@@ -316,12 +316,12 @@
                         <span class="modal-stat-val val-total" id="modalRankTotal">-</span>
                     </div>
                     <div class="modal-stat-box">
-                        <span class="modal-stat-label">Pořadí týmů (Pořadí / Body)</span>
-                        <span class="modal-stat-val"><span id="modalRankUmisteni"></span>. <span style="color:var(--text-muted);">/</span> <span id="modalPtsUmisteni"></span> b.</span>
+                        <span class="modal-stat-label">Body za umístění / Pořadí</span>
+                        <span class="modal-stat-val"><span id="modalPtsUmisteni"></span> b. <span style="color:var(--text-muted);">/</span> <span id="modalRankUmisteni"></span>.</span>
                     </div>
                     <div class="modal-stat-box">
-                        <span class="modal-stat-label">Bonusy (Pořadí / Body)</span>
-                        <span class="modal-stat-val"><span id="modalRankBonus"></span>. <span style="color:var(--text-muted);">/</span> <span id="modalPtsBonus"></span> b.</span>
+                        <span class="modal-stat-label">Body za bonusy / Pořadí</span>
+                        <span class="modal-stat-val"><span id="modalPtsBonus"></span> b. <span style="color:var(--text-muted);">/</span> <span id="modalRankBonus"></span>.</span>
                     </div>
                 </div>
 
@@ -416,14 +416,12 @@
                         <button class="tab-btn active" style="font-size: 0.85rem; padding: 8px 16px;" id="btn-prehled-cisla" onclick="vykresliPrehledMatrix('cisla')">Absolutní počty</button>
                         <button class="tab-btn" style="font-size: 0.85rem; padding: 8px 16px;" id="btn-prehled-procenta" onclick="vykresliPrehledMatrix('procenta')">Procenta</button>
                     </div>
-                    
                     <div class="modal-subtitle">Rozložení tipů na konečné umístění</div>
                     <div class="matrix-container" id="prehled-matrix"></div>
                 </div>
 
                 <div id="sekce-prehled-bonusy" style="display: none;">
                     <div id="prehled-bonusy"></div>
-
                     <div class="modal-subtitle" style="margin-top: 40px;">Nejvíce tipovaní střelci (TOP 10)</div>
                     <div id="prehled-strelci"></div>
                 </div>
@@ -514,6 +512,7 @@
             return getInitials(name);
         }
 
+        // CSV Parser, který nyní uchovává všechny řádky, včetně prázdných, pro přesné číslování indexů!
         function parseCSVData(text) {
             const rows = [];
             let currentRow = [];
@@ -537,9 +536,7 @@
                 } else if ((char === '\n' || char === '\r') && !insideQuotes) {
                     if (char === '\r' && nextChar === '\n') i++; 
                     currentRow.push(currentCell.trim());
-                    if (currentRow.some(cell => cell !== '')) {
-                        rows.push(currentRow);
-                    }
+                    rows.push(currentRow); // Vkládáme vždy, i prázdné, abychom neztratili indexování Excelu!
                     currentRow = [];
                     currentCell = '';
                 } else {
@@ -548,9 +545,7 @@
             }
             if (currentCell || currentRow.length > 0) {
                 currentRow.push(currentCell.trim());
-                if (currentRow.some(cell => cell !== '')) {
-                    rows.push(currentRow);
-                }
+                rows.push(currentRow);
             }
             return rows;
         }
@@ -782,10 +777,12 @@
             
             document.getElementById('modalPtsTotal').innerText = hrac.celkem;
             document.getElementById('modalRankTotal').innerText = `${hrac.poradiCelkem}. místo`;
+            
+            // Přehozené hodnoty Pořadí a Body
             document.getElementById('modalPtsUmisteni').innerText = hrac.bodyUmisteni;
-            document.getElementById('modalRankUmisteni').innerText = hrac.poradiUmisteni;
+            document.getElementById('modalRankUmisteni').innerText = `${hrac.poradiUmisteni}`;
             document.getElementById('modalPtsBonus').innerText = hrac.bodyBonus;
-            document.getElementById('modalRankBonus').innerText = hrac.poradiBonus;
+            document.getElementById('modalRankBonus').innerText = `${hrac.poradiBonus}`;
 
             const officialTeamsContainer = document.getElementById('modalOfficialTeams');
             officialTeamsContainer.innerHTML = '';
@@ -953,7 +950,6 @@
             for(let i=1; i<=16; i++) html += `<th>${i}.</th>`;
             html += `</tr></thead><tbody>`;
 
-            // Prvních 16 řádků (index 1 až 16) obsahuje data matice
             for (let r = 1; r <= 16; r++) {
                 const rowData = dataVyskytParsed[r];
                 if(!rowData) continue;
@@ -975,23 +971,22 @@
 
         function vykresliPrehledBonusy() {
             const bonusColsMapping = [
-                { col: 1, title: "Kdo ovládne základní část soutěže?" }, // B
-                { col: 2, title: "Který tým obdrží nejvíce žlutých karet?" }, // C
-                { col: 3, title: "Který tým obdrží nejvíce červených karet?" }, // D
-                { col: 4, title: "Který tým bude mít největší úspěšnost přihrávek?" }, // E
-                { col: 5, title: "Který tým bude mít na svém kontě nejvíce faulů?" }, // F
-                { col: 6, title: "Který tým bude v nejvíce ofsajdech?" }, // G
-                { col: 7, title: "Který tým během zápasů získá nejvíce míčů od soupeře?" } // H
+                { col: 1, title: "Kdo ovládne základní část soutěže?" },
+                { col: 2, title: "Který tým obdrží nejvíce žlutých karet?" },
+                { col: 3, title: "Který tým obdrží nejvíce červených karet?" },
+                { col: 4, title: "Který tým bude mít největší úspěšnost přihrávek?" },
+                { col: 5, title: "Který tým bude mít na svém kontě nejvíce faulů?" },
+                { col: 6, title: "Který tým bude v nejvíce ofsajdech?" },
+                { col: 7, title: "Který tým během zápasů získá nejvíce míčů od soupeře?" }
             ];
 
-            // 100% BULLETPROOF VYHLEDÁNÍ: Najdeme všechny řádky, kde v 1. sloupci je platný tým, a vezmeme druhou šestnáctku
             let vsechnyTymoveRadky = [];
-            dataVyskytParsed.forEach((row, index) => {
+            dataVyskytParsed.forEach((row) => {
                 if (row && row[0] && teamLogos[row[0].trim()]) {
                     vsechnyTymoveRadky.push(row);
                 }
             });
-            // Indexy 16 až 31 reprezentují řádky 33 až 48
+            // Druhá 16-tka týmů je na indexech 16 až 31 (odpovídá řádkům 33 až 48)
             let bonusTymoveRadky = vsechnyTymoveRadky.slice(16, 32);
 
             let html = '';
@@ -1015,7 +1010,7 @@
 
         function vykresliPrehledStrelci() {
             let strelci = [];
-            // Sloupec S je index 18. Čteme čistě od řádku 52 (index 51) do konce tabulky
+            // Sloupec S má index 18. Teď přesně a spolehlivě od Excelového řádku 52 (index 51)
             for(let r = 51; r < dataVyskytParsed.length; r++) {
                 const rowData = dataVyskytParsed[r];
                 if(rowData && rowData[18] && rowData[18].trim() !== '') {
