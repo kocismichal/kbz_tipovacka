@@ -150,7 +150,7 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.9);
             scrollbar-width: thin; scrollbar-color: var(--accent-blue) var(--bg-card);
         }
-        .modal-card.modal-wide { max-width: 900px; } /* Pro Přehled tipů */
+        .modal-card.modal-wide { max-width: 900px; }
         .modal-card::-webkit-scrollbar { width: 6px; }
         .modal-card::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 3px; }
         
@@ -168,7 +168,7 @@
             display: flex; align-items: center; justify-content: center; font-family: 'Oswald'; font-size: 2rem; color: #fff;
             overflow: hidden; margin: 0; flex-shrink: 0;
         }
-        .modal-name { font-family: 'Oswald', sans-serif; font-size: 1.8rem; margin: 0; display: flex; align-items: center; gap: 10px; }
+        .modal-name { font-family: 'Oswald', sans-serif; font-size: 1.8rem; margin: 0; display: flex; align-items: center; gap: 10px; text-align: center;}
         .modal-content { padding: 0 30px 30px 30px; }
 
         /* Systém bodování UI */
@@ -215,7 +215,7 @@
         .matrix-container table { width: auto; min-width: 100%; border-collapse: collapse; }
         .matrix-container th, .matrix-container td { padding: 10px; text-align: center; border: 1px solid var(--border-color); font-size: 0.85rem;}
         .matrix-container th { background: #111722; color: var(--text-muted); position: sticky; top: 0; z-index: 10; font-family: 'Oswald', sans-serif;}
-        .matrix-container td:first-child, .matrix-container th:first-child { position: sticky; left: 0; background: #111722; z-index: 20; text-align: left; font-weight: bold; color: #fff;}
+        .matrix-container td:first-child, .matrix-container th:first-child { position: sticky; left: 0; background: #111722; z-index: 20; text-align: center; }
         .matrix-container th:first-child { z-index: 30; }
 
         /* Bonusové otázky */
@@ -406,18 +406,27 @@
             </div>
             
             <div class="modal-content">
-                <div class="tabs" style="margin-top: 20px;">
-                    <button class="tab-btn active" id="btn-prehled-cisla" onclick="vykresliPrehledMatrix('cisla')">Absolutní počty</button>
-                    <button class="tab-btn" id="btn-prehled-procenta" onclick="vykresliPrehledMatrix('procenta')">Procenta</button>
+                <div class="tabs" style="margin-top: 10px; margin-bottom: 30px;">
+                    <button class="tab-btn active" id="btn-prehled-umisteni" onclick="zmenPrehledSekci('umisteni')">Umístění týmů</button>
+                    <button class="tab-btn" id="btn-prehled-bonusy" onclick="zmenPrehledSekci('bonusy')">Bonusové otázky</button>
                 </div>
                 
-                <div class="modal-subtitle">Rozložení tipů na konečné umístění</div>
-                <div class="matrix-container" id="prehled-matrix"></div>
+                <div id="sekce-prehled-umisteni">
+                    <div class="tabs" style="margin-bottom: 20px;">
+                        <button class="tab-btn active" style="font-size: 0.85rem; padding: 8px 16px;" id="btn-prehled-cisla" onclick="vykresliPrehledMatrix('cisla')">Absolutní počty</button>
+                        <button class="tab-btn" style="font-size: 0.85rem; padding: 8px 16px;" id="btn-prehled-procenta" onclick="vykresliPrehledMatrix('procenta')">Procenta</button>
+                    </div>
+                    
+                    <div class="modal-subtitle">Rozložení tipů na konečné umístění</div>
+                    <div class="matrix-container" id="prehled-matrix"></div>
+                </div>
 
-                <div id="prehled-bonusy"></div>
+                <div id="sekce-prehled-bonusy" style="display: none;">
+                    <div id="prehled-bonusy"></div>
 
-                <div class="modal-subtitle">Nejvíce tipovaní střelci (TOP 10)</div>
-                <div id="prehled-strelci"></div>
+                    <div class="modal-subtitle" style="margin-top: 40px;">Nejvíce tipovaní střelci (TOP 10)</div>
+                    <div id="prehled-strelci"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -626,7 +635,6 @@
                 return;
             }
 
-            // Najdeme nejvyšší počet bodů pro udělení koruny
             let maxZajicPoints = -1;
             zajici.forEach(z => {
                 if (z.celkem > maxZajicPoints) maxZajicPoints = z.celkem;
@@ -911,12 +919,24 @@
             document.getElementById('spravneModal').style.display = 'flex';
         }
 
+        // --- ZÁLOŽKY V PŘEHLEDU ---
+        function zmenPrehledSekci(sekce) {
+            document.getElementById('btn-prehled-umisteni').classList.toggle('active', sekce === 'umisteni');
+            document.getElementById('btn-prehled-bonusy').classList.toggle('active', sekce === 'bonusy');
+            
+            document.getElementById('sekce-prehled-umisteni').style.display = sekce === 'umisteni' ? 'block' : 'none';
+            document.getElementById('sekce-prehled-bonusy').style.display = sekce === 'bonusy' ? 'block' : 'none';
+        }
+
         // --- PŘEHLED VŠECH TIPŮ (Z VyskytovaTabulka) ---
         function otevriModalPrehled() {
             if (dataVyskytParsed.length === 0) {
                 alert("Data pro přehled tipů se nepodařilo načíst.");
                 return;
             }
+            
+            // Defaultní zobrazení při otevření
+            zmenPrehledSekci('umisteni');
             vykresliPrehledMatrix('cisla');
             vykresliPrehledBonusy();
             vykresliPrehledStrelci();
@@ -936,13 +956,15 @@
             for(let i=1; i<=16; i++) html += `<th>${i}.</th>`;
             html += `</tr></thead><tbody>`;
 
+            // Řádky 1 až 16
             for (let r = 1; r <= 16; r++) {
                 const rowData = dataVyskytParsed[r];
                 if(!rowData) continue;
                 const tym = rowData[0];
-                const logo = teamLogos[tym] || '';
+                const logo = teamLogos[tym] || 'https://i.imgur.com/8N4Jp62.png';
                 
-                html += `<tr><td style="position:sticky;left:0;background:#111722;font-weight:bold;z-index:20;color:#fff;"><img src="${logo}" style="width:20px;vertical-align:middle;margin-right:8px;">${tym}</td>`;
+                // Místo textu ukazujeme jen logo týmu
+                html += `<tr><td style="position:sticky;left:0;background:#111722;z-index:20;text-align:center;"><img src="${logo}" style="width:28px;height:28px;object-fit:contain;" title="${tym}"></td>`;
                 
                 for(let c = 1; c <= 16; c++) {
                     const val = isProc ? rowData[c+18] : rowData[c];
@@ -956,7 +978,7 @@
         }
 
         function vykresliPrehledBonusy() {
-            // Otázky jsou v řádcích 31-47, sloupce 0 (Tým) a 1-7 (Otázky B až H)
+            // Sloupce odpovídající konkrétním otázkám (B až H = index 1 až 7)
             const bonusColsMapping = [
                 { col: 1, title: "Kdo ovládne základní část soutěže?" },
                 { col: 2, title: "Který tým obdrží nejvíce žlutých karet?" },
@@ -970,7 +992,7 @@
             let html = '';
             bonusColsMapping.forEach(bq => {
                 html += `<div class="modal-subtitle" style="margin-top: 30px;">${bq.title}</div><div class="teams-grid-8x2">`;
-                // Data týmů jsou na řádcích 32-47 (indexy 31 až 46, záleží jak se na to díváme. Hlavička je na r=31)
+                // Data týmů jsou v řádcích 33 až 48 (indexy 32 až 47)
                 for(let r = 32; r <= 47; r++) {
                     const rowData = dataVyskytParsed[r];
                     if(!rowData || !rowData[0]) continue;
@@ -989,26 +1011,20 @@
         }
 
         function vykresliPrehledStrelci() {
-            // Střelci jsou v A51:F71 (indexy cca 50 až 70). Formát "Vasil Kušej (408)"
+            // Střelci jsou v B52 a níže, což je sloupec s indexem 1 (B), od řádku 52 (index 51)
             let strelci = [];
-            for(let r = 50; r <= 70; r++) {
+            for(let r = 51; r <= 60; r++) {
                 const rowData = dataVyskytParsed[r];
-                if(!rowData) continue;
-                for(let c = 0; c <= 5; c++) {
-                    if(rowData[c] && rowData[c].trim() !== '') {
-                        strelci.push(rowData[c].trim());
-                    }
+                if(rowData && rowData[1] && rowData[1].trim() !== '') {
+                    strelci.push(rowData[1].trim());
                 }
             }
             
-            // Vezmeme jen TOP 10
-            strelci = strelci.slice(0, 10);
-            
             let html = '<div class="bonus-list">';
             strelci.forEach((s, idx) => {
-                // S extrakcí jména a počtu v závorce (pokud je) pro hezčí zobrazení
                 let jmeno = s;
                 let pocet = "";
+                // Extrahuje "Vasil Kušej" a "408" ze zápisu "Vasil Kušej (408)"
                 const match = s.match(/(.*?)\((.*?)\)/);
                 if (match) {
                     jmeno = match[1].trim();
