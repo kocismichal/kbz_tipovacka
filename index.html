@@ -80,6 +80,7 @@
             width: 70px; height: 70px; margin: 0 auto 15px auto; border-radius: 50%;
             background: linear-gradient(135deg, var(--accent-blue), #00d2ff);
             display: flex; align-items: center; justify-content: center; font-family: 'Oswald'; font-size: 1.8rem; font-weight: bold;
+            overflow: hidden; /* Důležité pro oříznutí obrázku */
         }
         .zajic-name { font-family: 'Oswald', sans-serif; font-size: 1.3rem; margin-bottom: 10px; }
         .zajic-points { font-size: 1.1rem; color: var(--accent-yellow); font-weight: bold; }
@@ -117,7 +118,6 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.9);
         }
         
-        /* Modal - Tlačítko zavřít plovoucí */
         .close-btn {
             position: sticky; top: 15px; float: right; margin-right: 20px; z-index: 10;
             font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s;
@@ -130,12 +130,12 @@
             width: 80px; height: 80px; margin: 0 auto 15px auto; border-radius: 50%;
             background: linear-gradient(135deg, #ff4d29, #ffd700);
             display: flex; align-items: center; justify-content: center; font-family: 'Oswald'; font-size: 2rem; color: #fff;
+            overflow: hidden; /* Důležité pro oříznutí obrázku */
         }
         .modal-name { font-family: 'Oswald', sans-serif; font-size: 1.8rem; }
         
         .modal-content { padding: 0 30px 30px 30px; }
 
-        /* Modal - Základní statistiky */
         .modal-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px; }
         .modal-stat-box { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; text-align: center; border: 1px solid var(--border-color);}
         .modal-stat-label { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;}
@@ -143,7 +143,6 @@
         .val-total { color: var(--accent-yellow); font-size: 1.4rem; }
         .box-highlight { background: rgba(255, 215, 0, 0.05); border-color: rgba(255, 215, 0, 0.3); }
 
-        /* Modal - Tipy na pořadí týmů (Grid) */
         .modal-subtitle { font-family: 'Oswald', sans-serif; font-size: 1.2rem; color: var(--accent-blue); margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;}
         
         .teams-scroller {
@@ -163,7 +162,6 @@
         .pts-high { color: var(--accent-green); }
         .pts-zero { color: var(--text-muted); }
 
-        /* Modal - Bonusové otázky */
         .bonus-list { display: flex; flex-direction: column; gap: 10px; }
         .bonus-item {
             background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px;
@@ -249,18 +247,15 @@
                 </div>
 
                 <div class="modal-subtitle">Tipy na konečné umístění týmů</div>
-                <div class="teams-scroller" id="modalTeams">
-                    </div>
+                <div class="teams-scroller" id="modalTeams"></div>
 
                 <div class="modal-subtitle">Bonusové otázky</div>
-                <div class="bonus-list" id="modalBonuses">
-                    </div>
+                <div class="bonus-list" id="modalBonuses"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Odkazy na 3 CSV soubory
         const urlPrehled = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=1446924552&single=true&output=csv';
         const urlTipy = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=0&single=true&output=csv';
         const urlKontrola = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=1129220254&single=true&output=csv';
@@ -308,7 +303,14 @@
             return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase();
         }
 
-        // CSV parser
+        // --- NOVÁ FUNKCE: Vrátí fotku pro Podroužka, pro ostatní iniciály ---
+        function getAvatarHTML(name) {
+            if (name.trim() === "Jan Podroužek") {
+                return '<img src="podry.png" alt="Jan Podroužek" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            }
+            return getInitials(name);
+        }
+
         function parseCSVRow(rowText) {
             let cells = [];
             let insideQuotes = false;
@@ -331,7 +333,6 @@
 
         async function nactiData() {
             try {
-                // Fetch všeho najednou (paralelně) pro vyšší rychlost
                 const [resPrehled, resTipy, resKontrola] = await Promise.all([
                     fetch(urlPrehled), fetch(urlTipy), fetch(urlKontrola)
                 ]);
@@ -343,7 +344,7 @@
                 zpracujVsechnaData(csvPrehled, csvTipy, csvKontrola);
             } catch (error) {
                 console.error('Chyba:', error);
-                document.getElementById('tabulka-telo').innerHTML = '<tr><td colspan="3" class="loader">Chyba při načítání dat. Zkontrolujte připojení nebo platnost Google tabulky.</td></tr>';
+                document.getElementById('tabulka-telo').innerHTML = '<tr><td colspan="3" class="loader">Chyba při načítání dat.</td></tr>';
             }
         }
 
@@ -354,12 +355,10 @@
             
             vsichniHraci = [];
 
-            // Iterujeme přes řádky (1 = první člověk pod hlavičkou)
             for (let i = 1; i < radkyPrehled.length; i++) {
                 if (!radkyPrehled[i].trim()) continue;
                 
                 const bunkyP = parseCSVRow(radkyPrehled[i]); 
-                // V Tipy a Kontrola jsou data na tomtéž řádku 'i' (pokud sedí počet hlaviček, obvykle ano)
                 const bunkyT = (i < radkyTipy.length) ? parseCSVRow(radkyTipy[i]) : [];
                 const bunkyK = (i < radkyKontrola.length) ? parseCSVRow(radkyKontrola[i]) : [];
 
@@ -370,14 +369,12 @@
                     vsichniHraci.push({
                         puvodniIndex: i, 
                         jmeno: jmeno,
-                        // --- Statistiky žebříčků ---
                         bodyUmisteni: vycistiCislo(bunkyP[39]), 
                         bodyBonus: vycistiCislo(bunkyP[40]),    
                         celkem: vycistiCislo(bunkyP[41]),       
                         poradiUmisteni: parseInt(bunkyP[42].replace(/"/g, '')) || 999, 
                         poradiBonus: parseInt(bunkyP[43].replace(/"/g, '')) || 999,    
                         poradiCelkem: parseInt(bunkyP[44].replace(/"/g, '')) || 999,
-                        // --- Surové Tip a Kontrola Data ---
                         tipyData: bunkyT,
                         kontrolaData: bunkyK
                     });
@@ -392,7 +389,6 @@
             const container = document.getElementById('zajici-container');
             container.innerHTML = '';
             
-            // Řádky 3, 5, 6, 7 (indexy 2, 4, 5, 6 v poli dat)
             const hledaneIndexy = [2, 4, 5, 6]; 
             const zajici = vsichniHraci.filter(h => hledaneIndexy.includes(h.puvodniIndex));
 
@@ -405,8 +401,15 @@
                 const card = document.createElement('div');
                 card.className = 'zajic-card';
                 card.onclick = () => otevriModal(zajic);
+
+                // Kontrola pozadí pro avatara podle jména
+                const isPodrouzek = zajic.jmeno.trim() === "Jan Podroužek";
+                const bgStyle = isPodrouzek ? 'background: transparent;' : '';
+
                 card.innerHTML = `
-                    <div class="zajic-avatar">${getInitials(zajic.jmeno)}</div>
+                    <div class="zajic-avatar" style="${bgStyle}">
+                        ${getAvatarHTML(zajic.jmeno)}
+                    </div>
                     <div class="zajic-name">${zajic.jmeno}</div>
                     <div class="zajic-points">${zajic.celkem} bodů</div>
                     <div style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Celkově ${zajic.poradiCelkem}. místo</div>
@@ -490,12 +493,16 @@
             if (!e.target.closest('.search-container')) { document.getElementById('searchResults').style.display = 'none'; }
         });
 
-        // OTEVŘENÍ KARTY DETAILŮ
         function otevriModal(hrac) {
-            document.getElementById('modalInitials').innerText = getInitials(hrac.jmeno);
+            const avatarDiv = document.getElementById('modalInitials');
+            const isPodrouzek = hrac.jmeno.trim() === "Jan Podroužek";
+            
+            // Kontrola pozadí pro avatara v Modalu podle jména
+            avatarDiv.style.background = isPodrouzek ? 'transparent' : 'linear-gradient(135deg, #ff4d29, #ffd700)';
+            avatarDiv.innerHTML = getAvatarHTML(hrac.jmeno);
+            
             document.getElementById('modalName').innerText = hrac.jmeno;
             
-            // Základní statistiky
             document.getElementById('modalPtsUmisteni').innerText = hrac.bodyUmisteni;
             document.getElementById('modalRankUmisteni').innerText = hrac.poradiUmisteni;
             document.getElementById('modalPtsBonus').innerText = hrac.bodyBonus;
@@ -503,17 +510,15 @@
             document.getElementById('modalPtsTotal').innerText = hrac.celkem;
             document.getElementById('modalRankTotal').innerText = hrac.poradiCelkem;
 
-            // 1. Sekce: 16 Týmů
             const teamsContainer = document.getElementById('modalTeams');
             teamsContainer.innerHTML = '';
             
             if (hrac.tipyData.length > 0 && hrac.kontrolaData.length > 0) {
-                // Týmy a body za pořadí jsou ve sloupcích E-T (indexy 4 až 19 v poli)
                 for (let j = 4; j <= 19; j++) {
                     const tipTym = hrac.tipyData[j] ? hrac.tipyData[j].replace(/"/g, '').trim() : '';
                     const ziskaneBody = hrac.kontrolaData[j] ? hrac.kontrolaData[j].replace(/"/g, '').trim() : '0';
                     
-                    const logoUrl = teamLogos[tipTym] || 'https://i.imgur.com/8N4Jp62.png'; // Záchranný prázdný obrázek
+                    const logoUrl = teamLogos[tipTym] || 'https://i.imgur.com/8N4Jp62.png';
                     const ptsColor = (ziskaneBody === "10" || ziskaneBody === "9" || ziskaneBody === "8") ? 'pts-high' : (ziskaneBody === "0" ? 'pts-zero' : '');
 
                     teamsContainer.innerHTML += `
@@ -528,12 +533,10 @@
                 teamsContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.9rem;">Tipy se nepodařilo načíst.</span>';
             }
 
-            // 2. Sekce: Bonusy
             const bonusesContainer = document.getElementById('modalBonuses');
             bonusesContainer.innerHTML = '';
 
             if (hrac.tipyData.length > 0 && hrac.kontrolaData.length > 0) {
-                // Bonusy začínají ve sloupci U (index 20) a končí v AG (index 32). Máme 13 otázek.
                 for (let k = 0; k < 13; k++) {
                     const colIndex = 20 + k;
                     const tipOdpoved = hrac.tipyData[colIndex] ? hrac.tipyData[colIndex].replace(/"/g, '').trim() : 'Nebylo vyplněno';
@@ -554,7 +557,6 @@
                 bonusesContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.9rem;">Bonusy se nepodařilo načíst.</span>';
             }
 
-            // Otevřeme okno (reset scrollu na top)
             document.getElementById('playerModal').querySelector('.modal-card').scrollTop = 0;
             document.getElementById('playerModal').style.display = 'flex';
         }
