@@ -208,34 +208,48 @@
     </div>
 
     <script>
-        const urlPrehled = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=1446924552&single=true&output=csv';
-        const urlTipy = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=0&single=true&output=csv';
-        const urlKontrola = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=1129220254&single=true&output=csv';
-        const urlHotovo = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=1661482320&single=true&output=csv';
-        const urlVyskyt = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=236934267&single=true&output=csv';
+        // ODKAZY PRO 2. LIGU
+        const urlPrehled = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8xwUPtx_tkcu5fvjAtnsQIWHaJopVt6wgdGLu2qIk42xqr7GreVPUpprKf6IPIpqoJSMwoZa8xNu7/pub?gid=1446924552&single=true&output=csv';
+        const urlTipy = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8xwUPtx_tkcu5fvjAtnsQIWHaJopVt6wgdGLu2qIk42xqr7GreVPUpprKf6IPIpqoJSMwoZa8xNu7/pub?gid=0&single=true&output=csv';
+        const urlKontrola = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8xwUPtx_tkcu5fvjAtnsQIWHaJopVt6wgdGLu2qIk42xqr7GreVPUpprKf6IPIpqoJSMwoZa8xNu7/pub?gid=1129220254&single=true&output=csv';
+        const urlHotovo = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8xwUPtx_tkcu5fvjAtnsQIWHaJopVt6wgdGLu2qIk42xqr7GreVPUpprKf6IPIpqoJSMwoZa8xNu7/pub?gid=1661482320&single=true&output=csv';
+        const urlVyskyt = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8xwUPtx_tkcu5fvjAtnsQIWHaJopVt6wgdGLu2qIk42xqr7GreVPUpprKf6IPIpqoJSMwoZa8xNu7/pub?gid=236934267&single=true&output=csv';
 
+        // LOGA TÝMŮ PRO 2. LIGU
         const teamLogos = {
-            "Slavia Praha": "https://i.imgur.com/g1Zkhwg.png", "Sparta Praha": "https://i.imgur.com/NlyfFAC.png",
-            "Viktoria Plzeň": "https://i.imgur.com/SPtzSGy.png", "Baník Ostrava": "https://i.imgur.com/fhj9qlu.png",
-            "Mladá Boleslav": "https://i.imgur.com/faCQUVA.png", "Sigma Olomouc": "https://i.imgur.com/EQKL3hu.png",
-            "Jablonec": "https://i.imgur.com/e4ci4Rt.png", "Bohemians Praha": "https://i.imgur.com/sqSgm4a.png",
-            "Slovan Liberec": "https://i.imgur.com/CDcqChc.png", "Teplice": "https://i.imgur.com/t1u7O9z.png",
-            "Slovácko": "https://i.imgur.com/J9s2CwL.png", "Dukla Praha": "https://i.imgur.com/FZ2Lzu2.png",
-            "Pardubice": "https://i.imgur.com/3ZjvyQX.png", "Hradec Králové": "https://i.imgur.com/iyfKeMv.png",
-            "Karviná": "https://i.imgur.com/j7hx1cA.png", "Zlín": "https://i.imgur.com/7EseGiq.png"
+            "Slavia Praha B": "https://i.imgur.com/g1Zkhwg.png",
+    "Sparta Praha B": "https://i.imgur.com/NlyfFAC.png",
+    "Baník Ostrava B": "https://i.imgur.com/fhj9qlu.png",
+    "Chrudim": "https://i.imgur.com/GaaC0ox.png",
+    "Vyškov": "https://i.imgur.com/2gWNEbi.png",
+    "Příbram": "https://i.imgur.com/W5HbNQn.png",
+    "Táborsko": "https://i.imgur.com/R3QUiqz.png",
+    "Vlašim": "https://i.imgur.com/RCmUHo8.png",
+    "Zbrojovka Brno": "https://i.imgur.com/vJnfcFS.png",
+    "Artis Brno": "https://i.imgur.com/6hcOo7w.png",
+    "Viktoria Žižkov": "https://i.imgur.com/iIke5cO.png",
+    "Jihlava": "https://i.imgur.com/39RJLEC.png",
+    "Prostějov": "https://i.imgur.com/9AvvE6n.png",
+    "Opava": "https://i.imgur.com/Jn95z2w.png",
+    "Kroměříž": "https://i.imgur.com/s637GEc.png",
+    "Ústí nad Labem": "https://i.imgur.com/Ep5p3Xb.png",
+    "České Budějovice": "https://i.imgur.com/yUpY8bX.png"
         };
 
+        // 6 BONUSOVÝCH OTÁZEK PRO 2. LIGU
         const bonusQuestionsText = [
-            "Kdo ovládne základní část soutěže?", "Sestoupí prvoligový tým do druhé ligy po prohře v baráži?",
-            "Kolik bodů získá mistr Chance ligy během celé sezóny?", "Jaký bude bodový rozdíl mezi 1. a 2. místem?",
-            "Kolik bodů získá poslední tým tabulky během celé sezóny?", "Nejlepší střelec Chance ligy na konci sezóny:",
-            "Kolik gólů vstřelí nejlepší střelec soutěže?", "Který tým obdrží nejvíce žlutých karet?",
-            "Který tým obdrží nejvíce červených karet?", "Který tým bude mít největší úspěšnost přihrávek?",
-            "Který tým bude mít na svém kontě nejvíce faulů?", "Který tým bude v nejvíce ofsajdech?",
-            "Který tým během zápasů získá nejvíce míčů od soupeře?"
+            "Baráž postup?", 
+            "Počet bodů mistra?", 
+            "Rozdíl 1. a 2. místa?", 
+            "Počet bodů sestupujícího?", 
+            "Nejlepší střelec:", 
+            "Počet gólů střelce?"
         ];
 
-        let vsichniHraci = []; let spravneOdpovediRow = []; let dataVyskytParsed = []; let aktivniZalozka = 'celkem';
+        let vsichniHraci = []; 
+        let spravneOdpovediRow = []; 
+        let dataVyskytParsed = []; 
+        let aktivniZalozka = 'celkem';
 
         function odstranDiakritiku(text) { return text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : ""; }
         function getInitials(name) { const parts = name.trim().split(' '); return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase(); }
