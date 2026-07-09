@@ -6,244 +6,11 @@
     <title>Chance národní liga - KBZ tipovačka</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-main: #0b111e;
-            --bg-card: #161d2b;
-            --border-color: #232b38;
-            --text-main: #ffffff;
-            --text-muted: #8b95a5;
-            --accent-blue: #0088ff;
-            --accent-yellow: #ffd700;
-            --accent-green: #00e676;
-            --accent-red: #ff4d4d;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            line-height: 1.5;
-            padding-bottom: 50px;
-            background-image: url('pozadi.jpeg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; }
-
-        /* Hlavní Hlavička a Navigace */
-        header { text-align: center; margin: 40px 0 10px 0; }
-        .logo-text { font-family: 'Oswald', sans-serif; font-size: 3.5rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-main); text-shadow: 0 0 15px rgba(255,215,0,0.2); }
-        .logo-text span { color: var(--accent-yellow); }
-        
-        .main-nav { display: flex; justify-content: center; gap: 30px; margin-bottom: 40px; font-family: 'Oswald', sans-serif; font-size: 1.3rem; text-transform: uppercase; flex-wrap: wrap;}
-        .main-nav a { color: var(--text-muted); text-decoration: none; padding-bottom: 5px; transition: color 0.3s; }
-        .main-nav a:hover { color: #fff; }
-        .main-nav a.active { color: var(--accent-blue); border-bottom: 3px solid var(--accent-blue); }
-        
-        /* Počítadla */
-        .stats-header { display: flex; justify-content: center; gap: 40px; margin-bottom: 30px; }
-        .stat-item { text-align: center; }
-        .stat-value { font-family: 'Oswald', sans-serif; font-size: 2.2rem; color: var(--accent-blue); line-height: 1; }
-        .stat-value.gold { color: var(--accent-yellow); }
-        .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
-
-        /* Vyhledávání s našeptávačem */
-        .search-container { position: relative; max-width: 600px; margin: 0 auto 40px auto; z-index: 100; }
-        .search-input {
-            width: 100%; padding: 15px 20px 15px 45px;
-            background-color: rgba(22, 29, 43, 0.9); border: 1px solid var(--accent-blue);
-            border-radius: 30px; color: var(--text-main); font-size: 1.1rem;
-            box-shadow: 0 5px 20px rgba(0, 136, 255, 0.2);
-        }
-        .search-input:focus { outline: none; background-color: #1a2333; }
-        .search-container i { position: absolute; left: 18px; top: 17px; color: var(--text-muted); font-size: 1.2rem; }
-        
-        .autocomplete-results {
-            position: absolute; top: 60px; left: 0; right: 0;
-            background-color: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 12px; max-height: 300px; overflow-y: auto; display: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
-        .autocomplete-item {
-            padding: 12px 20px; cursor: pointer; border-bottom: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .autocomplete-item:hover { background-color: rgba(255,255,255,0.05); }
-
-        /* Nadpisy sekcí */
-        .section-title { 
-            font-family: 'Oswald', sans-serif; font-size: 1.5rem; color: var(--text-muted); 
-            border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase; 
-        }
-
-        /* Tlačítka menu (Správné odpovědi & Přehled) */
-        .results-btn-container { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
-        .results-btn {
-            background-color: var(--bg-card); border: 2px solid var(--accent-yellow); color: var(--accent-yellow);
-            padding: 14px 28px; border-radius: 30px; cursor: pointer; font-family: 'Oswald', sans-serif;
-            font-size: 1.1rem; text-transform: uppercase; transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .results-btn:hover { background-color: var(--accent-yellow); color: var(--bg-main); box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3); }
-        .btn-blue { border-color: var(--accent-blue); color: var(--accent-blue); }
-        .btn-blue:hover { background-color: var(--accent-blue); color: #fff; box-shadow: 0 4px 20px rgba(0, 136, 255, 0.3); }
-
-        /* Tipy Zajíců (Karty) */
-        .zajici-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 50px; }
-        .zajic-card { 
-            background: linear-gradient(145deg, var(--bg-card), #101520); border: 1px solid var(--border-color); 
-            border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: transform 0.2s;
-            position: relative;
-        }
-        .zajic-card:hover { transform: translateY(-5px); border-color: var(--accent-yellow); }
-        
-        .zajic-avatar-container { position: relative; width: 70px; height: 70px; margin: 0 auto 15px auto; }
-        .zajic-avatar {
-            width: 100%; height: 100%; border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-blue), #00d2ff);
-            display: flex; align-items: center; justify-content: center; font-family: 'Oswald'; font-size: 1.8rem; font-weight: bold;
-            overflow: hidden;
-        }
-        .zajic-name { font-family: 'Oswald', sans-serif; font-size: 1.3rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 5px; }
-        .zajic-points { font-size: 1.1rem; color: var(--accent-yellow); font-weight: bold; }
-
-        /* Záložky */
-        .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab-btn {
-            background-color: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted);
-            padding: 12px 24px; border-radius: 30px; cursor: pointer; font-family: 'Oswald', sans-serif;
-            font-size: 1rem; text-transform: uppercase; transition: all 0.3s;
-        }
-        .tab-btn.active { background-color: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
-        .tab-btn:hover:not(.active) { background-color: rgba(255,255,255,0.05); }
-
-        /* Tabulka žebříčku */
-        .table-container { 
-            background-color: rgba(22, 29, 43, 0.9); border: 1px solid var(--border-color); border-radius: 12px; 
-            overflow-x: auto; max-height: 650px; overflow-y: auto; margin-bottom: 50px;
-            scrollbar-width: thin; scrollbar-color: var(--accent-blue) var(--bg-card);
-        }
-        .table-container::-webkit-scrollbar { width: 8px; }
-        .table-container::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 4px; }
-        
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 14px 20px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-        th { font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; background-color: #111722; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.5); border-bottom: 2px solid var(--accent-blue); }
-        tr { cursor: pointer; transition: background 0.2s; }
-        tr:hover { background-color: rgba(255,255,255,0.05); }
-        .rank-col { font-family: 'Oswald', sans-serif; font-size: 1.2rem; width: 80px; text-align: center; }
-        .points-col { font-family: 'Oswald', sans-serif; font-size: 1.1rem; font-weight: bold; text-align: right; color: var(--accent-yellow); }
-        .sub-points-col { font-family: 'Oswald', sans-serif; font-size: 1rem; text-align: right; color: var(--text-muted); }
-
-        .fav-club-badge { width: 22px; height: 22px; object-fit: contain; vertical-align: middle; margin-left: 6px; }
-
-        /* Modální okna (Karty) */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
-            display: none; align-items: center; justify-content: center; z-index: 1000;
-        }
-        .modal-card {
-            background-color: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 16px; width: 95%; max-width: 680px; max-height: 90vh; overflow-y: auto;
-            position: relative; padding: 0;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
-            scrollbar-width: thin; scrollbar-color: var(--accent-blue) var(--bg-card);
-        }
-        .modal-card.modal-wide { max-width: 900px; }
-        .modal-card::-webkit-scrollbar { width: 6px; }
-        .modal-card::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 3px; }
-        
-        .close-btn {
-            position: sticky; top: 15px; float: right; margin-right: 20px; z-index: 20;
-            font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s;
-            background: rgba(0,0,0,0.5); padding: 5px 12px; border-radius: 50%;
-        }
-        .close-btn:hover { color: #fff; background: var(--accent-red); }
-        
-        .modal-header { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px; padding: 30px 30px 20px 30px; border-bottom: 1px solid var(--border-color); }
-        .modal-avatar {
-            width: 80px; height: 80px; border-radius: 50%;
-            background: linear-gradient(135deg, #ff4d29, #ffd700);
-            display: flex; align-items: center; justify-content: center; font-family: 'Oswald'; font-size: 2rem; color: #fff;
-            overflow: hidden; margin: 0; flex-shrink: 0;
-        }
-        .modal-name { font-family: 'Oswald', sans-serif; font-size: 1.8rem; margin: 0; display: flex; align-items: center; gap: 10px; text-align: center;}
-        .modal-content { padding: 0 30px 30px 30px; }
-
-        /* Systém bodování UI */
-        .scoring-info { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; align-items: start; }
-        .scoring-card { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; height: 100%;}
-        .scoring-card h4 { color: var(--accent-blue); margin-bottom: 12px; font-family: 'Oswald', sans-serif; font-size: 1.1rem; text-transform: uppercase; }
-        .scoring-card ul { list-style: none; padding: 0; margin: 0; font-size: 0.85rem; color: var(--text-muted); }
-        .scoring-card li { margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;}
-        .scoring-card li strong { color: #fff; font-weight: 600; }
-        @media (max-width: 600px) { .scoring-info { grid-template-columns: 1fr; } }
-
-        /* Statistiky v modalu */
-        .modal-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px; }
-        .modal-stat-box { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; text-align: center; border: 1px solid var(--border-color);}
-        .modal-stat-label { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;}
-        .modal-stat-val { font-family: 'Oswald', sans-serif; font-size: 1.2rem; }
-        .val-total { color: var(--accent-yellow); font-size: 1.4rem; }
-        .box-highlight { background: rgba(255, 215, 0, 0.05); border-color: rgba(255, 215, 0, 0.3); }
-
-        .modal-subtitle { display: flex; align-items: center; flex-wrap: wrap; font-family: 'Oswald', sans-serif; font-size: 1.2rem; color: var(--accent-blue); margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; margin-top: 25px;}
-        
-        /* Rozvržení mřížky 8 a 8 */
-        .teams-grid-8x2 {
-            display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-bottom: 10px;
-        }
-        
-        .team-col {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 4px; min-height: 80px; text-align: center;
-        }
-        .t-pos { font-family: 'Oswald', sans-serif; font-size: 0.95rem; color: var(--text-muted); margin-bottom: 6px; }
-        .t-logo { width: 34px; height: 34px; object-fit: contain; margin-bottom: 6px; }
-        .t-pts { font-family: 'Oswald', sans-serif; font-size: 1.05rem; color: #fff; }
-        .pts-high { color: var(--accent-green); }
-        .pts-zero { color: var(--text-muted); }
-
-        @media (max-width: 620px) {
-            .teams-grid-8x2 { grid-template-columns: repeat(4, 1fr); }
-            .modal-header { flex-direction: column; gap: 10px; padding-top: 40px;}
-        }
-
-        /* Matrix v přehledu */
-        .matrix-container { overflow-x: auto; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 30px; }
-        .matrix-container table { width: auto; min-width: 100%; border-collapse: collapse; }
-        .matrix-container th, .matrix-container td { padding: 10px; text-align: center; border: 1px solid var(--border-color); font-size: 0.85rem;}
-        .matrix-container th { background: #111722; color: var(--text-muted); position: sticky; top: 0; z-index: 10; font-family: 'Oswald', sans-serif;}
-        .matrix-container td:first-child, .matrix-container th:first-child { position: sticky; left: 0; background: #111722; z-index: 20; text-align: center; }
-        .matrix-container th:first-child { z-index: 30; }
-
-        /* Bonusové otázky */
-        .bonus-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
-        .bonus-item {
-            background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px;
-            padding: 12px 15px; display: flex; justify-content: space-between; align-items: center;
-        }
-        .bonus-text { flex-grow: 1; padding-right: 15px; }
-        .b-question { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 3px; }
-        .b-answer { font-weight: 600; font-size: 0.95rem; color: #fff;}
-        .b-pts { font-family: 'Oswald', sans-serif; font-size: 1.2rem; min-width: 40px; text-align: center; }
-
-        .loader { text-align: center; padding: 40px; color: var(--text-muted); font-size: 1.2rem; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="container">
-        <header>
-            <div class="logo-text">KBZ <span>TIPOVAČKA</span></div>
-        </header>
-        
         <div id="menu-container"></div>
 
         <div class="stats-header">
@@ -306,12 +73,10 @@
     <div class="modal-overlay" id="playerModal" onclick="zavriModal(event)">
         <div class="modal-card">
             <i class="fas fa-times close-btn" onclick="document.getElementById('playerModal').style.display='none'"></i>
-            
             <div class="modal-header">
                 <div class="modal-avatar" id="modalMainAvatar">--</div>
                 <div class="modal-name" id="modalName">Jméno Hráče</div>
             </div>
-            
             <div class="modal-content">
                 <div class="modal-stats">
                     <div class="modal-stat-box box-highlight">
@@ -429,30 +194,20 @@
     </div>
 
     <script>
-        // --- DYNAMICKÉ NAČTENÍ MENU ---
         fetch('menu.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('menu-container').innerHTML = data;
                 const path = window.location.pathname;
-                const page = path.split("/").pop() || "index.html";
+                const page = path.split("/").pop() || "2526_chnl.html";
                 const links = document.querySelectorAll('#menu-container a');
                 links.forEach(link => {
                     link.classList.remove('active');
-                    if (link.getAttribute('href') === page) {
-                        link.classList.add('active');
-                    }
+                    if (link.getAttribute('href') === page) link.classList.add('active');
                 });
             })
             .catch(error => console.error('Chyba při načítání menu:', error));
 
-        // Funkce pro zkratku v menu
-        function vyhodnotZimniPripravu() {
-            console.log("Vyhodnocuji zimní přípravu...");
-            alert("Vyhodnocení zimní přípravy spuštěno!");
-        }
-
-        // Odkazy pro druhou ligu
         const urlPrehled = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8xwUPtx_tkcu5fvjAtnsQIWHaJopVt6wgdGLu2qIk42xqr7GreVPUpprKf6IPIpqoJSMwoZa8xNu7/pub?gid=1446924552&single=true&output=csv';
         const urlTipy = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8xwUPtx_tkcu5fvjAtnsQIWHaJopVt6wgdGLu2qIk42xqr7GreVPUpprKf6IPIpqoJSMwoZa8xNu7/pub?gid=0&single=true&output=csv';
         const urlKontrola = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8xwUPtx_tkcu5fvjAtnsQIWHaJopVt6wgdGLu2qIk42xqr7GreVPUpprKf6IPIpqoJSMwoZa8xNu7/pub?gid=1129220254&single=true&output=csv';
@@ -460,488 +215,203 @@
         const urlVyskyt = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8xwUPtx_tkcu5fvjAtnsQIWHaJopVt6wgdGLu2qIk42xqr7GreVPUpprKf6IPIpqoJSMwoZa8xNu7/pub?gid=236934267&single=true&output=csv';
 
         const teamLogos = {
-            "Slavia Praha": "https://i.imgur.com/g1Zkhwg.png",
-            "Sparta Praha": "https://i.imgur.com/NlyfFAC.png",
-            "Viktoria Plzeň": "https://i.imgur.com/SPtzSGy.png",
-            "Baník Ostrava": "https://i.imgur.com/fhj9qlu.png",
-            "Mladá Boleslav": "https://i.imgur.com/faCQUVA.png",
-            "Sigma Olomouc": "https://i.imgur.com/EQKL3hu.png",
-            "Jablonec": "https://i.imgur.com/e4ci4Rt.png",
-            "Bohemians Praha": "https://i.imgur.com/sqSgm4a.png",
-            "Slovan Liberec": "https://i.imgur.com/CDcqChc.png",
-            "Teplice": "https://i.imgur.com/t1u7O9z.png",
-            "Slovácko": "https://i.imgur.com/J9s2CwL.png",
-            "Dukla Praha": "https://i.imgur.com/FZ2Lzu2.png",
-            "Pardubice": "https://i.imgur.com/3ZjvyQX.png",
-            "Hradec Králové": "https://i.imgur.com/iyfKeMv.png",
-            "Karviná": "https://i.imgur.com/j7hx1cA.png",
-            "Zlín": "https://i.imgur.com/7EseGiq.png",
-            "Slavia Praha B": "https://i.imgur.com/g1Zkhwg.png",
-            "Sparta Praha B": "https://i.imgur.com/NlyfFAC.png",
-            "Baník Ostrava B": "https://i.imgur.com/fhj9qlu.png",
-            "Chrudim": "https://i.imgur.com/GaaC0ox.png",
-            "Vyškov": "https://i.imgur.com/2gWNEbi.png",
-            "Příbram": "https://i.imgur.com/W5HbNQn.png",
-            "Táborsko": "https://i.imgur.com/R3QUiqz.png",
-            "Vlašim": "https://i.imgur.com/RCmUHo8.png",
-            "Zbrojovka Brno": "https://i.imgur.com/vJnfcFS.png",
-            "Artis Brno": "https://i.imgur.com/6hcOo7w.png",
-            "Viktoria Žižkov": "https://i.imgur.com/iIke5cO.png",
-            "Jihlava": "https://i.imgur.com/39RJLEC.png",
-            "Prostějov": "https://i.imgur.com/9AvvE6n.png",
-            "Opava": "https://i.imgur.com/Jn95z2w.png",
-            "Kroměříž": "https://i.imgur.com/s637GEc.png",
-            "Ústí nad Labem": "https://i.imgur.com/Ep5p3Xb.png",
-            "České Budějovice": "https://i.imgur.com/yUpY8bX.png"
+            "Slavia Praha": "https://i.imgur.com/g1Zkhwg.png", "Sparta Praha": "https://i.imgur.com/NlyfFAC.png",
+            "Viktoria Plzeň": "https://i.imgur.com/SPtzSGy.png", "Baník Ostrava": "https://i.imgur.com/fhj9qlu.png",
+            "Mladá Boleslav": "https://i.imgur.com/faCQUVA.png", "Sigma Olomouc": "https://i.imgur.com/EQKL3hu.png",
+            "Jablonec": "https://i.imgur.com/e4ci4Rt.png", "Bohemians Praha": "https://i.imgur.com/sqSgm4a.png",
+            "Slovan Liberec": "https://i.imgur.com/CDcqChc.png", "Teplice": "https://i.imgur.com/t1u7O9z.png",
+            "Slovácko": "https://i.imgur.com/J9s2CwL.png", "Pardubice": "https://i.imgur.com/3ZjvyQX.png",
+            "Hradec Králové": "https://i.imgur.com/iyfKeMv.png", "Zlín": "https://i.imgur.com/7EseGiq.png",
+            "Zbrojovka Brno": "https://i.imgur.com/VNzY5Ew.png", "Artis Brno": "https://i.imgur.com/6hcOo7w.png",
+            "Dukla Praha": "https://i.imgur.com/FZ2Lzu2.png", "Karviná": "https://i.imgur.com/j7hx1cA.png",
+            "Slavia Praha B": "https://i.imgur.com/g1Zkhwg.png", "Baník Ostrava B": "https://i.imgur.com/fhj9qlu.png",
+            "Příbram": "https://i.imgur.com/W5HbNQn.png", "Táborsko": "https://i.imgur.com/R3QUiqz.png",
+            "Vlašim": "https://i.imgur.com/RCmUHo8.png", "Viktoria Žižkov": "https://i.imgur.com/iIke5cO.png",
+            "Jihlava": "https://i.imgur.com/39RJLEC.png", "Prostějov": "https://i.imgur.com/9AvvE6n.png",
+            "Opava": "https://i.imgur.com/Jn95z2w.png", "Kroměříž": "https://i.imgur.com/s637GEc.png",
+            "Ústí nad Labem": "https://i.imgur.com/Ep5p3Xb.png", "Třinec": "https://i.imgur.com/rxmY9If.png",
+            "Kladno": "https://i.imgur.com/fuoQwTS.png", "Česká Lípa": "https://i.imgur.com/ccLgaLt.png"
         };
 
-        const bonusQuestionsText = [
-            "Baráž postup?",
-            "Počet bodů mistra?",
-            "Rozdíl 1. a 2. místa?",
-            "Počet bodů sestupujícího?",
-            "Nejlepší střelec:",
-            "Počet gólů střelce?"
-        ];
+        const bonusQuestionsText = ["Baráž postup?", "Počet bodů mistra?", "Rozdíl 1. a 2. místa?", "Počet bodů sestupujícího?", "Nejlepší střelec:", "Počet gólů střelce?"];
+        let vsichniHraci = []; let spravneOdpovediRow = []; let dataVyskytParsed = []; let aktivniZalozka = 'celkem';
 
-        let vsichniHraci = [];
-        let spravneOdpovediRow = [];
-        let dataVyskytParsed = [];
-        let aktivniZalozka = 'celkem';
-
-        function odstranDiakritiku(text) {
-            if (!text) return "";
-            return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        }
-
-        function getInitials(name) {
-            const parts = name.trim().split(' ');
-            return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase();
-        }
-
-        function ziskejLogoKlubuHTML(clubName) {
-            if (!clubName) return '';
-            const logo = teamLogos[clubName.trim()];
-            if (logo) {
-                return `<img src="${logo}" class="fav-club-badge" title="Oblíbený klub: ${clubName}">`;
-            }
-            return '';
-        }
-
+        function odstranDiakritiku(text) { return text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : ""; }
+        function getInitials(name) { const parts = name.trim().split(' '); return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase(); }
+        function ziskejLogoKlubuHTML(clubName) { if (!clubName) return ''; const logo = teamLogos[clubName.trim()]; return logo ? `<img src="${logo}" class="fav-club-badge" title="Oblíbený klub: ${clubName}">` : ''; }
         function getAvatarHTML(name, puvodniIndex) {
             const cleanName = name.toLowerCase();
-            if (cleanName.includes("podroužek") || puvodniIndex === 1) {
-                return '<img src="podry.png" alt="Jan Podroužek" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            }
-            if (cleanName.includes("sodoma") || puvodniIndex === 2) {
-                return '<img src="sodoma.png" alt="sodoma" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            }
-            if (cleanName.includes("dvorka") || puvodniIndex === 3) {
-                return '<img src="dvorka.png" alt="dvorka" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            }
-            if (cleanName.includes("lars") || puvodniIndex === 4) {
-                return '<img src="lars.png" alt="lars" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            }
+            if (cleanName.includes("podroužek") || puvodniIndex === 1) return '<img src="podry.png" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            if (cleanName.includes("sodoma") || puvodniIndex === 2) return '<img src="sodoma.png" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            if (cleanName.includes("dvorka") || puvodniIndex === 3) return '<img src="dvorka.png" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            if (cleanName.includes("lars") || puvodniIndex === 4) return '<img src="lars.png" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
             return getInitials(name);
         }
 
         function parseCSVData(text) {
-            const rows = [];
-            let currentRow = [];
-            let currentCell = '';
-            let insideQuotes = false;
-
+            const rows = []; let currentRow = []; let currentCell = ''; let insideQuotes = false;
             for (let i = 0; i < text.length; i++) {
-                const char = text[i];
-                const nextChar = text[i + 1];
-
-                if (char === '"') {
-                    if (insideQuotes && nextChar === '"') {
-                        currentCell += '"';
-                        i++; 
-                    } else {
-                        insideQuotes = !insideQuotes;
-                    }
-                } else if (char === ',' && !insideQuotes) {
-                    currentRow.push(currentCell.trim());
-                    currentCell = '';
-                } else if ((char === '\n' || char === '\r') && !insideQuotes) {
-                    if (char === '\r' && nextChar === '\n') i++; 
-                    currentRow.push(currentCell.trim());
-                    rows.push(currentRow);
-                    currentRow = [];
-                    currentCell = '';
-                } else {
-                    currentCell += char;
-                }
+                const char = text[i]; const nextChar = text[i + 1];
+                if (char === '"') { if (insideQuotes && nextChar === '"') { currentCell += '"'; i++; } else insideQuotes = !insideQuotes; } 
+                else if (char === ',' && !insideQuotes) { currentRow.push(currentCell.trim()); currentCell = ''; } 
+                else if ((char === '\n' || char === '\r') && !insideQuotes) { if (char === '\r' && nextChar === '\n') i++; currentRow.push(currentCell.trim()); rows.push(currentRow); currentRow = []; currentCell = ''; } 
+                else currentCell += char;
             }
-            if (currentCell || currentRow.length > 0) {
-                currentRow.push(currentCell.trim());
-                rows.push(currentRow);
-            }
+            if (currentCell || currentRow.length > 0) { currentRow.push(currentCell.trim()); rows.push(currentRow); }
             return rows;
         }
 
-        function vycistiCislo(text) {
-            if (!text) return 0;
-            let ciste = text.replace(/"/g, '').replace(',', '.').trim();
-            return parseFloat(ciste) || 0;
-        }
+        function vycistiCislo(text) { if (!text) return 0; return parseFloat(text.replace(/"/g, '').replace(',', '.').trim()) || 0; }
 
         async function nactiData() {
             try {
                 const [resPrehled, resTipy, resKontrola, resHotovo, resVyskyt] = await Promise.all([
                     fetch(urlPrehled), fetch(urlTipy), fetch(urlKontrola), fetch(urlHotovo).catch(() => null), fetch(urlVyskyt).catch(() => null)
                 ]);
-
-                const csvPrehled = await resPrehled.text();
-                const csvTipy = await resTipy.text();
-                const csvKontrola = await resKontrola.text();
-                let csvHotovo = resHotovo ? await resHotovo.text() : '';
-                let csvVyskyt = resVyskyt ? await resVyskyt.text() : '';
-
-                zpracujVsechnaData(csvPrehled, csvTipy, csvKontrola, csvHotovo, csvVyskyt);
-            } catch (error) {
-                console.error('Chyba:', error);
-                document.getElementById('tabulka-telo').innerHTML = '<tr><td colspan="5" class="loader">Chyba při stahování dat z Google tabulek.</td></tr>';
-            }
+                zpracujVsechnaData(await resPrehled.text(), await resTipy.text(), await resKontrola.text(), resHotovo ? await resHotovo.text() : '', resVyskyt ? await resVyskyt.text() : '');
+            } catch (error) { document.getElementById('tabulka-telo').innerHTML = '<tr><td colspan="5" class="loader">Chyba při stahování dat.</td></tr>'; }
         }
 
         function zpracujVsechnaData(csvPrehled, csvTipy, csvKontrola, csvHotovo, csvVyskyt) {
-            const dataPrehled = parseCSVData(csvPrehled);
-            const dataTipy = parseCSVData(csvTipy);
-            const dataKontrola = parseCSVData(csvKontrola);
-            const dataHotovo = csvHotovo ? parseCSVData(csvHotovo) : [];
-            dataVyskytParsed = csvVyskyt ? parseCSVData(csvVyskyt) : [];
-            
-            if (dataHotovo.length > 1) {
-                spravneOdpovediRow = dataHotovo[1];
-            }
-            
+            const dataPrehled = parseCSVData(csvPrehled); const dataTipy = parseCSVData(csvTipy); const dataKontrola = parseCSVData(csvKontrola);
+            const dataHotovo = csvHotovo ? parseCSVData(csvHotovo) : []; dataVyskytParsed = csvVyskyt ? parseCSVData(csvVyskyt) : [];
+            if (dataHotovo.length > 1) spravneOdpovediRow = dataHotovo[1];
             vsichniHraci = [];
-
             for (let i = 1; i < dataPrehled.length; i++) {
-                const bunkyP = dataPrehled[i]; 
-                const bunkyT = (i < dataTipy.length) ? dataTipy[i] : [];
-                const bunkyK = (i < dataKontrola.length) ? dataKontrola[i] : [];
-
+                const bunkyP = dataPrehled[i]; const bunkyT = (i < dataTipy.length) ? dataTipy[i] : []; const bunkyK = (i < dataKontrola.length) ? dataKontrola[i] : [];
                 if(bunkyP && bunkyP.length >= 45) {
                     const jmeno = bunkyP[2].replace(/"/g, '').trim(); 
-                    const oblubenyKlub = bunkyP[3] ? bunkyP[3].replace(/"/g, '').trim() : ''; 
                     if (jmeno === "") continue;
-
                     vsichniHraci.push({
-                        puvodniIndex: i, 
-                        jmeno: jmeno,
-                        oblubenyKlub: oblubenyKlub,
-                        bodyUmisteni: vycistiCislo(bunkyP[39]), 
-                        bodyBonus: vycistiCislo(bunkyP[40]),    
-                        celkem: vycistiCislo(bunkyP[41]),       
-                        poradiUmisteni: parseInt(bunkyP[42].replace(/"/g, '')) || 999, 
-                        poradiBonus: parseInt(bunkyP[43].replace(/"/g, '')) || 999,    
-                        poradiCelkem: parseInt(bunkyP[44].replace(/"/g, '')) || 999,
-                        tipyData: bunkyT,
-                        kontrolaData: bunkyK
+                        puvodniIndex: i, jmeno: jmeno, oblubenyKlub: bunkyP[3] ? bunkyP[3].replace(/"/g, '').trim() : '',
+                        bodyUmisteni: vycistiCislo(bunkyP[39]), bodyBonus: vycistiCislo(bunkyP[40]), celkem: vycistiCislo(bunkyP[41]),       
+                        poradiUmisteni: parseInt(bunkyP[42].replace(/"/g, '')) || 999, poradiBonus: parseInt(bunkyP[43].replace(/"/g, '')) || 999, poradiCelkem: parseInt(bunkyP[44].replace(/"/g, '')) || 999,
+                        tipyData: bunkyT, kontrolaData: bunkyK
                     });
                 }
             }
-
-            vykresliZajice();
-            vykresliTabulku();
+            vykresliZajice(); vykresliTabulku();
         }
 
         function vykresliZajice() {
-            const container = document.getElementById('zajici-container');
-            container.innerHTML = '';
-            
-            const hledaneIndexy = [1, 2, 3, 4]; 
-            const zajici = vsichniHraci.filter(h => hledaneIndexy.includes(h.puvodniIndex));
-
-            if(zajici.length === 0) {
-                container.innerHTML = '<div class="loader">Data pro VIP Zajíce se připravují...</div>';
-                return;
-            }
-
-            let maxZajicPoints = -1;
-            zajici.forEach(z => {
-                if (z.celkem > maxZajicPoints) maxZajicPoints = z.celkem;
-            });
-
+            const container = document.getElementById('zajici-container'); container.innerHTML = '';
+            const zajici = vsichniHraci.filter(h => [1, 2, 3, 4].includes(h.puvodniIndex));
+            if(zajici.length === 0) { container.innerHTML = '<div class="loader">Data pro VIP Zajíce se připravují...</div>'; return; }
+            let maxZajicPoints = -1; zajici.forEach(z => { if (z.celkem > maxZajicPoints) maxZajicPoints = z.celkem; });
             zajici.forEach(zajic => {
-                const card = document.createElement('div');
-                card.className = 'zajic-card';
-                card.onclick = () => otevriModal(zajic);
-
-                const cleanName = zajic.jmeno.toLowerCase();
-                const isCustomAvatar = cleanName.includes("podroužek") || cleanName.includes("sodoma") || cleanName.includes("dvorka") || cleanName.includes("lars");
-                const bgStyle = isCustomAvatar ? 'background: transparent;' : '';
-
-                const ziskaKorunu = zajic.celkem === maxZajicPoints && maxZajicPoints > 0;
-                const korunaHtml = ziskaKorunu ? `<img src="koruna.png" style="position: absolute; top: -22px; left: 50%; transform: translateX(-50%); width: 38px; height: auto; z-index: 5;" alt="Král Zajíců">` : '';
-
+                const card = document.createElement('div'); card.className = 'zajic-card'; card.onclick = () => otevriModal(zajic);
+                const isCustomAvatar = zajic.jmeno.toLowerCase().match(/(podroužek|sodoma|dvorka|lars)/);
+                const korunaHtml = (zajic.celkem === maxZajicPoints && maxZajicPoints > 0) ? `<img src="koruna.png" style="position: absolute; top: -22px; left: 50%; transform: translateX(-50%); width: 38px; height: auto; z-index: 5;">` : '';
                 card.innerHTML = `
-                    <div class="zajic-avatar-container">
-                        ${korunaHtml}
-                        <div class="zajic-avatar" style="${bgStyle}">
-                            ${getAvatarHTML(zajic.jmeno, zajic.puvodniIndex)}
-                        </div>
-                    </div>
+                    <div class="zajic-avatar-container">${korunaHtml}<div class="zajic-avatar" style="${isCustomAvatar ? 'background: transparent;' : ''}">${getAvatarHTML(zajic.jmeno, zajic.puvodniIndex)}</div></div>
                     <div class="zajic-name">${zajic.jmeno} ${ziskejLogoKlubuHTML(zajic.oblubenyKlub)}</div>
-                    <div class="zajic-points">${zajic.celkem} bodů</div>
-                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Celkově ${zajic.poradiCelkem}. místo</div>
-                `;
+                    <div class="zajic-points">${zajic.celkem} bodů</div><div style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Celkově ${zajic.poradiCelkem}. místo</div>`;
                 container.appendChild(card);
             });
         }
 
         function zmenZalozku(tabName) {
-            aktivniZalozka = tabName;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-            
+            aktivniZalozka = tabName; document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(`tab-${tabName}`).classList.add('active');
             const hlavicka = document.getElementById('tabulka-hlavicka');
-            
-            if (tabName === 'umisteni') {
-                hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za umístění</th>';
-            } else if (tabName === 'bonusy') {
-                hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za bonusové otázky</th>';
-            } else { 
-                hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za pořadí</th><th style="text-align:right;">Body za bonusy</th><th style="text-align:right;">Celkem bodů</th>';
-            }
+            if (tabName === 'umisteni') hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za umístění</th>';
+            else if (tabName === 'bonusy') hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za bonusové otázky</th>';
+            else hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za pořadí</th><th style="text-align:right;">Body za bonusy</th><th style="text-align:right;">Celkem bodů</th>';
             vykresliTabulku();
         }
 
         function vykresliTabulku() {
-            const tbody = document.getElementById('tabulka-telo');
-            tbody.innerHTML = '';
-            let data = [...vsichniHraci];
-
-            if (aktivniZalozka === 'umisteni') { data.sort((a, b) => a.poradiUmisteni - b.poradiUmisteni); } 
-            else if (aktivniZalozka === 'bonusy') { data.sort((a, b) => a.poradiBonus - b.poradiBonus); } 
-            else { data.sort((a, b) => a.poradiCelkem - b.poradiCelkem); }
-
+            const tbody = document.getElementById('tabulka-telo'); tbody.innerHTML = ''; let data = [...vsichniHraci];
+            if (aktivniZalozka === 'umisteni') data.sort((a, b) => a.poradiUmisteni - b.poradiUmisteni); 
+            else if (aktivniZalozka === 'bonusy') data.sort((a, b) => a.poradiBonus - b.poradiBonus); 
+            else data.sort((a, b) => a.poradiCelkem - b.poradiCelkem);
             document.getElementById('count-players').innerText = data.length;
-
             data.forEach(hrac => {
-                const tr = document.createElement('tr');
-                tr.onclick = () => otevriModal(hrac); 
-
+                const tr = document.createElement('tr'); tr.onclick = () => otevriModal(hrac); 
                 let poradi = 0; let bodyZobrazeni = 0;
-                if (aktivniZalozka === 'umisteni') { poradi = hrac.poradiUmisteni; bodyZobrazeni = hrac.bodyUmisteni; } 
-                else if (aktivniZalozka === 'bonusy') { poradi = hrac.poradiBonus; bodyZobrazeni = hrac.bodyBonus; } 
-                else { poradi = hrac.poradiCelkem; bodyZobrazeni = hrac.celkem; }
-
+                if (aktivniZalozka === 'umisteni') { poradi = hrac.poradiUmisteni; bodyZobrazeni = hrac.bodyUmisteni; } else if (aktivniZalozka === 'bonusy') { poradi = hrac.poradiBonus; bodyZobrazeni = hrac.bodyBonus; } else { poradi = hrac.poradiCelkem; bodyZobrazeni = hrac.celkem; }
                 let colorClass = poradi === 1 ? 'color: var(--accent-yellow); font-weight: bold;' : '';
-
-                let bodySloupceHtml = '';
-                if (aktivniZalozka === 'celkem') {
-                    bodySloupceHtml = `
-                        <td class="sub-points-col">${hrac.bodyUmisteni}</td>
-                        <td class="sub-points-col">${hrac.bodyBonus}</td>
-                        <td class="points-col">${bodyZobrazeni}</td>
-                    `;
-                } else {
-                    bodySloupceHtml = `<td class="points-col">${bodyZobrazeni}</td>`;
-                }
-
-                tr.innerHTML = `
-                    <td class="rank-col" style="${colorClass}">${poradi}.</td>
-                    <td style="font-weight: 600;">${hrac.jmeno} ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}</td>
-                    ${bodySloupceHtml}
-                `;
+                let bodySloupceHtml = (aktivniZalozka === 'celkem') ? `<td class="sub-points-col">${hrac.bodyUmisteni}</td><td class="sub-points-col">${hrac.bodyBonus}</td><td class="points-col">${bodyZobrazeni}</td>` : `<td class="points-col">${bodyZobrazeni}</td>`;
+                tr.innerHTML = `<td class="rank-col" style="${colorClass}">${poradi}.</td><td style="font-weight: 600;">${hrac.jmeno} ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}</td>${bodySloupceHtml}`;
                 tbody.appendChild(tr);
             });
         }
 
         function hledejHrace() {
             const inputValue = odstranDiakritiku(document.getElementById('searchInput').value.toLowerCase());
-            const resultBox = document.getElementById('searchResults');
-            resultBox.innerHTML = '';
+            const resultBox = document.getElementById('searchResults'); resultBox.innerHTML = '';
             if (inputValue.length < 1) { resultBox.style.display = 'none'; return; }
-
             const shody = vsichniHraci.filter(h => odstranDiakritiku(h.jmeno.toLowerCase()).includes(inputValue));
-            
             if (shody.length > 0) {
                 resultBox.style.display = 'block';
                 shody.forEach(hrac => {
-                    const div = document.createElement('div');
-                    div.className = 'autocomplete-item';
-                    
-                    const cleanName = hrac.jmeno.toLowerCase();
-                    const isCustomAvatar = cleanName.includes("podroužek") || cleanName.includes("sodoma") || cleanName.includes("dvorka") || cleanName.includes("lars");
-                    const bgStyle = isCustomAvatar ? 'background: transparent;' : 'background: linear-gradient(135deg, #ff4d29, #ffd700);';
-
-                    div.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <div style="width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:bold; overflow:hidden; color:#fff; flex-shrink:0; ${bgStyle}">
-                                ${getAvatarHTML(hrac.jmeno, hrac.puvodniIndex)}
-                            </div>
-                            <span><strong>${hrac.jmeno}</strong> ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}</span>
-                        </div> 
-                        <span style="color:var(--accent-yellow); font-size:0.9rem;">${hrac.celkem} b.</span>`;
-                    
-                    div.onclick = () => {
-                        document.getElementById('searchInput').value = '';
-                        resultBox.style.display = 'none';
-                        otevriModal(hrac);
-                    };
+                    const div = document.createElement('div'); div.className = 'autocomplete-item';
+                    const isCustomAvatar = hrac.jmeno.toLowerCase().match(/(podroužek|sodoma|dvorka|lars)/);
+                    div.innerHTML = `<div style="display:flex; align-items:center; gap:10px;"><div style="width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:bold; overflow:hidden; color:#fff; flex-shrink:0; ${isCustomAvatar ? 'background: transparent;' : 'background: linear-gradient(135deg, #ff4d29, #ffd700);'}">${getAvatarHTML(hrac.jmeno, hrac.puvodniIndex)}</div><span><strong>${hrac.jmeno}</strong> ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}</span></div><span style="color:var(--accent-yellow); font-size:0.9rem;">${hrac.celkem} b.</span>`;
+                    div.onclick = () => { document.getElementById('searchInput').value = ''; resultBox.style.display = 'none'; otevriModal(hrac); };
                     resultBox.appendChild(div);
                 });
-            } else {
-                resultBox.style.display = 'block';
-                resultBox.innerHTML = '<div class="autocomplete-item" style="color:var(--text-muted); cursor:default;">Nikdo nenalezen</div>';
-            }
+            } else { resultBox.style.display = 'block'; resultBox.innerHTML = '<div class="autocomplete-item" style="color:var(--text-muted); cursor:default;">Nikdo nenalezen</div>'; }
         }
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.search-container')) { document.getElementById('searchResults').style.display = 'none'; }
-        });
+        document.addEventListener('click', function(e) { if (!e.target.closest('.search-container')) document.getElementById('searchResults').style.display = 'none'; });
 
         function otevriModal(hrac) {
             const avatarDiv = document.getElementById('modalMainAvatar');
-            const cleanName = hrac.jmeno.toLowerCase();
-            const isCustomAvatar = cleanName.includes("podroužek") || cleanName.includes("sodoma") || cleanName.includes("dvorka") || cleanName.includes("lars");
-            
+            const isCustomAvatar = hrac.jmeno.toLowerCase().match(/(podroužek|sodoma|dvorka|lars)/);
             avatarDiv.style.background = isCustomAvatar ? 'transparent' : 'linear-gradient(135deg, #ff4d29, #ffd700)';
             avatarDiv.innerHTML = getAvatarHTML(hrac.jmeno, hrac.puvodniIndex);
-            
             document.getElementById('modalName').innerHTML = `${hrac.jmeno} ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}`;
-            
-            document.getElementById('modalPtsTotal').innerText = hrac.celkem;
-            document.getElementById('modalRankTotal').innerText = `${hrac.poradiCelkem}. místo`;
-            document.getElementById('modalPtsUmisteni').innerText = hrac.bodyUmisteni;
-            document.getElementById('modalRankUmisteni').innerText = hrac.poradiUmisteni;
-            document.getElementById('modalPtsBonus').innerText = hrac.bodyBonus;
-            document.getElementById('modalRankBonus').innerText = hrac.poradiBonus;
+            document.getElementById('modalPtsTotal').innerText = hrac.celkem; document.getElementById('modalRankTotal').innerText = `${hrac.poradiCelkem}. místo`;
+            document.getElementById('modalPtsUmisteni').innerText = hrac.bodyUmisteni; document.getElementById('modalRankUmisteni').innerText = hrac.poradiUmisteni;
+            document.getElementById('modalPtsBonus').innerText = hrac.bodyBonus; document.getElementById('modalRankBonus').innerText = hrac.poradiBonus;
 
-            const officialTeamsContainer = document.getElementById('modalOfficialTeams');
-            officialTeamsContainer.innerHTML = '';
-            
-            const userTeamsContainer = document.getElementById('modalUserTeams');
-            userTeamsContainer.innerHTML = '';
-            
+            const offT = document.getElementById('modalOfficialTeams'); offT.innerHTML = '';
+            const usrT = document.getElementById('modalUserTeams'); usrT.innerHTML = '';
             let pocetPresnychTipuTymu = 0;
 
             if (hrac.tipyData.length > 0 && hrac.kontrolaData.length > 0 && spravneOdpovediRow.length > 0) {
                 for (let j = 4; j <= 19; j++) {
                     const ofikoTym = spravneOdpovediRow[j] ? spravneOdpovediRow[j].replace(/"/g, '').trim() : '';
-                    const ofikoLogo = teamLogos[ofikoTym] || 'https://i.imgur.com/8N4Jp62.png';
-                    
-                    officialTeamsContainer.innerHTML += `
-                        <div class="team-col" style="justify-content: flex-start; padding-top: 15px;">
-                            <span class="t-pos">${j - 3}.</span>
-                            <img src="${ofikoLogo}" alt="${ofikoTym}" class="t-logo" title="${ofikoTym}">
-                        </div>
-                    `;
-
+                    offT.innerHTML += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j - 3}.</span><img src="${teamLogos[ofikoTym] || 'https://i.imgur.com/8N4Jp62.png'}" class="t-logo" title="${ofikoTym}"></div>`;
                     const tipTym = hrac.tipyData[j] ? hrac.tipyData[j].replace(/"/g, '').trim() : '';
-                    const tipLogo = teamLogos[tipTym] || 'https://i.imgur.com/8N4Jp62.png';
                     const ziskaneBody = hrac.kontrolaData[j] ? hrac.kontrolaData[j].replace(/"/g, '').trim() : '0';
-                    const ptsColor = (ziskaneBody === "10" || ziskaneBody === "8" || ziskaneBody === "6" || ziskaneBody === "4" || ziskaneBody === "2") ? 'pts-high' : 'pts-zero';
-
-                    if (ziskaneBody === "10") {
-                        pocetPresnychTipuTymu++;
-                    }
-
-                    userTeamsContainer.innerHTML += `
-                        <div class="team-col">
-                            <span class="t-pos">${j - 3}.</span>
-                            <img src="${tipLogo}" alt="${tipTym}" class="t-logo" title="${tipTym}">
-                            <span class="t-pts ${ptsColor}">${ziskaneBody}b</span>
-                        </div>
-                    `;
+                    const ptsColor = (["10","8","6","4","2"].includes(ziskaneBody)) ? 'pts-high' : 'pts-zero';
+                    if (ziskaneBody === "10") pocetPresnychTipuTymu++;
+                    usrT.innerHTML += `<div class="team-col"><span class="t-pos">${j - 3}.</span><img src="${teamLogos[tipTym] || 'https://i.imgur.com/8N4Jp62.png'}" class="t-logo" title="${tipTym}"><span class="t-pts ${ptsColor}">${ziskaneBody}b</span></div>`;
                 }
-            } else {
-                const err = '<span style="color:var(--text-muted); padding:10px;">Data se nepodařilo načíst.</span>';
-                officialTeamsContainer.innerHTML = err;
-                userTeamsContainer.innerHTML = err;
-            }
+            } else { offT.innerHTML = usrT.innerHTML = '<span style="color:var(--text-muted); padding:10px;">Data se nepodařilo načíst.</span>'; }
 
-            let nasobek = 1.0;
-            if (pocetPresnychTipuTymu >= 14) nasobek = 1.3;
-            else if (pocetPresnychTipuTymu >= 11) nasobek = 1.2;
-            else if (pocetPresnychTipuTymu >= 8) nasobek = 1.1;
-
-            let nasobekBarva = nasobek > 1.0 ? 'var(--accent-yellow)' : 'var(--text-muted)';
-            let nasobekCislo = nasobek.toFixed(1).replace('.', ',');
-            let nasobekHtml = `<span style="color: ${nasobekBarva}; font-size: 0.85rem; margin-left: 8px; border: 1px solid ${nasobekBarva}; padding: 3px 8px; border-radius: 6px; font-weight: bold; background: rgba(255,215,0,0.05); white-space: nowrap;">${nasobekCislo}x násobek bodů</span>`;
-
+            let nasobek = 1.0; if (pocetPresnychTipuTymu >= 14) nasobek = 1.3; else if (pocetPresnychTipuTymu >= 11) nasobek = 1.2; else if (pocetPresnychTipuTymu >= 8) nasobek = 1.1;
+            let nasobekHtml = `<span style="color: ${nasobek > 1.0 ? 'var(--accent-yellow)' : 'var(--text-muted)'}; font-size: 0.85rem; margin-left: 8px; border: 1px solid ${nasobek > 1.0 ? 'var(--accent-yellow)' : 'var(--text-muted)'}; padding: 3px 8px; border-radius: 6px; font-weight: bold; background: rgba(255,215,0,0.05); white-space: nowrap;">${nasobek.toFixed(1).replace('.', ',')}x násobek bodů</span>`;
             document.getElementById('modalUserTeamsTitle').innerHTML = `Tvoje tipy na umístění <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal; margin-left: 5px;">(vč. získaných bodů)</span> ${nasobekHtml}`;
 
-            const bonusesContainer = document.getElementById('modalBonuses');
-            bonusesContainer.innerHTML = '';
-
+            const bon = document.getElementById('modalBonuses'); bon.innerHTML = '';
             if (hrac.tipyData.length > 0 && hrac.kontrolaData.length > 0) {
                 for (let k = 0; k < 6; k++) {
                     const colIndex = 21 + k;
                     const tipOdpoved = hrac.tipyData[colIndex] ? hrac.tipyData[colIndex].replace(/"/g, '').trim() : 'Nevyplněno';
                     const ziskaneBody = hrac.kontrolaData[colIndex] ? hrac.kontrolaData[colIndex].replace(/"/g, '').trim() : '0';
                     const spravnaOdpoved = spravneOdpovediRow[colIndex] ? spravneOdpovediRow[colIndex].replace(/"/g, '').trim() : 'Zatím neznámá';
-                    
-                    const ptsColor = parseInt(ziskaneBody) > 0 ? 'color: var(--accent-green);' : 'color: var(--text-muted);';
-
-                    bonusesContainer.innerHTML += `
-                        <div class="bonus-item">
-                            <div class="bonus-text">
-                                <div class="b-question">${bonusQuestionsText[k]} <span style="color: var(--accent-yellow); font-style: italic; font-weight: 600; margin-left: 3px;">(${spravnaOdpoved})</span></div>
-                                <div class="b-answer">${tipOdpoved}</div>
-                            </div>
-                            <div class="b-pts" style="${ptsColor}">${ziskaneBody}</div>
-                        </div>
-                    `;
+                    bon.innerHTML += `<div class="bonus-item"><div class="bonus-text"><div class="b-question">${bonusQuestionsText[k]} <span style="color: var(--accent-yellow); font-style: italic; font-weight: 600; margin-left: 3px;">(${spravnaOdpoved})</span></div><div class="b-answer">${tipOdpoved}</div></div><div class="b-pts" style="${parseInt(ziskaneBody) > 0 ? 'color: var(--accent-green);' : 'color: var(--text-muted);'}">${ziskaneBody}</div></div>`;
                 }
-            } else {
-                bonusesContainer.innerHTML = '<span style="color:var(--text-muted); padding:20px;">Bonusy se nepodařilo načíst.</span>';
-            }
-
+            } else { bon.innerHTML = '<span style="color:var(--text-muted); padding:20px;">Bonusy se nepodařilo načíst.</span>'; }
+            
             document.getElementById('playerModal').querySelector('.modal-card').scrollTop = 0;
             document.getElementById('playerModal').style.display = 'flex';
         }
 
         function otevriModalSpravne() {
-            const teamsContainer = document.getElementById('modalSpravneTeams');
-            const bonusesContainer = document.getElementById('modalSpravneBonuses');
-            
-            teamsContainer.innerHTML = '';
-            bonusesContainer.innerHTML = '';
-
+            const tm = document.getElementById('modalSpravneTeams'); const bn = document.getElementById('modalSpravneBonuses');
+            tm.innerHTML = ''; bn.innerHTML = '';
             if (spravneOdpovediRow.length >= 20) {
                 for (let j = 4; j <= 19; j++) {
                     const spravnyTym = spravneOdpovediRow[j] ? spravneOdpovediRow[j].replace(/"/g, '').trim() : '';
-                    const logoUrl = teamLogos[spravnyTym] || 'https://i.imgur.com/8N4Jp62.png';
-
-                    teamsContainer.innerHTML += `
-                        <div class="team-col" style="justify-content: flex-start; padding-top: 15px;">
-                            <span class="t-pos">${j - 3}.</span>
-                            <img src="${logoUrl}" alt="${spravnyTym}" class="t-logo" title="${spravnyTym}">
-                        </div>
-                    `;
+                    tm.innerHTML += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j - 3}.</span><img src="${teamLogos[spravnyTym] || 'https://i.imgur.com/8N4Jp62.png'}" class="t-logo" title="${spravnyTym}"></div>`;
                 }
-                
                 for (let k = 0; k < 6; k++) {
-                    const colIndex = 21 + k;
-                    const spravnaOdpoved = spravneOdpovediRow[colIndex] ? spravneOdpovediRow[colIndex].replace(/"/g, '').trim() : 'Zatím neznámá';
-                    
-                    const rightIcon = teamLogos[spravnaOdpoved] 
-                        ? `<img src="${teamLogos[spravnaOdpoved]}" style="width:32px; height:32px; object-fit:contain;" alt="${spravnaOdpoved}">` 
-                        : ``;
-
-                    bonusesContainer.innerHTML += `
-                        <div class="bonus-item" style="border-color: rgba(255,215,0,0.2);">
-                            <div class="bonus-text">
-                                <div class="b-question">${bonusQuestionsText[k]}</div>
-                                <div class="b-answer" style="color: var(--accent-yellow);">${spravnaOdpoved}</div>
-                            </div>
-                            <div class="b-pts" style="display:flex; align-items:center;">${rightIcon}</div>
-                        </div>
-                    `;
+                    const colIndex = 21 + k; const spravnaOdpoved = spravneOdpovediRow[colIndex] ? spravneOdpovediRow[colIndex].replace(/"/g, '').trim() : 'Zatím neznámá';
+                    bn.innerHTML += `<div class="bonus-item" style="border-color: rgba(255,215,0,0.2);"><div class="bonus-text"><div class="b-question">${bonusQuestionsText[k]}</div><div class="b-answer" style="color: var(--accent-yellow);">${spravnaOdpoved}</div></div><div class="b-pts" style="display:flex; align-items:center;">${teamLogos[spravnaOdpoved] ? `<img src="${teamLogos[spravnaOdpoved]}" style="width:32px; height:32px; object-fit:contain;">` : ``}</div></div>`;
                 }
-            } else {
-                const errorMsg = '<span style="color:var(--text-muted); padding:20px; text-align:center; width:100%; display:block;">Odpovědi zatím nejsou vyplněny.</span>';
-                teamsContainer.innerHTML = errorMsg;
-                bonusesContainer.innerHTML = errorMsg;
-            }
-
+            } else { tm.innerHTML = bn.innerHTML = '<span style="color:var(--text-muted); padding:20px; text-align:center; width:100%; display:block;">Odpovědi zatím nejsou vyplněny.</span>'; }
             document.getElementById('spravneModal').querySelector('.modal-card').scrollTop = 0;
             document.getElementById('spravneModal').style.display = 'flex';
         }
@@ -949,86 +419,43 @@
         function zmenPrehledSekci(sekce) {
             document.getElementById('btn-prehled-umisteni').classList.toggle('active', sekce === 'umisteni');
             document.getElementById('btn-prehled-bonusy').classList.toggle('active', sekce === 'bonusy');
-            
             document.getElementById('sekce-prehled-umisteni').style.display = sekce === 'umisteni' ? 'block' : 'none';
             document.getElementById('sekce-prehled-bonusy').style.display = sekce === 'bonusy' ? 'block' : 'none';
         }
 
         function otevriModalPrehled() {
-            if (dataVyskytParsed.length === 0) {
-                alert("Data pro přehled tipů se nepodařilo načíst.");
-                return;
-            }
-            zmenPrehledSekci('umisteni');
-            vykresliPrehledMatrix('cisla');
-            vykresliPrehledBonusy();
-            vykresliPrehledStrelci();
-            
+            if (dataVyskytParsed.length === 0) { alert("Data pro přehled tipů se nepodařilo načíst."); return; }
+            zmenPrehledSekci('umisteni'); vykresliPrehledMatrix('cisla'); vykresliPrehledBonusy(); vykresliPrehledStrelci();
             document.getElementById('prehledModal').querySelector('.modal-card').scrollTop = 0;
             document.getElementById('prehledModal').style.display = 'flex';
         }
 
         function vykresliPrehledMatrix(mod) {
             const isProc = mod === 'procenta';
-            
-            document.getElementById('btn-prehled-cisla').classList.toggle('active', !isProc);
-            document.getElementById('btn-prehled-procenta').classList.toggle('active', isProc);
-            
+            document.getElementById('btn-prehled-cisla').classList.toggle('active', !isProc); document.getElementById('btn-prehled-procenta').classList.toggle('active', isProc);
             let html = `<table><thead><tr><th>Tým</th>`;
-            for(let i=1; i<=16; i++) html += `<th>${i}.</th>`;
-            html += `</tr></thead><tbody>`;
-
+            for(let i=1; i<=16; i++) html += `<th>${i}.</th>`; html += `</tr></thead><tbody>`;
             for (let r = 1; r <= 16; r++) {
-                const rowData = dataVyskytParsed[r];
-                if(!rowData) continue;
-                const tym = rowData[0];
-                const logo = teamLogos[tym] || 'https://i.imgur.com/8N4Jp62.png';
-                
+                if(!dataVyskytParsed[r]) continue;
+                const tym = dataVyskytParsed[r][0]; const logo = teamLogos[tym] || 'https://i.imgur.com/8N4Jp62.png';
                 html += `<tr><td style="position:sticky;left:0;background:#111722;z-index:20;text-align:center;"><img src="${logo}" style="width:28px;height:28px;object-fit:contain;" title="${tym}"></td>`;
-                
                 for(let c = 1; c <= 16; c++) {
-                    const val = isProc ? rowData[c+18] : rowData[c];
-                    const isZero = !val || val === '0' || val === '0%';
-                    html += `<td style="text-align:center; color:${isZero ? 'var(--text-muted)' : 'var(--accent-yellow)'}">${val || '-'}</td>`;
+                    const val = isProc ? dataVyskytParsed[r][c+18] : dataVyskytParsed[r][c];
+                    html += `<td style="text-align:center; color:${(!val || val === '0' || val === '0%') ? 'var(--text-muted)' : 'var(--accent-yellow)'}">${val || '-'}</td>`;
                 }
                 html += `</tr>`;
             }
-            html += `</tbody></table>`;
-            document.getElementById('prehled-matrix').innerHTML = html;
+            document.getElementById('prehled-matrix').innerHTML = html + `</tbody></table>`;
         }
 
         function vykresliPrehledBonusy() {
-            const bonusColsMapping = [
-                { col: 1, title: "Baráž postup?" },
-                { col: 2, title: "Počet bodů mistra?" },
-                { col: 3, title: "Rozdíl 1. a 2. místa?" },
-                { col: 4, title: "Počet bodů sestupujícího?" },
-                { col: 5, title: "Nejlepší střelec:" },
-                { col: 6, title: "Počet gólů střelce?" }
-            ];
-
-            let vsechnyTymoveRadky = [];
-            dataVyskytParsed.forEach((row) => {
-                if (row && row[0] && teamLogos[row[0].trim()]) {
-                    vsechnyTymoveRadky.push(row);
-                }
-            });
-            let bonusTymoveRadky = vsechnyTymoveRadky.slice(16, 32);
-
+            const bonusColsMapping = [ { col: 1, title: "Baráž postup?" }, { col: 2, title: "Počet bodů mistra?" }, { col: 3, title: "Rozdíl 1. a 2. místa?" }, { col: 4, title: "Počet bodů sestupujícího?" }, { col: 5, title: "Nejlepší střelec:" }, { col: 6, title: "Počet gólů střelce?" } ];
+            let bonusTymoveRadky = []; dataVyskytParsed.forEach(row => { if (row && row[0] && teamLogos[row[0].trim()]) bonusTymoveRadky.push(row); });
+            bonusTymoveRadky = bonusTymoveRadky.slice(16, 32);
             let html = '';
             bonusColsMapping.forEach(bq => {
                 html += `<div class="modal-subtitle" style="margin-top: 30px;">${bq.title}</div><div class="teams-grid-8x2">`;
-                
-                bonusTymoveRadky.forEach(rowData => {
-                    const tym = rowData[0].trim();
-                    const val = rowData[bq.col];
-                    const logo = teamLogos[tym] || 'https://i.imgur.com/8N4Jp62.png';
-                    
-                    html += `<div class="team-col">
-                                <img src="${logo}" class="t-logo" title="${tym}">
-                                <span class="t-pts" style="color:var(--accent-yellow); font-size:1.1rem;">${val || '0'}</span>
-                             </div>`;
-                });
+                bonusTymoveRadky.forEach(row => { html += `<div class="team-col"><img src="${teamLogos[row[0].trim()] || 'https://i.imgur.com/8N4Jp62.png'}" class="t-logo" title="${row[0].trim()}"><span class="t-pts" style="color:var(--accent-yellow); font-size:1.1rem;">${row[bq.col] || '0'}</span></div>`; });
                 html += `</div>`;
             });
             document.getElementById('prehled-bonusy').innerHTML = html;
@@ -1036,47 +463,18 @@
 
         function vykresliPrehledStrelci() {
             let strelci = [];
-            for(let r = 51; r < dataVyskytParsed.length; r++) {
-                const rowData = dataVyskytParsed[r];
-                if(rowData && rowData[18] && rowData[18].trim() !== '') {
-                    strelci.push(rowData[18].trim());
-                }
-            }
-            
+            for(let r = 51; r < dataVyskytParsed.length; r++) { if(dataVyskytParsed[r] && dataVyskytParsed[r][18] && dataVyskytParsed[r][18].trim() !== '') strelci.push(dataVyskytParsed[r][18].trim()); }
             let html = '<div class="bonus-list">';
             strelci.slice(0, 10).forEach((s, idx) => {
-                let jmeno = s;
-                let pocet = "";
                 const match = s.match(/(.*?)\((.*?)\)/);
-                if (match) {
-                    jmeno = match[1].trim();
-                    pocet = match[2].trim();
-                }
-
-                html += `
-                    <div class="bonus-item">
-                        <div class="bonus-text">
-                            <div class="b-answer" style="font-size: 1.1rem;">${idx + 1}. ${jmeno}</div>
-                        </div>
-                        <div class="b-pts" style="color: var(--accent-yellow);">${pocet}</div>
-                    </div>
-                `;
+                html += `<div class="bonus-item"><div class="bonus-text"><div class="b-answer" style="font-size: 1.1rem;">${idx + 1}. ${match ? match[1].trim() : s}</div></div><div class="b-pts" style="color: var(--accent-yellow);">${match ? match[2].trim() : ""}</div></div>`;
             });
-            html += '</div>';
-            document.getElementById('prehled-strelci').innerHTML = html;
+            document.getElementById('prehled-strelci').innerHTML = html + '</div>';
         }
 
-        function zavriModal(event) {
-            if (event.target.id === 'playerModal') document.getElementById('playerModal').style.display = 'none';
-        }
-
-        function zavriModalSpravne(event) {
-            if (event.target.id === 'spravneModal') document.getElementById('spravneModal').style.display = 'none';
-        }
-        
-        function zavriModalPrehled(event) {
-            if (event.target.id === 'prehledModal') document.getElementById('prehledModal').style.display = 'none';
-        }
+        function zavriModal(event) { if (event.target.id === 'playerModal') document.getElementById('playerModal').style.display = 'none'; }
+        function zavriModalSpravne(event) { if (event.target.id === 'spravneModal') document.getElementById('spravneModal').style.display = 'none'; }
+        function zavriModalPrehled(event) { if (event.target.id === 'prehledModal') document.getElementById('prehledModal').style.display = 'none'; }
 
         document.addEventListener('DOMContentLoaded', nactiData);
     </script>
