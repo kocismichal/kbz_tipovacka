@@ -1,0 +1,52 @@
+/* ZÁKLADNÍ BARVY A PROMĚNNÉ */
+:root {
+    --bg-main: #0b111e;
+    --bg-card: #161d2b;
+    --border-color: #232b38;
+    --text-main: #ffffff;
+    --text-muted: #8b95a5;
+    --accent-blue: #0088ff;
+    --accent-yellow: #ffd700;
+    --accent-green: #00e676;
+    --accent-red: #ff4d4d;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    line-height: 1.5;
+    padding: 20px;
+    padding-bottom: 50px;
+    background-image: url('pozadi.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.wrapper, .container { 
+    width: 100%; 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    position: relative; 
+}
+
+/* HLAVIČKA A LOGO */
+header { text-align: center; margin: 40px 0 20px 0; }
+.logo-text { font-family: 'Oswald', sans-serif; font-size: 2.8rem; text-transform: uppercase; letter-spacing: 1px; }
+.logo-text span { color: var(--accent-blue); }
+
+/* MENU */
+.main-nav { display: flex; justify-content: center; gap: 30px; margin-bottom: 40px; font-family: 'Oswald', sans-serif; font-size: 1.3rem; text-transform: uppercase; flex-wrap: wrap;}
+.main-nav a { color: var(--text-muted); text-decoration: none; padding-bottom: 5px; transition: color 0.3s; }
+.main-nav a:hover { color: #fff; }
+.main-nav a.active { color: var(--accent-blue); border-bottom: 3px solid var(--accent-blue); }
+
+/* SPOLEČNÉ NADPISY A LOADER */
+.section-title { font-family: 'Oswald', sans-serif; text-align: center; color: var(--accent-red); font-weight: bold; font-size: 1.5rem; text-transform: uppercase; margin: 25px 0 10px; border-top: 1px dashed var(--border-color); padding-top: 15px; }
+.loader { text-align: center; padding: 40px; color: var(--text-muted); font-size: 1.2rem; }
