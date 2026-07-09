@@ -704,4 +704,381 @@
             if (tabName === 'umisteni') {
                 hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za umístění</th>';
             } else if (tabName === 'bonusy') {
-                hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body
+                hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za bonusové otázky</th>';
+            } else { 
+                hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za pořadí</th><th style="text-align:right;">Body za bonusy</th><th style="text-align:right;">Celkem bodů</th>';
+            }
+            vykresliTabulku();
+        }
+
+        function vykresliTabulku() {
+            const tbody = document.getElementById('tabulka-telo');
+            tbody.innerHTML = '';
+            let data = [...vsichniHraci];
+
+            if (aktivniZalozka === 'umisteni') { data.sort((a, b) => a.poradiUmisteni - b.poradiUmisteni); } 
+            else if (aktivniZalozka === 'bonusy') { data.sort((a, b) => a.poradiBonus - b.poradiBonus); } 
+            else { data.sort((a, b) => a.poradiCelkem - b.poradiCelkem); }
+
+            document.getElementById('count-players').innerText = data.length;
+
+            data.forEach(hrac => {
+                const tr = document.createElement('tr');
+                tr.onclick = () => otevriModal(hrac); 
+
+                let poradi = 0; let bodyZobrazeni = 0;
+                if (aktivniZalozka === 'umisteni') { poradi = hrac.poradiUmisteni; bodyZobrazeni = hrac.bodyUmisteni; } 
+                else if (aktivniZalozka === 'bonusy') { poradi = hrac.poradiBonus; bodyZobrazeni = hrac.bodyBonus; } 
+                else { poradi = hrac.poradiCelkem; bodyZobrazeni = hrac.celkem; }
+
+                let colorClass = poradi === 1 ? 'color: var(--accent-yellow); font-weight: bold;' : '';
+
+                let bodySloupceHtml = '';
+                if (aktivniZalozka === 'celkem') {
+                    bodySloupceHtml = `
+                        <td class="sub-points-col">${hrac.bodyUmisteni}</td>
+                        <td class="sub-points-col">${hrac.bodyBonus}</td>
+                        <td class="points-col">${bodyZobrazeni}</td>
+                    `;
+                } else {
+                    bodySloupceHtml = `<td class="points-col">${bodyZobrazeni}</td>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="rank-col" style="${colorClass}">${poradi}.</td>
+                    <td style="font-weight: 600;">${hrac.jmeno} ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}</td>
+                    ${bodySloupceHtml}
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function hledejHrace() {
+            const inputValue = odstranDiakritiku(document.getElementById('searchInput').value.toLowerCase());
+            const resultBox = document.getElementById('searchResults');
+            resultBox.innerHTML = '';
+            if (inputValue.length < 1) { resultBox.style.display = 'none'; return; }
+
+            const shody = vsichniHraci.filter(h => odstranDiakritiku(h.jmeno.toLowerCase()).includes(inputValue));
+            
+            if (shody.length > 0) {
+                resultBox.style.display = 'block';
+                shody.forEach(hrac => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    
+                    const cleanName = hrac.jmeno.toLowerCase();
+                    const isCustomAvatar = cleanName.includes("podroužek") || cleanName.includes("sodoma") || cleanName.includes("dvorka") || cleanName.includes("lars");
+                    const bgStyle = isCustomAvatar ? 'background: transparent;' : 'background: linear-gradient(135deg, #ff4d29, #ffd700);';
+
+                    div.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:bold; overflow:hidden; color:#fff; flex-shrink:0; ${bgStyle}">
+                                ${getAvatarHTML(hrac.jmeno, hrac.puvodniIndex)}
+                            </div>
+                            <span><strong>${hrac.jmeno}</strong> ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}</span>
+                        </div> 
+                        <span style="color:var(--accent-yellow); font-size:0.9rem;">${hrac.celkem} b.</span>`;
+                    
+                    div.onclick = () => {
+                        document.getElementById('searchInput').value = '';
+                        resultBox.style.display = 'none';
+                        otevriModal(hrac);
+                    };
+                    resultBox.appendChild(div);
+                });
+            } else {
+                resultBox.style.display = 'block';
+                resultBox.innerHTML = '<div class="autocomplete-item" style="color:var(--text-muted); cursor:default;">Nikdo nenalezen</div>';
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-container')) { document.getElementById('searchResults').style.display = 'none'; }
+        });
+
+        function otevriModal(hrac) {
+            const avatarDiv = document.getElementById('modalMainAvatar');
+            const cleanName = hrac.jmeno.toLowerCase();
+            const isCustomAvatar = cleanName.includes("podroužek") || cleanName.includes("sodoma") || cleanName.includes("dvorka") || cleanName.includes("lars");
+            
+            avatarDiv.style.background = isCustomAvatar ? 'transparent' : 'linear-gradient(135deg, #ff4d29, #ffd700)';
+            avatarDiv.innerHTML = getAvatarHTML(hrac.jmeno, hrac.puvodniIndex);
+            
+            document.getElementById('modalName').innerHTML = `${hrac.jmeno} ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}`;
+            
+            document.getElementById('modalPtsTotal').innerText = hrac.celkem;
+            document.getElementById('modalRankTotal').innerText = `${hrac.poradiCelkem}. místo`;
+            document.getElementById('modalPtsUmisteni').innerText = hrac.bodyUmisteni;
+            document.getElementById('modalRankUmisteni').innerText = hrac.poradiUmisteni;
+            document.getElementById('modalPtsBonus').innerText = hrac.bodyBonus;
+            document.getElementById('modalRankBonus').innerText = hrac.poradiBonus;
+
+            const officialTeamsContainer = document.getElementById('modalOfficialTeams');
+            officialTeamsContainer.innerHTML = '';
+            
+            const userTeamsContainer = document.getElementById('modalUserTeams');
+            userTeamsContainer.innerHTML = '';
+            
+            let pocetPresnychTipuTymu = 0;
+
+            if (hrac.tipyData.length > 0 && hrac.kontrolaData.length > 0 && spravneOdpovediRow.length > 0) {
+                for (let j = 4; j <= 19; j++) {
+                    const ofikoTym = spravneOdpovediRow[j] ? spravneOdpovediRow[j].replace(/"/g, '').trim() : '';
+                    const ofikoLogo = teamLogos[ofikoTym] || 'https://i.imgur.com/8N4Jp62.png';
+                    
+                    officialTeamsContainer.innerHTML += `
+                        <div class="team-col" style="justify-content: flex-start; padding-top: 15px;">
+                            <span class="t-pos">${j - 3}.</span>
+                            <img src="${ofikoLogo}" alt="${ofikoTym}" class="t-logo" title="${ofikoTym}">
+                        </div>
+                    `;
+
+                    const tipTym = hrac.tipyData[j] ? hrac.tipyData[j].replace(/"/g, '').trim() : '';
+                    const tipLogo = teamLogos[tipTym] || 'https://i.imgur.com/8N4Jp62.png';
+                    const ziskaneBody = hrac.kontrolaData[j] ? hrac.kontrolaData[j].replace(/"/g, '').trim() : '0';
+                    const ptsColor = (ziskaneBody === "10" || ziskaneBody === "8" || ziskaneBody === "6" || ziskaneBody === "4" || ziskaneBody === "2") ? 'pts-high' : 'pts-zero';
+
+                    if (ziskaneBody === "10") {
+                        pocetPresnychTipuTymu++;
+                    }
+
+                    userTeamsContainer.innerHTML += `
+                        <div class="team-col">
+                            <span class="t-pos">${j - 3}.</span>
+                            <img src="${tipLogo}" alt="${tipTym}" class="t-logo" title="${tipTym}">
+                            <span class="t-pts ${ptsColor}">${ziskaneBody}b</span>
+                        </div>
+                    `;
+                }
+            } else {
+                const err = '<span style="color:var(--text-muted); padding:10px;">Data se nepodařilo načíst.</span>';
+                officialTeamsContainer.innerHTML = err;
+                userTeamsContainer.innerHTML = err;
+            }
+
+            let nasobek = 1.0;
+            if (pocetPresnychTipuTymu >= 14) nasobek = 1.3;
+            else if (pocetPresnychTipuTymu >= 11) nasobek = 1.2;
+            else if (pocetPresnychTipuTymu >= 8) nasobek = 1.1;
+
+            let nasobekBarva = nasobek > 1.0 ? 'var(--accent-yellow)' : 'var(--text-muted)';
+            let nasobekCislo = nasobek.toFixed(1).replace('.', ',');
+            let nasobekHtml = `<span style="color: ${nasobekBarva}; font-size: 0.85rem; margin-left: 8px; border: 1px solid ${nasobekBarva}; padding: 3px 8px; border-radius: 6px; font-weight: bold; background: rgba(255,215,0,0.05); white-space: nowrap;">${nasobekCislo}x násobek bodů</span>`;
+
+            document.getElementById('modalUserTeamsTitle').innerHTML = `Tvoje tipy na umístění <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal; margin-left: 5px;">(vč. získaných bodů)</span> ${nasobekHtml}`;
+
+            const bonusesContainer = document.getElementById('modalBonuses');
+            bonusesContainer.innerHTML = '';
+
+            if (hrac.tipyData.length > 0 && hrac.kontrolaData.length > 0) {
+                for (let k = 0; k < 6; k++) {
+                    const colIndex = 21 + k;
+                    const tipOdpoved = hrac.tipyData[colIndex] ? hrac.tipyData[colIndex].replace(/"/g, '').trim() : 'Nevyplněno';
+                    const ziskaneBody = hrac.kontrolaData[colIndex] ? hrac.kontrolaData[colIndex].replace(/"/g, '').trim() : '0';
+                    const spravnaOdpoved = spravneOdpovediRow[colIndex] ? spravneOdpovediRow[colIndex].replace(/"/g, '').trim() : 'Zatím neznámá';
+                    
+                    const ptsColor = parseInt(ziskaneBody) > 0 ? 'color: var(--accent-green);' : 'color: var(--text-muted);';
+
+                    bonusesContainer.innerHTML += `
+                        <div class="bonus-item">
+                            <div class="bonus-text">
+                                <div class="b-question">${bonusQuestionsText[k]} <span style="color: var(--accent-yellow); font-style: italic; font-weight: 600; margin-left: 3px;">(${spravnaOdpoved})</span></div>
+                                <div class="b-answer">${tipOdpoved}</div>
+                            </div>
+                            <div class="b-pts" style="${ptsColor}">${ziskaneBody}</div>
+                        </div>
+                    `;
+                }
+            } else {
+                bonusesContainer.innerHTML = '<span style="color:var(--text-muted); padding:20px;">Bonusy se nepodařilo načíst.</span>';
+            }
+
+            document.getElementById('playerModal').querySelector('.modal-card').scrollTop = 0;
+            document.getElementById('playerModal').style.display = 'flex';
+        }
+
+        function otevriModalSpravne() {
+            const teamsContainer = document.getElementById('modalSpravneTeams');
+            const bonusesContainer = document.getElementById('modalSpravneBonuses');
+            
+            teamsContainer.innerHTML = '';
+            bonusesContainer.innerHTML = '';
+
+            if (spravneOdpovediRow.length >= 20) {
+                for (let j = 4; j <= 19; j++) {
+                    const spravnyTym = spravneOdpovediRow[j] ? spravneOdpovediRow[j].replace(/"/g, '').trim() : '';
+                    const logoUrl = teamLogos[spravnyTym] || 'https://i.imgur.com/8N4Jp62.png';
+
+                    teamsContainer.innerHTML += `
+                        <div class="team-col" style="justify-content: flex-start; padding-top: 15px;">
+                            <span class="t-pos">${j - 3}.</span>
+                            <img src="${logoUrl}" alt="${spravnyTym}" class="t-logo" title="${spravnyTym}">
+                        </div>
+                    `;
+                }
+                
+                for (let k = 0; k < 6; k++) {
+                    const colIndex = 21 + k;
+                    const spravnaOdpoved = spravneOdpovediRow[colIndex] ? spravneOdpovediRow[colIndex].replace(/"/g, '').trim() : 'Zatím neznámá';
+                    
+                    const rightIcon = teamLogos[spravnaOdpoved] 
+                        ? `<img src="${teamLogos[spravnaOdpoved]}" style="width:32px; height:32px; object-fit:contain;" alt="${spravnaOdpoved}">` 
+                        : ``;
+
+                    bonusesContainer.innerHTML += `
+                        <div class="bonus-item" style="border-color: rgba(255,215,0,0.2);">
+                            <div class="bonus-text">
+                                <div class="b-question">${bonusQuestionsText[k]}</div>
+                                <div class="b-answer" style="color: var(--accent-yellow);">${spravnaOdpoved}</div>
+                            </div>
+                            <div class="b-pts" style="display:flex; align-items:center;">${rightIcon}</div>
+                        </div>
+                    `;
+                }
+            } else {
+                const errorMsg = '<span style="color:var(--text-muted); padding:20px; text-align:center; width:100%; display:block;">Odpovědi zatím nejsou vyplněny.</span>';
+                teamsContainer.innerHTML = errorMsg;
+                bonusesContainer.innerHTML = errorMsg;
+            }
+
+            document.getElementById('spravneModal').querySelector('.modal-card').scrollTop = 0;
+            document.getElementById('spravneModal').style.display = 'flex';
+        }
+
+        function zmenPrehledSekci(sekce) {
+            document.getElementById('btn-prehled-umisteni').classList.toggle('active', sekce === 'umisteni');
+            document.getElementById('btn-prehled-bonusy').classList.toggle('active', sekce === 'bonusy');
+            
+            document.getElementById('sekce-prehled-umisteni').style.display = sekce === 'umisteni' ? 'block' : 'none';
+            document.getElementById('sekce-prehled-bonusy').style.display = sekce === 'bonusy' ? 'block' : 'none';
+        }
+
+        function otevriModalPrehled() {
+            if (dataVyskytParsed.length === 0) {
+                alert("Data pro přehled tipů se nepodařilo načíst.");
+                return;
+            }
+            zmenPrehledSekci('umisteni');
+            vykresliPrehledMatrix('cisla');
+            vykresliPrehledBonusy();
+            vykresliPrehledStrelci();
+            
+            document.getElementById('prehledModal').querySelector('.modal-card').scrollTop = 0;
+            document.getElementById('prehledModal').style.display = 'flex';
+        }
+
+        function vykresliPrehledMatrix(mod) {
+            const isProc = mod === 'procenta';
+            
+            document.getElementById('btn-prehled-cisla').classList.toggle('active', !isProc);
+            document.getElementById('btn-prehled-procenta').classList.toggle('active', isProc);
+            
+            let html = `<table><thead><tr><th>Tým</th>`;
+            for(let i=1; i<=16; i++) html += `<th>${i}.</th>`;
+            html += `</tr></thead><tbody>`;
+
+            for (let r = 1; r <= 16; r++) {
+                const rowData = dataVyskytParsed[r];
+                if(!rowData) continue;
+                const tym = rowData[0];
+                const logo = teamLogos[tym] || 'https://i.imgur.com/8N4Jp62.png';
+                
+                html += `<tr><td style="position:sticky;left:0;background:#111722;z-index:20;text-align:center;"><img src="${logo}" style="width:28px;height:28px;object-fit:contain;" title="${tym}"></td>`;
+                
+                for(let c = 1; c <= 16; c++) {
+                    const val = isProc ? rowData[c+18] : rowData[c];
+                    const isZero = !val || val === '0' || val === '0%';
+                    html += `<td style="text-align:center; color:${isZero ? 'var(--text-muted)' : 'var(--accent-yellow)'}">${val || '-'}</td>`;
+                }
+                html += `</tr>`;
+            }
+            html += `</tbody></table>`;
+            document.getElementById('prehled-matrix').innerHTML = html;
+        }
+
+        function vykresliPrehledBonusy() {
+            const bonusColsMapping = [
+                { col: 1, title: "Baráž postup?" },
+                { col: 2, title: "Počet bodů mistra?" },
+                { col: 3, title: "Rozdíl 1. a 2. místa?" },
+                { col: 4, title: "Počet bodů sestupujícího?" },
+                { col: 5, title: "Nejlepší střelec:" },
+                { col: 6, title: "Počet gólů střelce?" }
+            ];
+
+            let vsechnyTymoveRadky = [];
+            dataVyskytParsed.forEach((row) => {
+                if (row && row[0] && teamLogos[row[0].trim()]) {
+                    vsechnyTymoveRadky.push(row);
+                }
+            });
+            let bonusTymoveRadky = vsechnyTymoveRadky.slice(16, 32);
+
+            let html = '';
+            bonusColsMapping.forEach(bq => {
+                html += `<div class="modal-subtitle" style="margin-top: 30px;">${bq.title}</div><div class="teams-grid-8x2">`;
+                
+                bonusTymoveRadky.forEach(rowData => {
+                    const tym = rowData[0].trim();
+                    const val = rowData[bq.col];
+                    const logo = teamLogos[tym] || 'https://i.imgur.com/8N4Jp62.png';
+                    
+                    html += `<div class="team-col">
+                                <img src="${logo}" class="t-logo" title="${tym}">
+                                <span class="t-pts" style="color:var(--accent-yellow); font-size:1.1rem;">${val || '0'}</span>
+                             </div>`;
+                });
+                html += `</div>`;
+            });
+            document.getElementById('prehled-bonusy').innerHTML = html;
+        }
+
+        function vykresliPrehledStrelci() {
+            let strelci = [];
+            for(let r = 51; r < dataVyskytParsed.length; r++) {
+                const rowData = dataVyskytParsed[r];
+                if(rowData && rowData[18] && rowData[18].trim() !== '') {
+                    strelci.push(rowData[18].trim());
+                }
+            }
+            
+            let html = '<div class="bonus-list">';
+            strelci.slice(0, 10).forEach((s, idx) => {
+                let jmeno = s;
+                let pocet = "";
+                const match = s.match(/(.*?)\((.*?)\)/);
+                if (match) {
+                    jmeno = match[1].trim();
+                    pocet = match[2].trim();
+                }
+
+                html += `
+                    <div class="bonus-item">
+                        <div class="bonus-text">
+                            <div class="b-answer" style="font-size: 1.1rem;">${idx + 1}. ${jmeno}</div>
+                        </div>
+                        <div class="b-pts" style="color: var(--accent-yellow);">${pocet}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            document.getElementById('prehled-strelci').innerHTML = html;
+        }
+
+        function zavriModal(event) {
+            if (event.target.id === 'playerModal') document.getElementById('playerModal').style.display = 'none';
+        }
+
+        function zavriModalSpravne(event) {
+            if (event.target.id === 'spravneModal') document.getElementById('spravneModal').style.display = 'none';
+        }
+        
+        function zavriModalPrehled(event) {
+            if (event.target.id === 'prehledModal') document.getElementById('prehledModal').style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', nactiData);
+    </script>
+</body>
+</html>
