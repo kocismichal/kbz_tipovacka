@@ -42,13 +42,11 @@
         .logo-text { font-family: 'Oswald', sans-serif; font-size: 2.8rem; text-transform: uppercase; letter-spacing: 1px; }
         .logo-text span { color: var(--accent-blue); }
 
-        /* Styly pro dynamické menu */
         .main-nav { display: flex; justify-content: center; gap: 30px; margin-bottom: 40px; font-family: 'Oswald', sans-serif; font-size: 1.3rem; text-transform: uppercase; flex-wrap: wrap;}
         .main-nav a { color: var(--text-muted); text-decoration: none; padding-bottom: 5px; transition: color 0.3s; }
         .main-nav a:hover { color: #fff; }
         .main-nav a.active { color: var(--accent-blue); border-bottom: 3px solid var(--accent-blue); }
 
-        /* INFORMAČNÍ BLOK O PRAVIDLECH */
         .hlasovani-info {
             background-color: rgba(22, 29, 43, 0.9);
             border: 2px solid var(--border-color);
@@ -65,7 +63,6 @@
         .hlasovani-info a { color: var(--accent-blue); text-decoration: none; font-weight: 600; }
         .hlasovani-info a:hover { text-decoration: underline; }
 
-        /* FORMULÁŘ A FIELDSETY */
         fieldset {
             background-color: rgba(22, 29, 43, 0.95);
             border: 1px solid var(--border-color);
@@ -74,56 +71,48 @@
             margin-bottom: 25px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        legend {
-            font-family: 'Oswald', sans-serif;
-            font-weight: 700;
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 0 15px;
-            color: var(--accent-blue);
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #fff;
-        }
+        legend { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; padding: 0 15px; color: var(--accent-blue); }
+        label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.9rem; color: #fff; }
         
-        .dropdown-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 10px;
-        }
-        @media (max-width: 600px) {
-            .dropdown-grid { grid-template-columns: 1fr; gap: 5px; }
-        }
-
+        .dropdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        @media (max-width: 600px) { .dropdown-grid { grid-template-columns: 1fr; gap: 5px; } }
         .grid-item { display: flex; flex-direction: column; }
 
-        select, input[type="text"], input[type="number"], textarea {
+        /* ZÁKLADNÍ INPUTY */
+        input[type="text"], input[type="email"], input[type="number"], textarea, select {
             width: 100%; padding: 10px 12px; margin: 6px 0 10px 0;
             background-color: var(--bg-main); border: 1px solid var(--border-color);
             border-radius: 6px; color: #fff; font-size: 0.9rem; transition: border-color 0.2s;
         }
-        select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent-blue); }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent-blue); }
         
-        select option.used { color: var(--text-muted); background-color: #121824; }
-
-        .section-title {
-            font-family: 'Oswald', sans-serif; text-align: center; color: var(--accent-red);
-            font-weight: bold; font-size: 1.2rem; text-transform: uppercase;
-            margin: 25px 0 10px; border-top: 1px dashed var(--border-color); padding-top: 15px;
+        /* VLASTNÍ DROPDOWN PRO LOGA */
+        .custom-select-wrapper { position: relative; width: 100%; margin: 6px 0 10px 0; }
+        .custom-select-wrapper select { display: none; }
+        .custom-select-trigger { 
+            background-color: var(--bg-main); border: 1px solid var(--border-color); 
+            border-radius: 6px; padding: 10px 12px; color: #fff; font-size: 0.9rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: space-between; 
+            transition: border-color 0.2s;
         }
-
-        button {
-            background-color: var(--accent-blue); color: white; border: none; padding: 12px 35px;
-            font-family: 'Oswald', sans-serif; font-size: 1.2rem; text-transform: uppercase;
-            letter-spacing: 1px; border-radius: 30px; cursor: pointer; transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 136, 255, 0.3);
+        .custom-select-trigger span { display: flex; align-items: center; gap: 8px; }
+        .custom-select-trigger::after { content: '\f0d7'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--text-muted); }
+        .custom-select-wrapper.open .custom-select-trigger { border-color: var(--accent-blue); }
+        .custom-select-options { 
+            position: absolute; top: 100%; left: 0; right: 0; background-color: var(--bg-card); 
+            border: 1px solid var(--accent-blue); border-radius: 6px; z-index: 50; 
+            max-height: 250px; overflow-y: auto; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.5); 
         }
+        .custom-select-wrapper.open .custom-select-options { display: block; }
+        .custom-option { padding: 10px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; border-bottom: 1px solid var(--border-color); color: #fff; font-size: 0.9rem;}
+        .custom-option:hover { background-color: rgba(255,255,255,0.05); }
+        .custom-option.disabled { color: var(--text-muted); background-color: #121824; cursor: not-allowed; }
+        .custom-option.disabled:hover { background-color: #121824; }
+        .opt-logo { width: 22px; height: 22px; object-fit: contain; }
+
+        .section-title { font-family: 'Oswald', sans-serif; text-align: center; color: var(--accent-red); font-weight: bold; font-size: 1.2rem; text-transform: uppercase; margin: 25px 0 10px; border-top: 1px dashed var(--border-color); padding-top: 15px; }
+
+        button { background-color: var(--accent-blue); color: white; border: none; padding: 12px 35px; font-family: 'Oswald', sans-serif; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; border-radius: 30px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0, 136, 255, 0.3); margin-top: 10px;}
         button:hover { background-color: #0077e6; box-shadow: 0 4px 20px rgba(0, 136, 255, 0.5); transform: translateY(-2px); }
 
         #souhlas-label { display: inline-block; max-width: 600px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); font-weight: normal; }
@@ -139,25 +128,24 @@
             <div class="logo-text">KBZ <span>TIPOVAČKA</span></div>
         </header>
 
-        <!-- ZDE SE DYNAMICKY NAČTE MENU -->
         <div id="menu-container"></div>
 
         <div class="hlasovani-info">
-            <h2>KONEC HLASOVÁNÍ - ZAČÁTEK DRUHÉHO KOLA</h2>
-            <h3>SOBOTA 2.8.2025 17:00</h3>
+            <h2>KONEC HLASOVÁNÍ - ZAČÁTEK PRVNÍHO KOLA</h2>
+            <h3>PONDĚLÍ 10.8.2026 17:00</h3>
             
             <h4>PRAVIDLA SOUTĚŽE</h4>
             <div class="note">Každý může zaslat pouze 1 hlas. Zadání e-mailu slouží pro kontakt při případné výhře.</div>
             <div class="note">Pokud chceš změnit své hlasování, vyplň formulář znovu se svým e-mailem a tvůj tip bude přepsán.</div>
             <div class="note">Tabulka bude veřejná a bude v ní vidět tvůj tip s tvým jménem. Svým vyplněním souhlasíš s případným zveřejněním tvého jména na konci soutěže.</div>
-            <div class="note"><a href="https://docs.google.com/spreadsheets/d/14Ys7rRsU_2A9S37LIc9cJ4tsbQodsFAlVlGSLg1xk54/edit?usp=sharing" target="_blank"><i class="fas fa-table"></i> Odkaz na tabulku</a>.</div>
+            <div class="note"><a href="https://docs.google.com/spreadsheets/d/18sqli_TrvVElJQFqogowxnnyYKHu6ONDsNNmPk4zjHg/edit?usp=sharing" target="_blank"><i class="fas fa-table"></i> Odkaz na tabulku</a>.</div>
 
             <h4>BODOVÁNÍ</h4>
             <div class="note">Přesný tip umístění = <strong>5 bodů</strong>.</div>
             <div class="note">Netrefené umístění o ± 1 = <strong>3 body</strong> // o ± 2 = <strong>2 body</strong> // o ± 3 = <strong>1 bod</strong>.</div>
             <div class="note">V případě trefení všech umístění jednotlivých týmů, budou body z této sekce vynásobeny <strong>1,3x</strong>.</div>
-            <div class="note">Pokud trefíš 14 umístění správně, budou body z této sekce vynásobeny <strong>1,2x</strong>.</div>
-            <div class="note">Pokud trefíš 12-13 umístění správně, budou body z této sekce vynásobeny <strong>1,1x</strong>.</div>
+            <div class="note">Pokud trefíš 12 umístění správně, budou body z této sekce vynásobeny <strong>1,2x</strong>.</div>
+            <div class="note">Pokud trefíš 10-11 umístění správně, budou body z této sekce vynásobeny <strong>1,1x</strong>.</div>
             <div class="note">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</div>
             <div class="note">Správný tip v bonusových otázkách = <strong>3 body</strong>.</div>
             <div class="note">Přesný číselný tip = <strong>5 bodů</strong>.</div>
@@ -170,13 +158,13 @@
                 <fieldset>
                     <legend><i class="fas fa-user"></i> Údaje o tobě (povinné)</legend>
                     <label for="jmeno">Jméno a příjmení:</label>
-                    <input type="text" name="jmeno" required>
+                    <input type="text" id="jmeno" name="jmeno" required>
 
-                    <label for="email">E-mail:</label>
-                    <input type="email" name="email" required placeholder="Budeš na něj kontaktován při výhře">
+                    <label for="email">E-mail: <span style="font-weight: normal; font-style: italic;">(budeš na něj kontaktován při výhře)</span></label>
+                    <input type="email" id="email" name="email" required>
 
                     <label for="fandim">Který tým je tvůj oblíbený v Chance lize?</label>
-                    <select name="fandim" required>
+                    <select name="fandim" id="fandim" required class="icon-select">
                         <option value="">-- Vyber tým --</option>
                     </select>
                 </fieldset>
@@ -190,7 +178,7 @@
                     <legend><i class="fas fa-bullseye"></i> Bonusové tipy (povinné)</legend>
                     
                     <label>Kdo ovládne základní část soutěže?</label>
-                    <select name="zakladnicast" required>
+                    <select name="zakladnicast" class="icon-select" required>
                         <option value="">-- Vyber tým --</option>
                     </select>
 
@@ -224,32 +212,32 @@
                     </div>
 
                     <label>Který tým obdrží nejvíce žlutých karet?</label>
-                    <select name="zlute" required>
+                    <select name="zlute" class="icon-select" required>
                         <option value="">-- Vyber tým --</option>
                     </select>
 
                     <label>Který tým obdrží nejvíce červených karet?</label>
-                    <select name="cervene" required>
+                    <select name="cervene" class="icon-select" required>
                         <option value="">-- Vyber tým --</option>
                     </select>
 
                     <label>Který tým bude mít největší úspěšnost přihrávek?</label>
-                    <select name="prihavky" required>
+                    <select name="prihavky" class="icon-select" required>
                         <option value="">-- Vyber tým --</option>
                     </select>
 
                     <label>Který tým bude mít na svém kontě nejvíce faulů?</label>
-                    <select name="fauly" required>
+                    <select name="fauly" class="icon-select" required>
                         <option value="">-- Vyber tým --</option>
                     </select>
 
                     <label>Který tým bude v nejvíce ofsajdech?</label>
-                    <select name="ofsajdy" required>
+                    <select name="ofsajdy" class="icon-select" required>
                         <option value="">-- Vyber tým --</option>
                     </select>
 
                     <label>Který tým během zápasů získá nejvíce míčů od soupeře?</label>
-                    <select name="zisky" required>
+                    <select name="zisky" class="icon-select" required>
                         <option value="">-- Vyber tým --</option>
                     </select>
                 </fieldset>
@@ -323,13 +311,10 @@
     </div>
 
     <script>
-        // SCRIPT PRO NAČTENÍ MENU
         fetch('menu.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('menu-container').innerHTML = data;
-                
-                // Zvýraznění aktivní stránky
                 const path = window.location.pathname;
                 const page = path.split("/").pop() || "index.html";
                 const links = document.querySelectorAll('#menu-container a');
@@ -340,27 +325,55 @@
                 });
             });
 
-        // FUNKCE PRO ZÁSTUPCE Z MENU
-        function vyhodnotZimniPripravu() {
-            // Sem můžeš následně přidat kód, který se má provést
-            console.log("Vyhodnocuji zimní přípravu...");
-            alert("Vyhodnocení zimní přípravy spuštěno!");
-        }
-
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl_tJGW9-uIULtF44NDxCcRqB2COfSGrjC17CHLqQXiWgh2vFgx7PvKIsP8nj9ZYeJ/exec";
         
-        const deadline = new Date("2026-08-30T17:00:00");
+        const deadline = new Date("2026-08-10T17:00:00");
         const now = new Date();
 
         if (now >= deadline) {
             document.getElementById("formularContainer").innerHTML =
                 "<h3 style='color: var(--accent-red); text-align: center; font-family: Oswald; font-size: 1.5rem;'>Omlouváme se, ale dohopsal jsi pozdě.</h3>";
         } else {
+            const teamLogos = {
+                "Slavia Praha": "https://i.imgur.com/g1Zkhwg.png",
+                "Sparta Praha": "https://i.imgur.com/NlyfFAC.png",
+                "Viktoria Plzeň": "https://i.imgur.com/SPtzSGy.png",
+                "Baník Ostrava": "https://i.imgur.com/fhj9qlu.png",
+                "Mladá Boleslav": "https://i.imgur.com/faCQUVA.png",
+                "Sigma Olomouc": "https://i.imgur.com/EQKL3hu.png",
+                "Jablonec": "https://i.imgur.com/e4ci4Rt.png",
+                "Bohemians Praha": "https://i.imgur.com/sqSgm4a.png",
+                "Slovan Liberec": "https://i.imgur.com/CDcqChc.png",
+                "Teplice": "https://i.imgur.com/t1u7O9z.png",
+                "Slovácko": "https://i.imgur.com/J9s2CwL.png",
+                "Pardubice": "https://i.imgur.com/3ZjvyQX.png",
+                "Hradec Králové": "https://i.imgur.com/iyfKeMv.png",
+                "Zlín": "https://i.imgur.com/7EseGiq.png",
+                "Zbrojovka Brno": "https://i.imgur.com/VNzY5Ew.png",
+                "Artis Brno": "https://i.imgur.com/6hcOo7w.png",
+                "Dukla Praha": "https://i.imgur.com/FZ2Lzu2.png",
+                "Karviná": "https://i.imgur.com/j7hx1cA.png",
+                "Slavia Praha B": "https://i.imgur.com/g1Zkhwg.png",
+                "Baník Ostrava B": "https://i.imgur.com/fhj9qlu.png",
+                "Příbram": "https://i.imgur.com/W5HbNQn.png",
+                "Táborsko": "https://i.imgur.com/R3QUiqz.png",
+                "Vlašim": "https://i.imgur.com/RCmUHo8.png",
+                "Viktoria Žižkov": "https://i.imgur.com/iIke5cO.png",
+                "Jihlava": "https://i.imgur.com/39RJLEC.png",
+                "Prostějov": "https://i.imgur.com/9AvvE6n.png",
+                "Opava": "https://i.imgur.com/Jn95z2w.png",
+                "Kroměříž": "https://i.imgur.com/s637GEc.png",
+                "Ústí nad Labem": "https://i.imgur.com/Ep5p3Xb.png",
+                "Třinec": "https://i.imgur.com/rxmY9If.png",
+                "Kladno": "https://i.imgur.com/fuoQwTS.png",
+                "Česká Lípa": "https://i.imgur.com/ccLgaLt.png"
+            };
+
             const tymy = [
-                "Slavia Praha", "Viktoria Plzeň", "Baník Ostrava", "Sparta Praha",
-                "Jablonec", "Sigma Olomouc", "Bohemians Praha", "Hradec Králové",
-                "Slovan Liberec", "Karviná", "Mladá Boleslav", "Teplice",
-                "Slovácko", "Dukla Praha", "Pardubice", "Zlín"
+                "Slavia Praha", "Sparta Praha", "Viktoria Plzeň", "Baník Ostrava",
+                "Mladá Boleslav", "Sigma Olomouc", "Jablonec", "Bohemians Praha",
+                "Slovan Liberec", "Teplice", "Slovácko", "Pardubice",
+                "Hradec Králové", "Zlín", "Zbrojovka Brno", "Artis Brno"
             ];
 
             function vytvorDropdowny() {
@@ -374,6 +387,7 @@
                     
                     const select = document.createElement("select");
                     select.name = `misto${i + 1}`;
+                    select.className = "icon-select";
                     select.required = true;
                     select.dataset.index = i;
 
@@ -401,9 +415,7 @@
                 const tymPozice = {};
 
                 selecty.forEach((s, idx) => {
-                    if (s.value) {
-                        tymPozice[s.value] = idx + 1;
-                    }
+                    if (s.value) tymPozice[s.value] = idx + 1;
                 });
 
                 selecty.forEach(select => {
@@ -421,6 +433,9 @@
                             option.textContent = option.value;
                         }
                     });
+                    
+                    // Skrytý select vyvolá událost pro aktualizaci vizuálního UI custom dropdownu
+                    select.dispatchEvent(new Event('custom-update'));
                 });
             }
 
@@ -433,6 +448,68 @@
                         option.textContent = tym;
                         select.appendChild(option);
                     });
+                });
+            }
+
+            function initCustomSelects() {
+                document.querySelectorAll("select.icon-select").forEach(select => {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'custom-select-wrapper';
+                    select.parentNode.insertBefore(wrapper, select);
+                    wrapper.appendChild(select);
+
+                    const trigger = document.createElement('div');
+                    trigger.className = 'custom-select-trigger';
+                    trigger.innerHTML = '<span>-- Vyber tým --</span>';
+                    wrapper.appendChild(trigger);
+
+                    const optionsDiv = document.createElement('div');
+                    optionsDiv.className = 'custom-select-options';
+                    wrapper.appendChild(optionsDiv);
+
+                    trigger.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        document.querySelectorAll('.custom-select-wrapper').forEach(w => {
+                            if(w !== wrapper) w.classList.remove('open');
+                        });
+
+                        optionsDiv.innerHTML = '';
+                        Array.from(select.options).forEach((opt, index) => {
+                            if (opt.value === "") return; 
+                            const optDiv = document.createElement('div');
+                            optDiv.className = 'custom-option' + (opt.disabled ? ' disabled' : '');
+                            
+                            let logoHtml = teamLogos[opt.value] ? `<img src="${teamLogos[opt.value]}" class="opt-logo">` : '';
+                            optDiv.innerHTML = `${logoHtml} ${opt.text}`;
+                            
+                            if(!opt.disabled) {
+                                optDiv.addEventListener('click', () => {
+                                    select.selectedIndex = index;
+                                    select.dispatchEvent(new Event('change'));
+                                    trigger.innerHTML = `<span>${logoHtml} ${opt.text}</span>`;
+                                    wrapper.classList.remove('open');
+                                });
+                            }
+                            optionsDiv.appendChild(optDiv);
+                        });
+
+                        wrapper.classList.toggle('open');
+                    });
+                    
+                    // Listener pro vnější změny
+                    select.addEventListener('custom-update', () => {
+                        const opt = select.options[select.selectedIndex];
+                        if(opt && opt.value !== "") {
+                            let logoHtml = teamLogos[opt.value] ? `<img src="${teamLogos[opt.value]}" class="opt-logo">` : '';
+                            trigger.innerHTML = `<span>${logoHtml} ${opt.text}</span>`;
+                        } else {
+                            trigger.innerHTML = '<span>-- Vyber tým --</span>';
+                        }
+                    });
+                });
+
+                document.addEventListener('click', () => {
+                    document.querySelectorAll('.custom-select-wrapper').forEach(w => w.classList.remove('open'));
                 });
             }
 
@@ -474,11 +551,16 @@
 
                 document.getElementById("vysledek").innerHTML = "<h3 style='color: var(--accent-green);'>Děkujeme! Tip byl úspěšně odeslán.</h3>";
                 this.reset();
-                setTimeout(() => { aktualizujDropdowny(); aktualizujZajice(); }, 100);
+                setTimeout(() => { 
+                    aktualizujDropdowny(); 
+                    aktualizujZajice(); 
+                    document.querySelectorAll("select.icon-select").forEach(s => s.dispatchEvent(new Event('custom-update')));
+                }, 100);
             });
 
             vytvorDropdowny();
             naplnitZakladniCastDropdown();
+            initCustomSelects();
         }
     </script>
 </body>
