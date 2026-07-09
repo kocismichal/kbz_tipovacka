@@ -42,6 +42,12 @@
         .logo-text { font-family: 'Oswald', sans-serif; font-size: 2.8rem; text-transform: uppercase; letter-spacing: 1px; }
         .logo-text span { color: var(--accent-blue); }
 
+        /* Styly pro dynamické menu */
+        .main-nav { display: flex; justify-content: center; gap: 30px; margin-bottom: 40px; font-family: 'Oswald', sans-serif; font-size: 1.3rem; text-transform: uppercase; flex-wrap: wrap;}
+        .main-nav a { color: var(--text-muted); text-decoration: none; padding-bottom: 5px; transition: color 0.3s; }
+        .main-nav a:hover { color: #fff; }
+        .main-nav a.active { color: var(--accent-blue); border-bottom: 3px solid var(--accent-blue); }
+
         /* INFORMAČNÍ BLOK O PRAVIDLECH */
         .hlasovani-info {
             background-color: rgba(22, 29, 43, 0.9);
@@ -85,7 +91,6 @@
             color: #fff;
         }
         
-        /* DROPDOWN GRID PRO 16 TÝMŮ */
         .dropdown-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -96,84 +101,35 @@
             .dropdown-grid { grid-template-columns: 1fr; gap: 5px; }
         }
 
-        .grid-item {
-            display: flex;
-            flex-direction: column;
-        }
+        .grid-item { display: flex; flex-direction: column; }
 
         select, input[type="text"], input[type="number"], textarea {
-            width: 100%;
-            padding: 10px 12px;
-            margin: 6px 0 10px 0;
-            background-color: var(--bg-main);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: #fff;
-            font-size: 0.9rem;
-            transition: border-color 0.2s;
+            width: 100%; padding: 10px 12px; margin: 6px 0 10px 0;
+            background-color: var(--bg-main); border: 1px solid var(--border-color);
+            border-radius: 6px; color: #fff; font-size: 0.9rem; transition: border-color 0.2s;
         }
-        select:focus, input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent-blue);
-        }
+        select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent-blue); }
         
-        /* Ostřílené šedivé zbarvení pro již vybrané týmy v dropdownu */
-        select option.used {
-            color: var(--text-muted);
-            background-color: #121824;
-        }
+        select option.used { color: var(--text-muted); background-color: #121824; }
 
         .section-title {
-            font-family: 'Oswald', sans-serif;
-            text-align: center;
-            color: var(--accent-red);
-            font-weight: bold;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            margin: 25px 0 10px;
-            border-top: 1px dashed var(--border-color);
-            padding-top: 15px;
+            font-family: 'Oswald', sans-serif; text-align: center; color: var(--accent-red);
+            font-weight: bold; font-size: 1.2rem; text-transform: uppercase;
+            margin: 25px 0 10px; border-top: 1px dashed var(--border-color); padding-top: 15px;
         }
 
-        /* TLAČÍTKO ODESLAT */
         button {
-            background-color: var(--accent-blue);
-            color: white;
-            border: none;
-            padding: 12px 35px;
-            font-family: 'Oswald', sans-serif;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s;
+            background-color: var(--accent-blue); color: white; border: none; padding: 12px 35px;
+            font-family: 'Oswald', sans-serif; font-size: 1.2rem; text-transform: uppercase;
+            letter-spacing: 1px; border-radius: 30px; cursor: pointer; transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(0, 136, 255, 0.3);
         }
-        button:hover {
-            background-color: #0077e6;
-            box-shadow: 0 4px 20px rgba(0, 136, 255, 0.5);
-            transform: translateY(-2px);
-        }
+        button:hover { background-color: #0077e6; box-shadow: 0 4px 20px rgba(0, 136, 255, 0.5); transform: translateY(-2px); }
 
-        #souhlas-label {
-            display: inline-block;
-            max-width: 600px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: normal;
-        }
-        #souhlas-label.green {
-            color: var(--accent-green);
-        }
+        #souhlas-label { display: inline-block; max-width: 600px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); font-weight: normal; }
+        #souhlas-label.green { color: var(--accent-green); }
 
-        #vysledek {
-            margin-top: 25px;
-            text-align: center;
-            font-family: 'Oswald', sans-serif;
-            font-size: 1.3rem;
-        }
+        #vysledek { margin-top: 25px; text-align: center; font-family: 'Oswald', sans-serif; font-size: 1.3rem; }
     </style>
 </head>
 <body>
@@ -183,188 +139,214 @@
             <div class="logo-text">KBZ <span>TIPOVAČKA</span></div>
         </header>
 
-        <div class="hlasovani-info">
-            <h2>KONEC HLASOVÁNÍ - ZAČÁTEK DRUHÉHO KOLA</h2> [cite: 3, 19]
-            <h3>SOBOTA 2.8.2025 17:00</h3> [cite: 3, 19]
-            
-            <h4>PRAVIDLA SOUTĚŽE</h4> [cite: 4, 19]
-            <div class="note">Každý může zaslat pouze 1 hlas. Zadání e-mailu slouží pro kontakt při případné výhře.</div> [cite: 13, 19, 20]
-            <div class="note">Pokud chceš změnit své hlasování, vyplň formulář znovu se svým e-mailem a tvůj tip bude přepsán.</div> [cite: 13, 20]
-            <div class="note">Tabulka bude veřejná a bude v ní vidět tvůj tip s tvým jménem. Svým vyplněním souhlasíš s případným zveřejněním tvého jména na konci soutěže.</div> [cite: 13, 20, 21]
-            <div class="note"><a href="https://docs.google.com/spreadsheets/d/14Ys7rRsU_2A9S37LIc9cJ4tsbQodsFAlVlGSLg1xk54/edit?usp=sharing" target="_blank"><i class="fas fa-table"></i> Odkaz na tabulku</a>.</div> [cite: 21, 22]
+        <!-- ZDE SE DYNAMICKY NAČTE MENU -->
+        <div id="menu-container"></div>
 
-            <h4>BODOVÁNÍ</h4> [cite: 23]
-            <div class="note">Přesný tip umístění = <strong>5 bodů</strong>.</div> [cite: 23]
-            <div class="note">Netrefené umístění o ± 1 = <strong>3 body</strong> // o ± 2 = <strong>2 body</strong> // o ± 3 = <strong>1 bod</strong>.</div> [cite: 23, 24]
-            <div class="note">V případě trefení všech umístění jednotlivých týmů, budou body z této sekce vynásobeny <strong>1,3x</strong>.</div> [cite: 24]
-            <div class="note">Pokud trefíš 14 umístění správně, budou body z této sekce vynásobeny <strong>1,2x</strong>.</div> [cite: 24]
-            <div class="note">Pokud trefíš 12-13 umístění správně, budou body z této sekce vynásobeny <strong>1,1x</strong>.</div> [cite: 24]
-            <div class="note">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</div> [cite: 24, 25]
-            <div class="note">Správný tip v bonusových otázkách = <strong>3 body</strong>.</div> [cite: 25]
-            <div class="note">Přesný číselný tip = <strong>5 bodů</strong>.</div> [cite: 25]
-            <div class="note">Netrefený číselný tip o ± 1 = <strong>3 body</strong> // o ± 2 = <strong>2 body</strong> // o ± 3 = <strong>1 bod</strong>.</div> [cite: 25, 26, 27]
+        <div class="hlasovani-info">
+            <h2>KONEC HLASOVÁNÍ - ZAČÁTEK DRUHÉHO KOLA</h2>
+            <h3>SOBOTA 2.8.2025 17:00</h3>
+            
+            <h4>PRAVIDLA SOUTĚŽE</h4>
+            <div class="note">Každý může zaslat pouze 1 hlas. Zadání e-mailu slouží pro kontakt při případné výhře.</div>
+            <div class="note">Pokud chceš změnit své hlasování, vyplň formulář znovu se svým e-mailem a tvůj tip bude přepsán.</div>
+            <div class="note">Tabulka bude veřejná a bude v ní vidět tvůj tip s tvým jménem. Svým vyplněním souhlasíš s případným zveřejněním tvého jména na konci soutěže.</div>
+            <div class="note"><a href="https://docs.google.com/spreadsheets/d/14Ys7rRsU_2A9S37LIc9cJ4tsbQodsFAlVlGSLg1xk54/edit?usp=sharing" target="_blank"><i class="fas fa-table"></i> Odkaz na tabulku</a>.</div>
+
+            <h4>BODOVÁNÍ</h4>
+            <div class="note">Přesný tip umístění = <strong>5 bodů</strong>.</div>
+            <div class="note">Netrefené umístění o ± 1 = <strong>3 body</strong> // o ± 2 = <strong>2 body</strong> // o ± 3 = <strong>1 bod</strong>.</div>
+            <div class="note">V případě trefení všech umístění jednotlivých týmů, budou body z této sekce vynásobeny <strong>1,3x</strong>.</div>
+            <div class="note">Pokud trefíš 14 umístění správně, budou body z této sekce vynásobeny <strong>1,2x</strong>.</div>
+            <div class="note">Pokud trefíš 12-13 umístění správně, budou body z této sekce vynásobeny <strong>1,1x</strong>.</div>
+            <div class="note">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</div>
+            <div class="note">Správný tip v bonusových otázkách = <strong>3 body</strong>.</div>
+            <div class="note">Přesný číselný tip = <strong>5 bodů</strong>.</div>
+            <div class="note">Netrefený číselný tip o ± 1 = <strong>3 body</strong> // o ± 2 = <strong>2 body</strong> // o ± 3 = <strong>1 bod</strong>.</div>
         </div>
 
         <div id="formularContainer">
             <form id="tipForm">
                 
                 <fieldset>
-                    <legend><i class="fas fa-user"></i> Údaje o tobě (povinné)</legend> [cite: 27]
-                    <label for="jmeno">Jméno a příjmení:</label> [cite: 27]
-                    <input type="text" name="jmeno" required> [cite: 27]
+                    <legend><i class="fas fa-user"></i> Údaje o tobě (povinné)</legend>
+                    <label for="jmeno">Jméno a příjmení:</label>
+                    <input type="text" name="jmeno" required>
 
-                    <label for="email">E-mail:</label> [cite: 27]
-                    <input type="email" name="email" required placeholder="Budeš na něj kontaktován při výhře"> [cite: 27, 28]
+                    <label for="email">E-mail:</label>
+                    <input type="email" name="email" required placeholder="Budeš na něj kontaktován při výhře">
 
-                    <label for="fandim">Který tým je tvůj oblíbený v Chance lize?</label> [cite: 28]
-                    <select name="fandim" required> [cite: 28]
-                        <option value="">-- Vyber tým --</option> [cite: 28]
+                    <label for="fandim">Který tým je tvůj oblíbený v Chance lize?</label>
+                    <select name="fandim" required>
+                        <option value="">-- Vyber tým --</option>
                     </select>
                 </fieldset>
 
                 <fieldset>
-                    <legend><i class="fas fa-list-ol"></i> Tip na pořadí týmů na konci celé sezóny (povinné)</legend> [cite: 28]
-                    <div id="dropdowns" class="dropdown-grid"></div> [cite: 29]
+                    <legend><i class="fas fa-list-ol"></i> Tip na pořadí týmů na konci celé sezóny (povinné)</legend>
+                    <div id="dropdowns" class="dropdown-grid"></div>
                 </fieldset>
 
                 <fieldset>
-                    <legend><i class="fas fa-bullseye"></i> Bonusové tipy (povinné)</legend> [cite: 29]
+                    <legend><i class="fas fa-bullseye"></i> Bonusové tipy (povinné)</legend>
                     
-                    <label>Kdo ovládne základní část soutěže?</label> [cite: 29]
-                    <select name="zakladnicast" required> [cite: 29]
-                        <option value="">-- Vyber tým --</option> [cite: 29]
+                    <label>Kdo ovládne základní část soutěže?</label>
+                    <select name="zakladnicast" required>
+                        <option value="">-- Vyber tým --</option>
                     </select>
 
-                    <label>Sestoupí prvoligový tým do druhé ligy po prohře v baráži?</label> [cite: 29]
-                    <select name="baraz" required> [cite: 29, 30]
-                        <option value="">-- Vyber odpověď ANO/NE --</option> [cite: 30]
-                        <option value="Ano">Ano</option> [cite: 30]
-                        <option value="Ne">Ne</option> [cite: 30]
+                    <label>Sestoupí prvoligový tým do druhé ligy po prohře v baráži?</label>
+                    <select name="baraz" required>
+                        <option value="">-- Vyber odpověď ANO/NE --</option>
+                        <option value="Ano">Ano</option>
+                        <option value="Ne">Ne</option>
                     </select>
 
-                    <label>Kolik bodů získá mistr Chance ligy během celé sezóny?</label> [cite: 30]
-                    <input type="number" name="body_mistr" min="0" max="105" required placeholder="0 - 105"> [cite: 30]
+                    <label>Kolik bodů získá mistr Chance ligy během celé sezóny?</label>
+                    <input type="number" name="body_mistr" min="0" max="105" required placeholder="0 - 105">
 
-                    <label>Jaký bude bodový rozdíl mezi 1. a 2. místem?</label> [cite: 30]
-                    <input type="number" name="rozdil_1_2" min="0" max="105" required placeholder="0 - 105"> [cite: 31]
+                    <label>Jaký bude bodový rozdíl mezi 1. a 2. místem?</label>
+                    <input type="number" name="rozdil_1_2" min="0" max="105" required placeholder="0 - 105">
 
-                    <label>Kolik bodů získá poslední tým tabulky během celé sezóny?</label> [cite: 31]
-                    <input type="number" name="body_posledni" min="0" max="105" required placeholder="0 - 105"> [cite: 31]
+                    <label>Kolik bodů získá poslední tým tabulky během celé sezóny?</label>
+                    <input type="number" name="body_posledni" min="0" max="105" required placeholder="0 - 105">
 
-                    <div class="section-title">Nejlepší střelec soutěže</div> [cite: 31]
-                    <label>Nejlepší střelec Chance ligy na konci sezóny:</label> [cite: 31]
-                    <input type="text" name="strelec" placeholder="např. Jan Kliment (snaž se napsat celé jméno správně)" required> [cite: 31, 32]
+                    <div class="section-title">Nejlepší střelec soutěže</div>
+                    <label>Nejlepší střelec Chance ligy na konci sezóny:</label>
+                    <input type="text" name="strelec" placeholder="např. Jan Kliment (snaž se napsat celé jméno správně)" required>
 
-                    <label>Kolik gólů vstřelí nejlepší střelec soutěže?</label> [cite: 32]
-                    <input type="number" name="gol_strelec" min="0" max="100" required placeholder="0 - 100"> [cite: 32]
+                    <label>Kolik gólů vstřelí nejlepší střelec soutěže?</label>
+                    <input type="number" name="gol_strelec" min="0" max="100" required placeholder="0 - 100">
 
-                    <div class="section-title">Analytické okénko</div> [cite: 32]
+                    <div class="section-title">Analytické okénko</div>
                     <div class="note">
                         Statistické údaje budou čerpány po konci celé sezóny z 
-                        <a href="https://www.chanceliga.cz" target="_blank">oficiální stránky Chance ligy</a>. [cite: 32]
+                        <a href="https://www.chanceliga.cz" target="_blank">oficiální stránky Chance ligy</a>.
                     </div>
 
-                    <label>Který tým obdrží nejvíce žlutých karet?</label> [cite: 33]
-                    <select name="zlute" required> [cite: 33]
-                        <option value="">-- Vyber tým --</option> [cite: 33]
+                    <label>Který tým obdrží nejvíce žlutých karet?</label>
+                    <select name="zlute" required>
+                        <option value="">-- Vyber tým --</option>
                     </select>
 
-                    <label>Který tým obdrží nejvíce červených karet?</label> [cite: 33]
-                    <select name="cervene" required> [cite: 33]
-                        <option value="">-- Vyber tým --</option> [cite: 33]
+                    <label>Který tým obdrží nejvíce červených karet?</label>
+                    <select name="cervene" required>
+                        <option value="">-- Vyber tým --</option>
                     </select>
 
-                    <label>Který tým bude mít největší úspěšnost přihrávek?</label> [cite: 33, 34]
-                    <select name="prihavky" required> [cite: 34]
-                        <option value="">-- Vyber tým --</option> [cite: 34]
+                    <label>Který tým bude mít největší úspěšnost přihrávek?</label>
+                    <select name="prihavky" required>
+                        <option value="">-- Vyber tým --</option>
                     </select>
 
-                    <label>Který tým bude mít na svém kontě nejvíce faulů?</label> [cite: 34]
-                    <select name="fauly" required> [cite: 34]
-                        <option value="">-- Vyber tým --</option> [cite: 34]
+                    <label>Který tým bude mít na svém kontě nejvíce faulů?</label>
+                    <select name="fauly" required>
+                        <option value="">-- Vyber tým --</option>
                     </select>
 
-                    <label>Který tým bude v nejvíce ofsajdech?</label> [cite: 34]
-                    <select name="ofsajdy" required> [cite: 35]
-                        <option value="">-- Vyber tým --</option> [cite: 35]
+                    <label>Který tým bude v nejvíce ofsajdech?</label>
+                    <select name="ofsajdy" required>
+                        <option value="">-- Vyber tým --</option>
                     </select>
 
-                    <label>Který tým během zápasů získá nejvíce míčů od soupeře?</label> [cite: 35]
-                    <select name="zisky" required> [cite: 35]
-                        <option value="">-- Vyber tým --</option> [cite: 35]
+                    <label>Který tým během zápasů získá nejvíce míčů od soupeře?</label>
+                    <select name="zisky" required>
+                        <option value="">-- Vyber tým --</option>
                     </select>
                 </fieldset>
 
                 <fieldset>
-                    <legend><i class="fas fa-rabbit"></i> Bonusové otázky (nepovinné, nebodované)</legend> [cite: 35]
+                    <legend><i class="fas fa-rabbit"></i> Bonusové otázky (nepovinné, nebodované)</legend>
 
-                    <label>Kdo vyhraje celosezónní Zajíc Tipovačku?</label> [cite: 35]
-                    <select name="zajic_vitez"> [cite: 35, 36]
-                        <option value="">-- Vyber jednu z možností --</option> [cite: 36]
-                        <option value="Ondra">Ondra</option> [cite: 36]
-                        <option value="Podry">Podry</option> [cite: 36]
-                        <option value="Vacíno">Vacíno</option> [cite: 36]
-                        <option value="Folpi">Folpi</option> [cite: 36]
+                    <label>Kdo vyhraje celosezónní Zajíc Tipovačku?</label>
+                    <select name="zajic_vitez">
+                        <option value="">-- Vyber jednu z možností --</option>
+                        <option value="Ondra">Ondra</option>
+                        <option value="Podry">Podry</option>
+                        <option value="Vacíno">Vacíno</option>
+                        <option value="Folpi">Folpi</option>
                     </select>
 
-                    <label>Seřaď Zajíce podle oblíbenosti (1. místo)</label> [cite: 36, 37]
-                    <select name="zajic1" class="zajic-select"> [cite: 37]
-                        <option value="">-- Vyber --</option> [cite: 37]
-                        <option value="Ondra">Ondra</option> [cite: 37]
-                        <option value="Podry">Podry</option> [cite: 37]
-                        <option value="Vacíno">Vacíno</option> [cite: 37]
-                        <option value="Folpi">Folpi</option> [cite: 37]
+                    <label>Seřaď Zajíce podle oblíbenosti (1. místo)</label>
+                    <select name="zajic1" class="zajic-select">
+                        <option value="">-- Vyber --</option>
+                        <option value="Ondra">Ondra</option>
+                        <option value="Podry">Podry</option>
+                        <option value="Vacíno">Vacíno</option>
+                        <option value="Folpi">Folpi</option>
                     </select>
 
-                    <label>Seřaď Zajíce podle oblíbenosti (2. místo)</label> [cite: 37]
-                    <select name="zajic2" class="zajic-select"> [cite: 37]
-                        <option value="">-- Vyber --</option> [cite: 37]
-                        <option value="Ondra">Ondra</option> [cite: 37]
-                        <option value="Podry">Podry</option> [cite: 37]
-                        <option value="Vacíno">Vacíno</option> [cite: 37]
-                        <option value="Folpi">Folpi</option> [cite: 37]
+                    <label>Seřaď Zajíce podle oblíbenosti (2. místo)</label>
+                    <select name="zajic2" class="zajic-select">
+                        <option value="">-- Vyber --</option>
+                        <option value="Ondra">Ondra</option>
+                        <option value="Podry">Podry</option>
+                        <option value="Vacíno">Vacíno</option>
+                        <option value="Folpi">Folpi</option>
                     </select>
 
-                    <label>Seřaď Zajíce podle oblíbenosti (3. místo)</label> [cite: 37]
-                    <select name="zajic3" class="zajic-select"> [cite: 37]
-                        <option value="">-- Vyber --</option> [cite: 37]
-                        <option value="Ondra">Ondra</option> [cite: 37]
-                        <option value="Podry">Podry</option> [cite: 37]
-                        <option value="Vacíno">Vacíno</option> [cite: 37]
-                        <option value="Folpi">Folpi</option> [cite: 37]
+                    <label>Seřaď Zajíce podle oblíbenosti (3. místo)</label>
+                    <select name="zajic3" class="zajic-select">
+                        <option value="">-- Vyber --</option>
+                        <option value="Ondra">Ondra</option>
+                        <option value="Podry">Podry</option>
+                        <option value="Vacíno">Vacíno</option>
+                        <option value="Folpi">Folpi</option>
                     </select>
 
-                    <label>Seřaď Zajíce podle oblíbenosti (4. místo)</label> [cite: 37]
-                    <select name="zajic4" class="zajic-select"> [cite: 37]
-                        <option value="">-- Vyber --</option> [cite: 37]
-                        <option value="Ondra">Ondra</option> [cite: 37]
-                        <option value="Podry">Podry</option> [cite: 37]
-                        <option value="Vacíno">Vacíno</option> [cite: 37]
-                        <option value="Folpi">Folpi</option> [cite: 37]
+                    <label>Seřaď Zajíce podle oblíbenosti (4. místo)</label>
+                    <select name="zajic4" class="zajic-select">
+                        <option value="">-- Vyber --</option>
+                        <option value="Ondra">Ondra</option>
+                        <option value="Podry">Podry</option>
+                        <option value="Vacíno">Vacíno</option>
+                        <option value="Folpi">Folpi</option>
                     </select>
 
-                    <label>Máš něco na srdci?</label> [cite: 37]
-                    <textarea name="poznamky" rows="3" placeholder="Chceš nám něco vzkázat? Máš možnost!!"></textarea> [cite: 37, 38]
+                    <label>Máš něco na srdci?</label>
+                    <textarea name="poznamky" rows="3" placeholder="Chceš nám něco vzkázat? Máš možnost!!"></textarea>
                 </fieldset>
 
-                <div style="text-align: center; font-style: italic; margin-bottom: 20px;"> [cite: 38, 39]
+                <div style="text-align: center; font-style: italic; margin-bottom: 20px;">
                     <label id="souhlas-label">
-                        <input type="checkbox" name="souhlas" id="souhlas" required style="margin-right: 6px; margin-top: 10px; width: auto; display: inline-block;"> [cite: 39, 40]
-                        Souhlasím se zveřejněním svého jména ve veřejné tabulce<br> a zveřejněním na sociálních sítích v případě výhry. [cite: 39, 40]
+                        <input type="checkbox" name="souhlas" id="souhlas" required style="margin-right: 6px; margin-top: 10px; width: auto; display: inline-block;">
+                        Souhlasím se zveřejněním svého jména ve veřejné tabulce<br> a zveřejněním na sociálních sítích v případě výhry.
                     </label>
                 </div>
 
                 <div style="text-align: center;">
-                    <button type="submit"><i class="fas fa-paper-plane"></i> Odeslat tip</button> [cite: 40]
+                    <button type="submit"><i class="fas fa-paper-plane"></i> Odeslat tip</button>
                 </div>
             </form>
         </div>
 
-        <div id="vysledek"></div> [cite: 40]
+        <div id="vysledek"></div>
     </div>
 
     <script>
-        // TVÁ NOVÁ URL ADRESA PRO APPS SCRIPT
+        // SCRIPT PRO NAČTENÍ MENU
+        fetch('menu.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('menu-container').innerHTML = data;
+                
+                // Zvýraznění aktivní stránky
+                const path = window.location.pathname;
+                const page = path.split("/").pop() || "index.html";
+                const links = document.querySelectorAll('#menu-container a');
+                links.forEach(link => {
+                    if (link.getAttribute('href') === page) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+        // FUNKCE PRO ZÁSTUPCE Z MENU
+        function vyhodnotZimniPripravu() {
+            // Sem můžeš následně přidat kód, který se má provést
+            console.log("Vyhodnocuji zimní přípravu...");
+            alert("Vyhodnocení zimní přípravy spuštěno!");
+        }
+
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl_tJGW9-uIULtF44NDxCcRqB2COfSGrjC17CHLqQXiWgh2vFgx7PvKIsP8nj9ZYeJ/exec";
         
         const deadline = new Date("2026-08-30T17:00:00");
@@ -372,15 +354,14 @@
 
         if (now >= deadline) {
             document.getElementById("formularContainer").innerHTML =
-                "<h3 style='color: var(--accent-red); text-align: center; font-family: Oswald; font-size: 1.5rem;'>Omlouváme se, ale dohopsal jsi pozdě.</h3>"; [cite: 40, 41, 42]
+                "<h3 style='color: var(--accent-red); text-align: center; font-family: Oswald; font-size: 1.5rem;'>Omlouváme se, ale dohopsal jsi pozdě.</h3>";
         } else {
-            // Seznam 16 týmů z tvého skriptu
             const tymy = [
                 "Slavia Praha", "Viktoria Plzeň", "Baník Ostrava", "Sparta Praha",
                 "Jablonec", "Sigma Olomouc", "Bohemians Praha", "Hradec Králové",
                 "Slovan Liberec", "Karviná", "Mladá Boleslav", "Teplice",
                 "Slovácko", "Dukla Praha", "Pardubice", "Zlín"
-            ]; [cite: 42]
+            ];
 
             function vytvorDropdowny() {
                 const dropdownsDiv = document.getElementById("dropdowns");
@@ -389,26 +370,26 @@
                     item.className = "grid-item";
 
                     const label = document.createElement("label");
-                    label.textContent = `${i + 1}. místo:`; [cite: 43]
+                    label.textContent = `${i + 1}. místo:`;
                     
                     const select = document.createElement("select");
-                    select.name = `misto${i + 1}`; [cite: 43, 44]
+                    select.name = `misto${i + 1}`;
                     select.required = true;
                     select.dataset.index = i;
 
                     const emptyOption = document.createElement("option");
                     emptyOption.value = "";
-                    emptyOption.textContent = "-- Vyber tým --"; [cite: 44]
-                    select.appendChild(emptyOption); [cite: 45]
+                    emptyOption.textContent = "-- Vyber tým --";
+                    select.appendChild(emptyOption);
 
                     tymy.forEach(tym => {
                         const option = document.createElement("option");
                         option.value = tym;
-                        option.textContent = tym; [cite: 45]
-                        select.appendChild(option); [cite: 45]
+                        option.textContent = tym;
+                        select.appendChild(option);
                     });
 
-                    select.addEventListener("change", aktualizujDropdowny); [cite: 46]
+                    select.addEventListener("change", aktualizujDropdowny);
                     item.appendChild(label);
                     item.appendChild(select);
                     dropdownsDiv.appendChild(item);
@@ -416,90 +397,88 @@
             }
 
             function aktualizujDropdowny() {
-                const selecty = Array.from(document.querySelectorAll("select[name^='misto']")); [cite: 46]
-                const tymPozice = {}; [cite: 47]
+                const selecty = Array.from(document.querySelectorAll("select[name^='misto']"));
+                const tymPozice = {};
 
                 selecty.forEach((s, idx) => {
                     if (s.value) {
-                        tymPozice[s.value] = idx + 1; [cite: 48]
+                        tymPozice[s.value] = idx + 1;
                     }
                 });
 
                 selecty.forEach(select => {
-                    const aktualni = select.value; [cite: 49]
+                    const aktualni = select.value;
                     Array.from(select.options).forEach(option => {
-                        option.classList.remove("used"); [cite: 49]
-                        if (option.value === "") return; [cite: 49]
+                        option.classList.remove("used");
+                        if (option.value === "") return;
                         
                         if (tymPozice[option.value] && option.value !== aktualni) {
-                            option.disabled = true; [cite: 49, 50]
-                            option.classList.add("used"); [cite: 50]
-                            option.textContent = `${option.value} (${tymPozice[option.value]}. místo)`; [cite: 50]
+                            option.disabled = true;
+                            option.classList.add("used");
+                            option.textContent = `${option.value} (${tymPozice[option.value]}. místo)`;
                         } else {
-                            option.disabled = false; [cite: 50]
-                            option.textContent = option.value; [cite: 50]
+                            option.disabled = false;
+                            option.textContent = option.value;
                         }
                     });
                 });
             }
 
             function naplnitZakladniCastDropdown() {
-                const vsechny = document.querySelectorAll("select[name='zakladnicast'], select[name='fandim'], select[name='prihavky'], select[name='zlute'], select[name='cervene'], select[name='fauly'], select[name='ofsajdy'], select[name='zisky']"); [cite: 52]
+                const vsechny = document.querySelectorAll("select[name='zakladnicast'], select[name='fandim'], select[name='prihavky'], select[name='zlute'], select[name='cervene'], select[name='fauly'], select[name='ofsajdy'], select[name='zisky']");
                 vsechny.forEach(select => {
                     tymy.forEach(tym => {
                         const option = document.createElement("option");
                         option.value = tym;
-                        option.textContent = tym; [cite: 53]
-                        select.appendChild(option); [cite: 53]
+                        option.textContent = tym;
+                        select.appendChild(option);
                     });
                 });
             }
 
             function aktualizujZajice() {
-                const selecty = Array.from(document.querySelectorAll(".zajic-select")); [cite: 54]
-                const vybrane = selecty.map(s => s.value).filter(v => v); [cite: 55]
+                const selecty = Array.from(document.querySelectorAll(".zajic-select"));
+                const vybrane = selecty.map(s => s.value).filter(v => v);
 
                 selecty.forEach(select => {
-                    const aktualni = select.value; [cite: 55]
+                    const aktualni = select.value;
                     Array.from(select.options).forEach(option => {
-                        if (option.value === "") return; [cite: 55]
-                        option.disabled = vybrane.includes(option.value) && option.value !== aktualni; [cite: 55]
+                        if (option.value === "") return;
+                        option.disabled = vybrane.includes(option.value) && option.value !== aktualni;
                     });
                 });
             }
 
             document.querySelectorAll(".zajic-select").forEach(select => {
-                select.addEventListener("change", aktualizujZajice); [cite: 56]
+                select.addEventListener("change", aktualizujZajice);
             });
             
             document.getElementById("souhlas").addEventListener("change", function() {
-                const label = document.getElementById("souhlas-label"); [cite: 56]
+                const label = document.getElementById("souhlas-label");
                 if (this.checked) {
-                    label.classList.add("green"); [cite: 56]
+                    label.classList.add("green");
                 } else {
-                    label.classList.remove("green"); [cite: 56]
+                    label.classList.remove("green");
                 }
             });
 
-            // ODESLÁNÍ FORMULÁŘE NA TVOJE NOVÉ URL
-            document.getElementById("tipForm").addEventListener("submit", function(e) { [cite: 56, 57]
-                e.preventDefault(); [cite: 57]
-                const formData = new FormData(this); [cite: 57]
+            document.getElementById("tipForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
 
-                fetch(SCRIPT_URL, { [cite: 57]
-                    method: "POST", [cite: 57]
-                    body: formData, [cite: 57]
-                    mode: "no-cors" [cite: 57]
+                fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: formData,
+                    mode: "no-cors"
                 });
 
-                document.getElementById("vysledek").innerHTML = "<h3 style='color: var(--accent-green);'>Děkujeme! Tip byl úspěšně odeslán.</h3>"; [cite: 57, 58]
-                this.reset(); [cite: 58]
-                // Po resetu uvolníme zakázané volby
+                document.getElementById("vysledek").innerHTML = "<h3 style='color: var(--accent-green);'>Děkujeme! Tip byl úspěšně odeslán.</h3>";
+                this.reset();
                 setTimeout(() => { aktualizujDropdowny(); aktualizujZajice(); }, 100);
             });
 
-            vytvorDropdowny(); [cite: 58, 59]
-            naplnitZakladniCastDropdown(); [cite: 59]
+            vytvorDropdowny();
+            naplnitZakladniCastDropdown();
         }
     </script>
 </body>
