@@ -6,120 +6,7 @@
     <title>Chance liga - KBZ tipovačka (Formulář)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-main: #0b111e;
-            --bg-card: #161d2b;
-            --border-color: #232b38;
-            --text-main: #ffffff;
-            --text-muted: #8b95a5;
-            --accent-blue: #0088ff;
-            --accent-yellow: #ffd700;
-            --accent-green: #00e676;
-            --accent-red: #ff4d4d;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            line-height: 1.5;
-            padding: 20px;
-            background-image: url('pozadi.jpeg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .wrapper { width: 100%; max-width: 800px; margin: 0 auto; }
-
-        header { text-align: center; margin: 20px 0 30px 0; }
-        .logo-text { font-family: 'Oswald', sans-serif; font-size: 2.8rem; text-transform: uppercase; letter-spacing: 1px; }
-        .logo-text span { color: var(--accent-blue); }
-
-        .main-nav { display: flex; justify-content: center; gap: 30px; margin-bottom: 40px; font-family: 'Oswald', sans-serif; font-size: 1.3rem; text-transform: uppercase; flex-wrap: wrap;}
-        .main-nav a { color: var(--text-muted); text-decoration: none; padding-bottom: 5px; transition: color 0.3s; }
-        .main-nav a:hover { color: #fff; }
-        .main-nav a.active { color: var(--accent-blue); border-bottom: 3px solid var(--accent-blue); }
-
-        .hlasovani-info {
-            background-color: rgba(22, 29, 43, 0.9);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 30px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-        .hlasovani-info h2 { color: var(--accent-red); font-family: 'Oswald', sans-serif; font-size: 1.6rem; margin-bottom: 5px; }
-        .hlasovani-info h3 { color: var(--accent-yellow); font-family: 'Oswald', sans-serif; font-size: 1.3rem; margin-bottom: 15px; }
-        .hlasovani-info h4 { color: var(--accent-blue); font-family: 'Oswald', sans-serif; font-size: 1.1rem; text-transform: uppercase; margin: 20px 0 10px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
-        .hlasovani-info .note { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; line-height: 1.4; }
-        .hlasovani-info a { color: var(--accent-blue); text-decoration: none; font-weight: 600; }
-        .hlasovani-info a:hover { text-decoration: underline; }
-
-        fieldset {
-            background-color: rgba(22, 29, 43, 0.95);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        legend { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; padding: 0 15px; color: var(--accent-blue); }
-        label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.9rem; color: #fff; }
-        
-        .dropdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
-        @media (max-width: 600px) { .dropdown-grid { grid-template-columns: 1fr; gap: 5px; } }
-        .grid-item { display: flex; flex-direction: column; }
-
-        /* ZÁKLADNÍ INPUTY */
-        input[type="text"], input[type="email"], input[type="number"], textarea, select {
-            width: 100%; padding: 10px 12px; margin: 6px 0 10px 0;
-            background-color: var(--bg-main); border: 1px solid var(--border-color);
-            border-radius: 6px; color: #fff; font-size: 0.9rem; transition: border-color 0.2s;
-        }
-        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent-blue); }
-        
-        /* VLASTNÍ DROPDOWN PRO LOGA */
-        .custom-select-wrapper { position: relative; width: 100%; margin: 6px 0 10px 0; }
-        .custom-select-wrapper select { display: none; }
-        .custom-select-trigger { 
-            background-color: var(--bg-main); border: 1px solid var(--border-color); 
-            border-radius: 6px; padding: 10px 12px; color: #fff; font-size: 0.9rem;
-            cursor: pointer; display: flex; align-items: center; justify-content: space-between; 
-            transition: border-color 0.2s;
-        }
-        .custom-select-trigger span { display: flex; align-items: center; gap: 8px; }
-        .custom-select-trigger::after { content: '\f0d7'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--text-muted); }
-        .custom-select-wrapper.open .custom-select-trigger { border-color: var(--accent-blue); }
-        .custom-select-options { 
-            position: absolute; top: 100%; left: 0; right: 0; background-color: var(--bg-card); 
-            border: 1px solid var(--accent-blue); border-radius: 6px; z-index: 50; 
-            max-height: 250px; overflow-y: auto; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.5); 
-        }
-        .custom-select-wrapper.open .custom-select-options { display: block; }
-        .custom-option { padding: 10px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; border-bottom: 1px solid var(--border-color); color: #fff; font-size: 0.9rem;}
-        .custom-option:hover { background-color: rgba(255,255,255,0.05); }
-        .custom-option.disabled { color: var(--text-muted); background-color: #121824; cursor: not-allowed; }
-        .custom-option.disabled:hover { background-color: #121824; }
-        .opt-logo { width: 22px; height: 22px; object-fit: contain; }
-
-        .section-title { font-family: 'Oswald', sans-serif; text-align: center; color: var(--accent-red); font-weight: bold; font-size: 1.2rem; text-transform: uppercase; margin: 25px 0 10px; border-top: 1px dashed var(--border-color); padding-top: 15px; }
-
-        button { background-color: var(--accent-blue); color: white; border: none; padding: 12px 35px; font-family: 'Oswald', sans-serif; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; border-radius: 30px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0, 136, 255, 0.3); margin-top: 10px;}
-        button:hover { background-color: #0077e6; box-shadow: 0 4px 20px rgba(0, 136, 255, 0.5); transform: translateY(-2px); }
-
-        #souhlas-label { display: inline-block; max-width: 600px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); font-weight: normal; }
-        #souhlas-label.green { color: var(--accent-green); }
-
-        #vysledek { margin-top: 25px; text-align: center; font-family: 'Oswald', sans-serif; font-size: 1.3rem; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -128,7 +15,10 @@
             <div class="logo-text">KBZ <span>TIPOVAČKA</span></div>
         </header>
 
-        <div id="menu-container"></div>
+        <!-- HLAVIČKA FORMULÁŘE S TLAČÍTKEM DOMŮ -->
+        <div class="eval-container" style="text-align: center; border: none; background: transparent; padding: 0;">
+            <a href="index.html" class="btn-home" style="position: relative; display: inline-flex; margin-bottom: 20px; top: 0; left: 0;"><i class="fas fa-home"></i> Domů</a>
+        </div>
 
         <div class="hlasovani-info">
             <h2>KONEC HLASOVÁNÍ - ZAČÁTEK PRVNÍHO KOLA</h2>
@@ -311,20 +201,6 @@
     </div>
 
     <script>
-        fetch('menu.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('menu-container').innerHTML = data;
-                const path = window.location.pathname;
-                const page = path.split("/").pop() || "index.html";
-                const links = document.querySelectorAll('#menu-container a');
-                links.forEach(link => {
-                    if (link.getAttribute('href') === page) {
-                        link.classList.add('active');
-                    }
-                });
-            });
-
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxl_tJGW9-uIULtF44NDxCcRqB2COfSGrjC17CHLqQXiWgh2vFgx7PvKIsP8nj9ZYeJ/exec";
         
         const deadline = new Date("2026-08-10T17:00:00");
@@ -434,7 +310,6 @@
                         }
                     });
                     
-                    // Skrytý select vyvolá událost pro aktualizaci vizuálního UI custom dropdownu
                     select.dispatchEvent(new Event('custom-update'));
                 });
             }
@@ -496,7 +371,6 @@
                         wrapper.classList.toggle('open');
                     });
                     
-                    // Listener pro vnější změny
                     select.addEventListener('custom-update', () => {
                         const opt = select.options[select.selectedIndex];
                         if(opt && opt.value !== "") {
@@ -549,7 +423,7 @@
                     mode: "no-cors"
                 });
 
-                document.getElementById("vysledek").innerHTML = "<h3 style='color: var(--accent-green);'>Děkujeme! Tip byl úspěšně odeslán.</h3>";
+                document.getElementById("vysledek").innerHTML = "<h3 style='color: var(--accent-primary);'>Děkujeme! Tip byl úspěšně odeslán.</h3>";
                 this.reset();
                 setTimeout(() => { 
                     aktualizujDropdowny(); 
