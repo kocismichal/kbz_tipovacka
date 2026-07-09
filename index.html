@@ -40,7 +40,7 @@
         .logo-text { font-family: 'Oswald', sans-serif; font-size: 2.8rem; text-transform: uppercase; letter-spacing: 1px; }
         .logo-text span { color: var(--accent-blue); }
 
-        .main-nav { display: flex; justify-content: center; gap: 30px; margin-bottom: 40px; font-family: 'Oswald', sans-serif; font-size: 1.3rem; text-transform: uppercase; }
+        .main-nav { display: flex; justify-content: center; gap: 30px; margin-bottom: 40px; font-family: 'Oswald', sans-serif; font-size: 1.3rem; text-transform: uppercase; flex-wrap: wrap;}
         .main-nav a { color: var(--text-muted); text-decoration: none; padding-bottom: 5px; transition: color 0.3s; }
         .main-nav a:hover { color: #fff; }
         .main-nav a.active { color: var(--accent-blue); border-bottom: 3px solid var(--accent-blue); }
@@ -244,10 +244,7 @@
             <div class="logo-text">KBZ <span>TIPOVAČKA</span></div>
         </header>
         
-        <div class="main-nav">
-            <a href="index.html" class="active">Chance liga</a>
-            <a href="druha_liga.html">Chance národní liga</a>
-        </div>
+        <div id="menu-container"></div>
 
         <div class="stats-header">
             <div class="stat-item">
@@ -309,12 +306,10 @@
     <div class="modal-overlay" id="playerModal" onclick="zavriModal(event)">
         <div class="modal-card">
             <i class="fas fa-times close-btn" onclick="document.getElementById('playerModal').style.display='none'"></i>
-            
             <div class="modal-header">
                 <div class="modal-avatar" id="modalMainAvatar">--</div>
                 <div class="modal-name" id="modalName">Jméno Hráče</div>
             </div>
-            
             <div class="modal-content">
                 <div class="modal-stats">
                     <div class="modal-stat-box box-highlight">
@@ -352,12 +347,10 @@
     <div class="modal-overlay" id="spravneModal" onclick="zavriModalSpravne(event)">
         <div class="modal-card">
             <i class="fas fa-times close-btn" onclick="document.getElementById('spravneModal').style.display='none'"></i>
-            
             <div class="modal-header">
                 <div class="modal-avatar" style="background: var(--accent-yellow); color: var(--bg-main);"><i class="fas fa-check"></i></div>
                 <div class="modal-name">Správné odpovědi a bodování</div>
             </div>
-            
             <div class="modal-content">
                 <div class="modal-subtitle">Systém bodování</div>
                 <div class="scoring-info">
@@ -396,10 +389,8 @@
                         </ul>
                     </div>
                 </div>
-
                 <div class="modal-subtitle">Aktuální oficiální pořadí týmů</div>
                 <div class="teams-grid-8x2" id="modalSpravneTeams"></div>
-
                 <div class="modal-subtitle">Správné odpovědi na bonusy</div>
                 <div class="bonus-list" id="modalSpravneBonuses"></div>
             </div>
@@ -409,18 +400,15 @@
     <div class="modal-overlay" id="prehledModal" onclick="zavriModalPrehled(event)">
         <div class="modal-card modal-wide">
             <i class="fas fa-times close-btn" onclick="document.getElementById('prehledModal').style.display='none'"></i>
-            
             <div class="modal-header">
                 <div class="modal-avatar" style="background: var(--accent-blue); color: var(--bg-main);"><i class="fas fa-chart-bar"></i></div>
                 <div class="modal-name">Přehled všech tipů</div>
             </div>
-            
             <div class="modal-content">
                 <div class="tabs" style="margin-top: 10px; margin-bottom: 30px;">
                     <button class="tab-btn active" id="btn-prehled-umisteni" onclick="zmenPrehledSekci('umisteni')">Umístění týmů</button>
                     <button class="tab-btn" id="btn-prehled-bonusy" onclick="zmenPrehledSekci('bonusy')">Bonusové otázky</button>
                 </div>
-                
                 <div id="sekce-prehled-umisteni">
                     <div class="tabs" style="margin-bottom: 20px;">
                         <button class="tab-btn active" style="font-size: 0.85rem; padding: 8px 16px;" id="btn-prehled-cisla" onclick="vykresliPrehledMatrix('cisla')">Absolutní počty</button>
@@ -429,7 +417,6 @@
                     <div class="modal-subtitle">Rozložení tipů na konečné umístění</div>
                     <div class="matrix-container" id="prehled-matrix"></div>
                 </div>
-
                 <div id="sekce-prehled-bonusy" style="display: none;">
                     <div id="prehled-bonusy"></div>
                     <div class="modal-subtitle" style="margin-top: 40px;">Nejvíce tipovaní střelci (TOP 10)</div>
@@ -440,6 +427,29 @@
     </div>
 
     <script>
+        // --- DYNAMICKÉ NAČTENÍ MENU ---
+        fetch('menu.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('menu-container').innerHTML = data;
+                const path = window.location.pathname;
+                const page = path.split("/").pop() || "index.html";
+                const links = document.querySelectorAll('#menu-container a');
+                links.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === page) {
+                        link.classList.add('active');
+                    }
+                });
+            })
+            .catch(error => console.error('Chyba při načítání menu:', error));
+
+        // Funkce pro zkratku v menu
+        function vyhodnotZimniPripravu() {
+            console.log("Vyhodnocuji zimní přípravu...");
+            alert("Vyhodnocení zimní přípravy spuštěno!");
+        }
+
         const urlPrehled = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=1446924552&single=true&output=csv';
         const urlTipy = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=0&single=true&output=csv';
         const urlKontrola = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=1129220254&single=true&output=csv';
@@ -522,7 +532,6 @@
             return getInitials(name);
         }
 
-        // CSV Parser, který nyní uchovává všechny řádky, včetně prázdných, pro přesné číslování indexů!
         function parseCSVData(text) {
             const rows = [];
             let currentRow = [];
@@ -546,7 +555,7 @@
                 } else if ((char === '\n' || char === '\r') && !insideQuotes) {
                     if (char === '\r' && nextChar === '\n') i++; 
                     currentRow.push(currentCell.trim());
-                    rows.push(currentRow); // Vkládáme vždy, i prázdné, abychom neztratili indexování Excelu!
+                    rows.push(currentRow); 
                     currentRow = [];
                     currentCell = '';
                 } else {
@@ -788,7 +797,6 @@
             document.getElementById('modalPtsTotal').innerText = hrac.celkem;
             document.getElementById('modalRankTotal').innerText = `${hrac.poradiCelkem}. místo`;
             
-            // Přehozené hodnoty Pořadí a Body
             document.getElementById('modalPtsUmisteni').innerText = hrac.bodyUmisteni;
             document.getElementById('modalRankUmisteni').innerText = `${hrac.poradiUmisteni}`;
             document.getElementById('modalPtsBonus').innerText = hrac.bodyBonus;
@@ -926,7 +934,6 @@
             document.getElementById('spravneModal').style.display = 'flex';
         }
 
-        // --- ZÁLOŽKY V PŘEHLEDU ---
         function zmenPrehledSekci(sekce) {
             document.getElementById('btn-prehled-umisteni').classList.toggle('active', sekce === 'umisteni');
             document.getElementById('btn-prehled-bonusy').classList.toggle('active', sekce === 'bonusy');
@@ -935,7 +942,6 @@
             document.getElementById('sekce-prehled-bonusy').style.display = sekce === 'bonusy' ? 'block' : 'none';
         }
 
-        // --- PŘEHLED VŠECH TIPŮ ---
         function otevriModalPrehled() {
             if (dataVyskytParsed.length === 0) {
                 alert("Data pro přehled tipů se nepodařilo načíst.");
@@ -996,7 +1002,6 @@
                     vsechnyTymoveRadky.push(row);
                 }
             });
-            // Druhá 16-tka týmů je na indexech 16 až 31 (odpovídá řádkům 33 až 48)
             let bonusTymoveRadky = vsechnyTymoveRadky.slice(16, 32);
 
             let html = '';
@@ -1020,7 +1025,6 @@
 
         function vykresliPrehledStrelci() {
             let strelci = [];
-            // Sloupec S má index 18. Teď přesně a spolehlivě od Excelového řádku 52 (index 51)
             for(let r = 51; r < dataVyskytParsed.length; r++) {
                 const rowData = dataVyskytParsed[r];
                 if(rowData && rowData[18] && rowData[18].trim() !== '') {
