@@ -40,7 +40,7 @@
         .logo-text { font-family: 'Oswald', sans-serif; font-size: 3.5rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-main); text-shadow: 0 0 15px rgba(255,215,0,0.2); }
         .logo-text span { color: var(--accent-yellow); }
         
-        .main-nav { display: flex; justify-content: center; gap: 30px; margin-bottom: 40px; font-family: 'Oswald', sans-serif; font-size: 1.3rem; text-transform: uppercase; }
+        .main-nav { display: flex; justify-content: center; gap: 30px; margin-bottom: 40px; font-family: 'Oswald', sans-serif; font-size: 1.3rem; text-transform: uppercase; flex-wrap: wrap;}
         .main-nav a { color: var(--text-muted); text-decoration: none; padding-bottom: 5px; transition: color 0.3s; }
         .main-nav a:hover { color: #fff; }
         .main-nav a.active { color: var(--accent-blue); border-bottom: 3px solid var(--accent-blue); }
@@ -243,10 +243,8 @@
         <header>
             <div class="logo-text">KBZ <span>TIPOVAČKA</span></div>
         </header>
-        <div class="main-nav">
-            <a href="index.html">Chance liga</a>
-            <a href="druha_liga.html" class="active">Chance národní liga</a>
-        </div>
+        
+        <div id="menu-container"></div>
 
         <div class="stats-header">
             <div class="stat-item">
@@ -351,12 +349,10 @@
     <div class="modal-overlay" id="spravneModal" onclick="zavriModalSpravne(event)">
         <div class="modal-card">
             <i class="fas fa-times close-btn" onclick="document.getElementById('spravneModal').style.display='none'"></i>
-            
             <div class="modal-header">
                 <div class="modal-avatar" style="background: var(--accent-yellow); color: var(--bg-main);"><i class="fas fa-check"></i></div>
                 <div class="modal-name">Správné odpovědi a bodování</div>
             </div>
-            
             <div class="modal-content">
                 <div class="modal-subtitle">Systém bodování</div>
                 <div class="scoring-info">
@@ -395,10 +391,8 @@
                         </ul>
                     </div>
                 </div>
-
                 <div class="modal-subtitle">Aktuální oficiální pořadí týmů</div>
                 <div class="teams-grid-8x2" id="modalSpravneTeams"></div>
-
                 <div class="modal-subtitle">Správné odpovědi na bonusy</div>
                 <div class="bonus-list" id="modalSpravneBonuses"></div>
             </div>
@@ -408,18 +402,15 @@
     <div class="modal-overlay" id="prehledModal" onclick="zavriModalPrehled(event)">
         <div class="modal-card modal-wide">
             <i class="fas fa-times close-btn" onclick="document.getElementById('prehledModal').style.display='none'"></i>
-            
             <div class="modal-header">
                 <div class="modal-avatar" style="background: var(--accent-blue); color: var(--bg-main);"><i class="fas fa-chart-bar"></i></div>
                 <div class="modal-name">Přehled všech tipů (2. liga)</div>
             </div>
-            
             <div class="modal-content">
                 <div class="tabs" style="margin-top: 10px; margin-bottom: 30px;">
                     <button class="tab-btn active" id="btn-prehled-umisteni" onclick="zmenPrehledSekci('umisteni')">Umístění týmů</button>
                     <button class="tab-btn" id="btn-prehled-bonusy" onclick="zmenPrehledSekci('bonusy')">Bonusové otázky</button>
                 </div>
-                
                 <div id="sekce-prehled-umisteni">
                     <div class="tabs" style="margin-bottom: 20px;">
                         <button class="tab-btn active" style="font-size: 0.85rem; padding: 8px 16px;" id="btn-prehled-cisla" onclick="vykresliPrehledMatrix('cisla')">Absolutní počty</button>
@@ -428,7 +419,6 @@
                     <div class="modal-subtitle">Rozložení tipů na konečné umístění</div>
                     <div class="matrix-container" id="prehled-matrix"></div>
                 </div>
-
                 <div id="sekce-prehled-bonusy" style="display: none;">
                     <div id="prehled-bonusy"></div>
                     <div class="modal-subtitle" style="margin-top: 40px;">Nejvíce tipovaní střelci (TOP 10)</div>
@@ -439,6 +429,29 @@
     </div>
 
     <script>
+        // --- DYNAMICKÉ NAČTENÍ MENU ---
+        fetch('menu.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('menu-container').innerHTML = data;
+                const path = window.location.pathname;
+                const page = path.split("/").pop() || "index.html";
+                const links = document.querySelectorAll('#menu-container a');
+                links.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === page) {
+                        link.classList.add('active');
+                    }
+                });
+            })
+            .catch(error => console.error('Chyba při načítání menu:', error));
+
+        // Funkce pro zkratku v menu
+        function vyhodnotZimniPripravu() {
+            console.log("Vyhodnocuji zimní přípravu...");
+            alert("Vyhodnocení zimní přípravy spuštěno!");
+        }
+
         // Odkazy pro druhou ligu
         const urlPrehled = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8xwUPtx_tkcu5fvjAtnsQIWHaJopVt6wgdGLu2qIk42xqr7GreVPUpprKf6IPIpqoJSMwoZa8xNu7/pub?gid=1446924552&single=true&output=csv';
         const urlTipy = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8xwUPtx_tkcu5fvjAtnsQIWHaJopVt6wgdGLu2qIk42xqr7GreVPUpprKf6IPIpqoJSMwoZa8xNu7/pub?gid=0&single=true&output=csv';
@@ -446,7 +459,6 @@
         const urlHotovo = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8xwUPtx_tkcu5fvjAtnsQIWHaJopVt6wgdGLu2qIk42xqr7GreVPUpprKf6IPIpqoJSMwoZa8xNu7/pub?gid=1661482320&single=true&output=csv';
         const urlVyskyt = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8xwUPtx_tkcu5fvjAtnsQIWHaJopVt6wgdGLu2qIk42xqr7GreVPUpprKf6IPIpqoJSMwoZa8xNu7/pub?gid=236934267&single=true&output=csv';
 
-        // Slovník log pro obě ligy
         const teamLogos = {
             "Slavia Praha": "https://i.imgur.com/g1Zkhwg.png",
             "Sparta Praha": "https://i.imgur.com/NlyfFAC.png",
@@ -483,7 +495,6 @@
             "České Budějovice": "https://i.imgur.com/yUpY8bX.png"
         };
 
-        // Texty bonusových otázek upraveny na 6 otázek pro 2. ligu
         const bonusQuestionsText = [
             "Baráž postup?",
             "Počet bodů mistra?",
@@ -517,19 +528,18 @@
             return '';
         }
 
-        // Noví Zajíci pro 2. ligu a jejich avataři
         function getAvatarHTML(name, puvodniIndex) {
             const cleanName = name.toLowerCase();
-            if (cleanName.includes("podroužek") || puvodniIndex === 1) { // Řádek 2 (index 1)
+            if (cleanName.includes("podroužek") || puvodniIndex === 1) {
                 return '<img src="podry.png" alt="Jan Podroužek" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
             }
-            if (cleanName.includes("sodoma") || puvodniIndex === 2) { // Řádek 3 (index 2)
+            if (cleanName.includes("sodoma") || puvodniIndex === 2) {
                 return '<img src="sodoma.png" alt="sodoma" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
             }
-            if (cleanName.includes("dvorka") || puvodniIndex === 3) { // Řádek 4 (index 3)
+            if (cleanName.includes("dvorka") || puvodniIndex === 3) {
                 return '<img src="dvorka.png" alt="dvorka" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
             }
-            if (cleanName.includes("lars") || puvodniIndex === 4) { // Řádek 5 (index 4)
+            if (cleanName.includes("lars") || puvodniIndex === 4) {
                 return '<img src="lars.png" alt="lars" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
             }
             return getInitials(name);
@@ -558,7 +568,7 @@
                 } else if ((char === '\n' || char === '\r') && !insideQuotes) {
                     if (char === '\r' && nextChar === '\n') i++; 
                     currentRow.push(currentCell.trim());
-                    rows.push(currentRow); // Vkládáme vždy, i prázdné
+                    rows.push(currentRow);
                     currentRow = [];
                     currentCell = '';
                 } else {
@@ -624,12 +634,12 @@
                         puvodniIndex: i, 
                         jmeno: jmeno,
                         oblubenyKlub: oblubenyKlub,
-                        bodyUmisteni: vycistiCislo(bunkyP[39]), // AN
-                        bodyBonus: vycistiCislo(bunkyP[40]),    // AO
-                        celkem: vycistiCislo(bunkyP[41]),       // AP
-                        poradiUmisteni: parseInt(bunkyP[42].replace(/"/g, '')) || 999, // AQ
-                        poradiBonus: parseInt(bunkyP[43].replace(/"/g, '')) || 999,    // AR
-                        poradiCelkem: parseInt(bunkyP[44].replace(/"/g, '')) || 999,   // AS
+                        bodyUmisteni: vycistiCislo(bunkyP[39]), 
+                        bodyBonus: vycistiCislo(bunkyP[40]),    
+                        celkem: vycistiCislo(bunkyP[41]),       
+                        poradiUmisteni: parseInt(bunkyP[42].replace(/"/g, '')) || 999, 
+                        poradiBonus: parseInt(bunkyP[43].replace(/"/g, '')) || 999,    
+                        poradiCelkem: parseInt(bunkyP[44].replace(/"/g, '')) || 999,
                         tipyData: bunkyT,
                         kontrolaData: bunkyK
                     });
@@ -644,7 +654,6 @@
             const container = document.getElementById('zajici-container');
             container.innerHTML = '';
             
-            // Nové indexy pro VIP Zajíce z 2. ligy (původní řádky 2, 3, 4, 5 odpovídají indexům 1, 2, 3, 4)
             const hledaneIndexy = [1, 2, 3, 4]; 
             const zajici = vsichniHraci.filter(h => hledaneIndexy.includes(h.puvodniIndex));
 
@@ -695,389 +704,4 @@
             if (tabName === 'umisteni') {
                 hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za umístění</th>';
             } else if (tabName === 'bonusy') {
-                hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za bonusové otázky</th>';
-            } else { 
-                hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za pořadí</th><th style="text-align:right;">Body za bonusy</th><th style="text-align:right;">Celkem bodů</th>';
-            }
-            vykresliTabulku();
-        }
-
-        function vykresliTabulku() {
-            const tbody = document.getElementById('tabulka-telo');
-            tbody.innerHTML = '';
-            let data = [...vsichniHraci];
-
-            if (aktivniZalozka === 'umisteni') { data.sort((a, b) => a.poradiUmisteni - b.poradiUmisteni); } 
-            else if (aktivniZalozka === 'bonusy') { data.sort((a, b) => a.poradiBonus - b.poradiBonus); } 
-            else { data.sort((a, b) => a.poradiCelkem - b.poradiCelkem); }
-
-            document.getElementById('count-players').innerText = data.length;
-
-            data.forEach(hrac => {
-                const tr = document.createElement('tr');
-                tr.onclick = () => otevriModal(hrac); 
-
-                let poradi = 0; let bodyZobrazeni = 0;
-                if (aktivniZalozka === 'umisteni') { poradi = hrac.poradiUmisteni; bodyZobrazeni = hrac.bodyUmisteni; } 
-                else if (aktivniZalozka === 'bonusy') { poradi = hrac.poradiBonus; bodyZobrazeni = hrac.bodyBonus; } 
-                else { poradi = hrac.poradiCelkem; bodyZobrazeni = hrac.celkem; }
-
-                let colorClass = poradi === 1 ? 'color: var(--accent-yellow); font-weight: bold;' : '';
-
-                let bodySloupceHtml = '';
-                if (aktivniZalozka === 'celkem') {
-                    bodySloupceHtml = `
-                        <td class="sub-points-col">${hrac.bodyUmisteni}</td>
-                        <td class="sub-points-col">${hrac.bodyBonus}</td>
-                        <td class="points-col">${bodyZobrazeni}</td>
-                    `;
-                } else {
-                    bodySloupceHtml = `<td class="points-col">${bodyZobrazeni}</td>`;
-                }
-
-                tr.innerHTML = `
-                    <td class="rank-col" style="${colorClass}">${poradi}.</td>
-                    <td style="font-weight: 600;">${hrac.jmeno} ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}</td>
-                    ${bodySloupceHtml}
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function hledejHrace() {
-            const inputValue = odstranDiakritiku(document.getElementById('searchInput').value.toLowerCase());
-            const resultBox = document.getElementById('searchResults');
-            resultBox.innerHTML = '';
-            if (inputValue.length < 1) { resultBox.style.display = 'none'; return; }
-
-            const shody = vsichniHraci.filter(h => odstranDiakritiku(h.jmeno.toLowerCase()).includes(inputValue));
-            
-            if (shody.length > 0) {
-                resultBox.style.display = 'block';
-                shody.forEach(hrac => {
-                    const div = document.createElement('div');
-                    div.className = 'autocomplete-item';
-                    
-                    const cleanName = hrac.jmeno.toLowerCase();
-                    const isCustomAvatar = cleanName.includes("podroužek") || cleanName.includes("sodoma") || cleanName.includes("dvorka") || cleanName.includes("lars");
-                    const bgStyle = isCustomAvatar ? 'background: transparent;' : 'background: linear-gradient(135deg, #ff4d29, #ffd700);';
-
-                    div.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <div style="width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:bold; overflow:hidden; color:#fff; flex-shrink:0; ${bgStyle}">
-                                ${getAvatarHTML(hrac.jmeno, hrac.puvodniIndex)}
-                            </div>
-                            <span><strong>${hrac.jmeno}</strong> ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}</span>
-                        </div> 
-                        <span style="color:var(--accent-yellow); font-size:0.9rem;">${hrac.celkem} b.</span>`;
-                    
-                    div.onclick = () => {
-                        document.getElementById('searchInput').value = '';
-                        resultBox.style.display = 'none';
-                        otevriModal(hrac);
-                    };
-                    resultBox.appendChild(div);
-                });
-            } else {
-                resultBox.style.display = 'block';
-                resultBox.innerHTML = '<div class="autocomplete-item" style="color:var(--text-muted); cursor:default;">Nikdo nenalezen</div>';
-            }
-        }
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.search-container')) { document.getElementById('searchResults').style.display = 'none'; }
-        });
-
-        function otevriModal(hrac) {
-            const avatarDiv = document.getElementById('modalMainAvatar');
-            const cleanName = hrac.jmeno.toLowerCase();
-            const isCustomAvatar = cleanName.includes("podroužek") || cleanName.includes("sodoma") || cleanName.includes("dvorka") || cleanName.includes("lars");
-            
-            avatarDiv.style.background = isCustomAvatar ? 'transparent' : 'linear-gradient(135deg, #ff4d29, #ffd700)';
-            avatarDiv.innerHTML = getAvatarHTML(hrac.jmeno, hrac.puvodniIndex);
-            
-            document.getElementById('modalName').innerHTML = `${hrac.jmeno} ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}`;
-            
-            document.getElementById('modalPtsTotal').innerText = hrac.celkem;
-            document.getElementById('modalRankTotal').innerText = `${hrac.poradiCelkem}. místo`;
-            document.getElementById('modalPtsUmisteni').innerText = hrac.bodyUmisteni;
-            document.getElementById('modalRankUmisteni').innerText = hrac.poradiUmisteni;
-            document.getElementById('modalPtsBonus').innerText = hrac.bodyBonus;
-            document.getElementById('modalRankBonus').innerText = hrac.poradiBonus;
-
-            const officialTeamsContainer = document.getElementById('modalOfficialTeams');
-            officialTeamsContainer.innerHTML = '';
-            
-            const userTeamsContainer = document.getElementById('modalUserTeams');
-            userTeamsContainer.innerHTML = '';
-            
-            let pocetPresnychTipuTymu = 0;
-
-            if (hrac.tipyData.length > 0 && hrac.kontrolaData.length > 0 && spravneOdpovediRow.length > 0) {
-                for (let j = 4; j <= 19; j++) {
-                    const ofikoTym = spravneOdpovediRow[j] ? spravneOdpovediRow[j].replace(/"/g, '').trim() : '';
-                    const ofikoLogo = teamLogos[ofikoTym] || 'https://i.imgur.com/8N4Jp62.png';
-                    
-                    officialTeamsContainer.innerHTML += `
-                        <div class="team-col" style="justify-content: flex-start; padding-top: 15px;">
-                            <span class="t-pos">${j - 3}.</span>
-                            <img src="${ofikoLogo}" alt="${ofikoTym}" class="t-logo" title="${ofikoTym}">
-                        </div>
-                    `;
-
-                    const tipTym = hrac.tipyData[j] ? hrac.tipyData[j].replace(/"/g, '').trim() : '';
-                    const tipLogo = teamLogos[tipTym] || 'https://i.imgur.com/8N4Jp62.png';
-                    const ziskaneBody = hrac.kontrolaData[j] ? hrac.kontrolaData[j].replace(/"/g, '').trim() : '0';
-                    const ptsColor = (ziskaneBody === "10" || ziskaneBody === "8" || ziskaneBody === "6" || ziskaneBody === "4" || ziskaneBody === "2") ? 'pts-high' : 'pts-zero';
-
-                    if (ziskaneBody === "10") {
-                        pocetPresnychTipuTymu++;
-                    }
-
-                    userTeamsContainer.innerHTML += `
-                        <div class="team-col">
-                            <span class="t-pos">${j - 3}.</span>
-                            <img src="${tipLogo}" alt="${tipTym}" class="t-logo" title="${tipTym}">
-                            <span class="t-pts ${ptsColor}">${ziskaneBody}b</span>
-                        </div>
-                    `;
-                }
-            } else {
-                const err = '<span style="color:var(--text-muted); padding:10px;">Data se nepodařilo načíst.</span>';
-                officialTeamsContainer.innerHTML = err;
-                userTeamsContainer.innerHTML = err;
-            }
-
-            let nasobek = 1.0;
-            if (pocetPresnychTipuTymu >= 14) nasobek = 1.3;
-            else if (pocetPresnychTipuTymu >= 11) nasobek = 1.2;
-            else if (pocetPresnychTipuTymu >= 8) nasobek = 1.1;
-
-            let nasobekBarva = nasobek > 1.0 ? 'var(--accent-yellow)' : 'var(--text-muted)';
-            let nasobekCislo = nasobek.toFixed(1).replace('.', ',');
-            let nasobekHtml = `<span style="color: ${nasobekBarva}; font-size: 0.85rem; margin-left: 8px; border: 1px solid ${nasobekBarva}; padding: 3px 8px; border-radius: 6px; font-weight: bold; background: rgba(255,215,0,0.05); white-space: nowrap;">${nasobekCislo}x násobek bodů</span>`;
-
-            document.getElementById('modalUserTeamsTitle').innerHTML = `Tvoje tipy na umístění <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal; margin-left: 5px;">(vč. získaných bodů)</span> ${nasobekHtml}`;
-
-            const bonusesContainer = document.getElementById('modalBonuses');
-            bonusesContainer.innerHTML = '';
-
-            // 6 bonusových otázek pro 2. ligu v indexech V až AA (21 až 26)
-            if (hrac.tipyData.length > 0 && hrac.kontrolaData.length > 0) {
-                for (let k = 0; k < 6; k++) {
-                    const colIndex = 21 + k;
-                    const tipOdpoved = hrac.tipyData[colIndex] ? hrac.tipyData[colIndex].replace(/"/g, '').trim() : 'Nevyplněno';
-                    const ziskaneBody = hrac.kontrolaData[colIndex] ? hrac.kontrolaData[colIndex].replace(/"/g, '').trim() : '0';
-                    const spravnaOdpoved = spravneOdpovediRow[colIndex] ? spravneOdpovediRow[colIndex].replace(/"/g, '').trim() : 'Zatím neznámá';
-                    
-                    const ptsColor = parseInt(ziskaneBody) > 0 ? 'color: var(--accent-green);' : 'color: var(--text-muted);';
-
-                    bonusesContainer.innerHTML += `
-                        <div class="bonus-item">
-                            <div class="bonus-text">
-                                <div class="b-question">${bonusQuestionsText[k]} <span style="color: var(--accent-yellow); font-style: italic; font-weight: 600; margin-left: 3px;">(${spravnaOdpoved})</span></div>
-                                <div class="b-answer">${tipOdpoved}</div>
-                            </div>
-                            <div class="b-pts" style="${ptsColor}">${ziskaneBody}</div>
-                        </div>
-                    `;
-                }
-            } else {
-                bonusesContainer.innerHTML = '<span style="color:var(--text-muted); padding:20px;">Bonusy se nepodařilo načíst.</span>';
-            }
-
-            document.getElementById('playerModal').querySelector('.modal-card').scrollTop = 0;
-            document.getElementById('playerModal').style.display = 'flex';
-        }
-
-        function otevriModalSpravne() {
-            const teamsContainer = document.getElementById('modalSpravneTeams');
-            const bonusesContainer = document.getElementById('modalSpravneBonuses');
-            
-            teamsContainer.innerHTML = '';
-            bonusesContainer.innerHTML = '';
-
-            if (spravneOdpovediRow.length >= 20) {
-                for (let j = 4; j <= 19; j++) {
-                    const spravnyTym = spravneOdpovediRow[j] ? spravneOdpovediRow[j].replace(/"/g, '').trim() : '';
-                    const logoUrl = teamLogos[spravnyTym] || 'https://i.imgur.com/8N4Jp62.png';
-
-                    teamsContainer.innerHTML += `
-                        <div class="team-col" style="justify-content: flex-start; padding-top: 15px;">
-                            <span class="t-pos">${j - 3}.</span>
-                            <img src="${logoUrl}" alt="${spravnyTym}" class="t-logo" title="${spravnyTym}">
-                        </div>
-                    `;
-                }
-                
-                // 6 bonusových otázek pro 2. ligu v indexech V až AA (21 až 26)
-                for (let k = 0; k < 6; k++) {
-                    const colIndex = 21 + k;
-                    const spravnaOdpoved = spravneOdpovediRow[colIndex] ? spravneOdpovediRow[colIndex].replace(/"/g, '').trim() : 'Zatím neznámá';
-                    
-                    const rightIcon = teamLogos[spravnaOdpoved] 
-                        ? `<img src="${teamLogos[spravnaOdpoved]}" style="width:32px; height:32px; object-fit:contain;" alt="${spravnaOdpoved}">` 
-                        : ``;
-
-                    bonusesContainer.innerHTML += `
-                        <div class="bonus-item" style="border-color: rgba(255,215,0,0.2);">
-                            <div class="bonus-text">
-                                <div class="b-question">${bonusQuestionsText[k]}</div>
-                                <div class="b-answer" style="color: var(--accent-yellow);">${spravnaOdpoved}</div>
-                            </div>
-                            <div class="b-pts" style="display:flex; align-items:center;">${rightIcon}</div>
-                        </div>
-                    `;
-                }
-            } else {
-                const errorMsg = '<span style="color:var(--text-muted); padding:20px; text-align:center; width:100%; display:block;">Odpovědi zatím nejsou vyplněny.</span>';
-                teamsContainer.innerHTML = errorMsg;
-                bonusesContainer.innerHTML = errorMsg;
-            }
-
-            document.getElementById('spravneModal').querySelector('.modal-card').scrollTop = 0;
-            document.getElementById('spravneModal').style.display = 'flex';
-        }
-
-        // --- ZÁLOŽKY V PŘEHLEDU ---
-        function zmenPrehledSekci(sekce) {
-            document.getElementById('btn-prehled-umisteni').classList.toggle('active', sekce === 'umisteni');
-            document.getElementById('btn-prehled-bonusy').classList.toggle('active', sekce === 'bonusy');
-            
-            document.getElementById('sekce-prehled-umisteni').style.display = sekce === 'umisteni' ? 'block' : 'none';
-            document.getElementById('sekce-prehled-bonusy').style.display = sekce === 'bonusy' ? 'block' : 'none';
-        }
-
-        // --- PŘEHLED VŠECH TIPŮ ---
-        function otevriModalPrehled() {
-            if (dataVyskytParsed.length === 0) {
-                alert("Data pro přehled tipů se nepodařilo načíst.");
-                return;
-            }
-            zmenPrehledSekci('umisteni');
-            vykresliPrehledMatrix('cisla');
-            vykresliPrehledBonusy();
-            vykresliPrehledStrelci();
-            
-            document.getElementById('prehledModal').querySelector('.modal-card').scrollTop = 0;
-            document.getElementById('prehledModal').style.display = 'flex';
-        }
-
-        function vykresliPrehledMatrix(mod) {
-            const isProc = mod === 'procenta';
-            
-            document.getElementById('btn-prehled-cisla').classList.toggle('active', !isProc);
-            document.getElementById('btn-prehled-procenta').classList.toggle('active', isProc);
-            
-            let html = `<table><thead><tr><th>Tým</th>`;
-            for(let i=1; i<=16; i++) html += `<th>${i}.</th>`;
-            html += `</tr></thead><tbody>`;
-
-            for (let r = 1; r <= 16; r++) {
-                const rowData = dataVyskytParsed[r];
-                if(!rowData) continue;
-                const tym = rowData[0];
-                const logo = teamLogos[tym] || 'https://i.imgur.com/8N4Jp62.png';
-                
-                html += `<tr><td style="position:sticky;left:0;background:#111722;z-index:20;text-align:center;"><img src="${logo}" style="width:28px;height:28px;object-fit:contain;" title="${tym}"></td>`;
-                
-                for(let c = 1; c <= 16; c++) {
-                    const val = isProc ? rowData[c+18] : rowData[c];
-                    const isZero = !val || val === '0' || val === '0%';
-                    html += `<td style="text-align:center; color:${isZero ? 'var(--text-muted)' : 'var(--accent-yellow)'}">${val || '-'}</td>`;
-                }
-                html += `</tr>`;
-            }
-            html += `</tbody></table>`;
-            document.getElementById('prehled-matrix').innerHTML = html;
-        }
-
-        function vykresliPrehledBonusy() {
-            // Pro 2. ligu: 6 otázek ve sloupcích B až G (indexy 1 až 6)
-            const bonusColsMapping = [
-                { col: 1, title: "Baráž postup?" },
-                { col: 2, title: "Počet bodů mistra?" },
-                { col: 3, title: "Rozdíl 1. a 2. místa?" },
-                { col: 4, title: "Počet bodů sestupujícího?" },
-                { col: 5, title: "Nejlepší střelec:" },
-                { col: 6, title: "Počet gólů střelce?" }
-            ];
-
-            // Odfiltrovat jen řádky týmů z prvního sloupce pro bonusovou matrix
-            let vsechnyTymoveRadky = [];
-            dataVyskytParsed.forEach((row) => {
-                if (row && row[0] && teamLogos[row[0].trim()]) {
-                    vsechnyTymoveRadky.push(row);
-                }
-            });
-            // Druhá 16-tka týmů je na indexech 16 až 31
-            let bonusTymoveRadky = vsechnyTymoveRadky.slice(16, 32);
-
-            let html = '';
-            bonusColsMapping.forEach(bq => {
-                html += `<div class="modal-subtitle" style="margin-top: 30px;">${bq.title}</div><div class="teams-grid-8x2">`;
-                
-                bonusTymoveRadky.forEach(rowData => {
-                    const tym = rowData[0].trim();
-                    const val = rowData[bq.col];
-                    const logo = teamLogos[tym] || 'https://i.imgur.com/8N4Jp62.png';
-                    
-                    html += `<div class="team-col">
-                                <img src="${logo}" class="t-logo" title="${tym}">
-                                <span class="t-pts" style="color:var(--accent-yellow); font-size:1.1rem;">${val || '0'}</span>
-                             </div>`;
-                });
-                html += `</div>`;
-            });
-            document.getElementById('prehled-bonusy').innerHTML = html;
-        }
-
-        function vykresliPrehledStrelci() {
-            let strelci = [];
-            // Sloupec S má index 18.
-            for(let r = 51; r < dataVyskytParsed.length; r++) {
-                const rowData = dataVyskytParsed[r];
-                if(rowData && rowData[18] && rowData[18].trim() !== '') {
-                    strelci.push(rowData[18].trim());
-                }
-            }
-            
-            let html = '<div class="bonus-list">';
-            strelci.slice(0, 10).forEach((s, idx) => {
-                let jmeno = s;
-                let pocet = "";
-                const match = s.match(/(.*?)\((.*?)\)/);
-                if (match) {
-                    jmeno = match[1].trim();
-                    pocet = match[2].trim();
-                }
-
-                html += `
-                    <div class="bonus-item">
-                        <div class="bonus-text">
-                            <div class="b-answer" style="font-size: 1.1rem;">${idx + 1}. ${jmeno}</div>
-                        </div>
-                        <div class="b-pts" style="color: var(--accent-yellow);">${pocet}</div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            document.getElementById('prehled-strelci').innerHTML = html;
-        }
-
-        function zavriModal(event) {
-            if (event.target.id === 'playerModal') document.getElementById('playerModal').style.display = 'none';
-        }
-
-        function zavriModalSpravne(event) {
-            if (event.target.id === 'spravneModal') document.getElementById('spravneModal').style.display = 'none';
-        }
-        
-        function zavriModalPrehled(event) {
-            if (event.target.id === 'prehledModal') document.getElementById('prehledModal').style.display = 'none';
-        }
-
-        document.addEventListener('DOMContentLoaded', nactiData);
-    </script>
-</body>
-</html>
+                hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body
