@@ -1,3 +1,77 @@
+/* --- UNIVERZÁLNÍ HORNÍ NAVIGAČNÍ LIŠTA --- */
+.main-navbar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: rgba(22, 29, 43, 0.95);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 10px 20px;
+    margin-bottom: 30px;
+    overflow-x: auto; /* Na mobilech umožní posouvání do stran */
+    white-space: nowrap;
+    scrollbar-width: none; /* Skryje posuvník ve Firefoxu */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+.main-navbar::-webkit-scrollbar { 
+    display: none; /* Skryje posuvník v Chrome/Safari */
+}
+
+.nav-home-btn {
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    color: #fff;
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: 0.3s;
+    flex-shrink: 0;
+}
+.nav-home-btn:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.nav-group-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.nav-group-links {
+    display: flex;
+    gap: 15px;
+}
+.nav-group-links a {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s, text-shadow 0.2s;
+}
+.nav-group-links a:hover {
+    opacity: 0.8;
+    text-shadow: 0 0 10px currentColor;
+}
+
+.nav-separator {
+    width: 1px;
+    height: 35px;
+    background-color: var(--border-color);
+    margin: 0 5px;
+    flex-shrink: 0;
+}
+
 /* ZÁKLADNÍ BARVY A PROMĚNNÉ */
 :root {
     --bg-main: #0b111e;
