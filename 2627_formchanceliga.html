@@ -263,6 +263,9 @@ fieldset legend {
                     </div>
 
                     <div id="dropdowns" class="dropdown-grid"></div>
+
+                    <div class="section-title" style="margin-top: 30px; border-top: 1px dashed var(--border-color); padding-top: 15px;">Tvůj aktuální tip pořadí</div>
+                    <div id="live-grid" class="history-grid"></div>
                 </fieldset>
 
                 <fieldset>
@@ -506,7 +509,44 @@ fieldset legend {
                     dropdownsDiv.appendChild(item);
                 }
             }
+            
+// Vytvoří prázdná políčka pro živý náhled (volá se na začátku)
+            function vytvorLiveGrid() {
+                const liveGridDiv = document.getElementById("live-grid");
+                liveGridDiv.innerHTML = "";
+                for (let i = 1; i <= 16; i++) {
+                    const teamDiv = document.createElement("div");
+                    teamDiv.className = "history-team";
+                    teamDiv.id = `live-pos-${i}`;
+                    // Šedý placeholder obrázek a snížená průhlednost dokud není vybráno
+                    teamDiv.innerHTML = `<span class="pos">${i}.</span><img src="https://i.imgur.com/8N4Jp62.png" alt="Zatím nevybráno" style="opacity: 0.2; transition: opacity 0.3s;">`;
+                    liveGridDiv.appendChild(teamDiv);
+                }
+            }
 
+            // Aktualizuje živý náhled na základě vybraných hodnot
+            function aktualizujLiveGrid() {
+                for (let i = 1; i <= 16; i++) {
+                    const select = document.querySelector(`select[name='misto${i}']`);
+                    const liveSlot = document.getElementById(`live-pos-${i}`);
+                    if (!liveSlot) continue;
+                    
+                    const img = liveSlot.querySelector('img');
+                    
+                    if (select && select.value && teamLogos[select.value]) {
+                        // Pokud je vybrán tým, zobraz jeho logo
+                        img.src = teamLogos[select.value];
+                        img.title = select.value;
+                        img.style.opacity = '1';
+                    } else {
+                        // Pokud není vybráno nic, vrať prázdný zástupný znak
+                        img.src = 'https://i.imgur.com/8N4Jp62.png';
+                        img.title = '';
+                        img.style.opacity = '0.2';
+                    }
+                }
+            }
+            
             function aktualizujDropdowny() {
                 const selecty = Array.from(document.querySelectorAll("select[name^='misto']"));
                 const tymPozice = {};
@@ -533,6 +573,7 @@ fieldset legend {
                     
                     select.dispatchEvent(new Event('custom-update'));
                 });
+                aktualizujLiveGrid();
             }
 
             function naplnitZakladniCastDropdown() {
@@ -695,6 +736,7 @@ fieldset legend {
             });
 
             vytvorDropdowny();
+            vytvorLiveGrid(); // PŘIDÁNO: Vytvoření prázdných oken živého náhledu
             naplnitZakladniCastDropdown();
             initCustomSelects();
         }
