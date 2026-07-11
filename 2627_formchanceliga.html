@@ -610,19 +610,20 @@ function aktualizujLiveGrid() {
 
         // LOGIKA OTEVŘENÍ / VYTVOŘENÍ POLOŽEK
         trigger.addEventListener('click', (e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // Zabrání tomu, aby se kliknutí propadlo do document.click
             document.querySelectorAll('.custom-select-wrapper').forEach(w => {
                 if(w !== wrapper) w.classList.remove('open');
             });
 
             optionsDiv.innerHTML = '';
             
-            // PŘIDÁNO: Pokud je už něco vybráno, přidáme nahoru možnost "Zrušit výběr"
+            // Pokud je už něco vybráno, přidáme nahoru možnost "Zrušit výběr"
             if (select.value !== "") {
                 const clearDiv = document.createElement('div');
                 clearDiv.className = 'custom-option';
                 clearDiv.innerHTML = `<i class="fas fa-times" style="color: var(--accent-red); margin-right: 8px; width: 22px; text-align: center;"></i> <strong style="color: var(--accent-red);">Zrušit výběr</strong>`;
-                clearDiv.addEventListener('click', () => {
+                clearDiv.addEventListener('click', (ev) => {
+                    ev.stopPropagation(); // Zabrání probliknutí
                     select.selectedIndex = 0; // Nastaví prázdnou volbu
                     select.dispatchEvent(new Event('change'));
                     trigger.innerHTML = '<span>-- Vyber tým --</span>';
@@ -662,15 +663,13 @@ function aktualizujLiveGrid() {
                 optDiv.innerHTML = `${logoHtml} ${opt.text}`;
                 
                 if(!opt.disabled) {
-                    optDiv.addEventListener('click', () => {
-                        // PŘIDÁNO: Pokud kliknu na ten tým, který už mám vybrán, odznačí se
-                        if (isCurrentSelection) {
-                            select.selectedIndex = 0;
-                            trigger.innerHTML = '<span>-- Vyber tým --</span>';
-                        } else {
-                            select.selectedIndex = index;
-                            trigger.innerHTML = `<span>${logoHtml} ${opt.text}</span>`;
-                        }
+                    optDiv.addEventListener('click', (ev) => {
+                        ev.stopPropagation(); // Zabrání okamžitému zavření celého dokumentu a chybám
+                        
+                        // Zvolí tým (i kdyby to byl ten samý, nic se neresetuje)
+                        select.selectedIndex = index;
+                        trigger.innerHTML = `<span>${logoHtml} ${opt.text}</span>`;
+                        
                         select.dispatchEvent(new Event('change'));
                         wrapper.classList.remove('open');
                         trigger.focus();
@@ -731,6 +730,12 @@ function aktualizujLiveGrid() {
                 trigger.innerHTML = '<span>-- Vyber tým --</span>';
             }
         });
+    });
+
+    // PŘIDÁNO ZPĚT: Kliknutí kamkoliv jinam na stránce zavře všechny otevřené roletky,
+    // aniž by to změnilo to, co v nich máš zrovna vybrané.
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.custom-select-wrapper').forEach(w => w.classList.remove('open'));
     });
 }
             
