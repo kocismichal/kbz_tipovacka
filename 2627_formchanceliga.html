@@ -301,19 +301,22 @@ fieldset legend {
 
     <!-- NOVÁ SEKCE: BRANKÁŘI -->
     <div class="section-title">Brankáři</div>
-    <label>Který brankář odchytá nejvíce minut?</label>
+    <label>Který brankář odchytá nejvíce minut? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Matouš Trmal a Adam Zadražil</strong></span></span></label>
     <input type="text" name="brankar_minuty" placeholder="Napiš jméno a příjmení" required>
 
-    <label>Který brankář bude mít největší úspěšnost zákroků? (min. 10 zápasů)</label>
+    <label>Který brankář vychytá nejvíce nul? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Adam Zadražil</strong></span></span></label>
+    <input type="text" name="brankar_nuly" placeholder="Napiš jméno a příjmení" required>
+
+    <label>Který brankář bude mít největší úspěšnost zákroků? (min. 10 zápasů) <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Tomáš Frühwald</strong></span></span></label>
     <input type="text" name="brankar_uspesnost" placeholder="Napiš jméno a příjmení" required>
 
-    <label>Který brankář obdrží nejvíce gólů?</label>
+    <label>Který brankář obdrží nejvíce gólů? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Jakub Lapeš</strong></span></span></label>
     <input type="text" name="brankar_obdrzene_goly" placeholder="Napiš jméno a příjmení" required>
 
-    <label>Který brankář bude mít největší sérii bez gólu?</label>
+    <label>Který brankář bude mít největší sérii bez gólu? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Jakub Markovič</strong></span></span></label>
     <input type="text" name="brankar_serie" placeholder="Napiš jméno a příjmení" required>
 
-    <label>Vstřelí nějaký brankář v sezóně gól?</label>
+    <label>Vstřelí nějaký brankář v sezóně gól? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Ne</strong></span></span></label>
     <select name="brankar_gol" required>
         <option value="">-- Vyber odpověď ANO/NE --</option>
         <option value="Ano">Ano</option>
@@ -322,10 +325,10 @@ fieldset legend {
 
     <!-- NOVÁ SEKCE: TRENÉŘI -->
     <div class="section-title">Trenéři</div>
-    <label>Který trenér obdrží nejvíce žlutých karet?</label>
+    <label>Který trenér obdrží nejvíce žlutých karet? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Tomáš Janotka a Aleš Majer</strong></span></span></label>
     <input type="text" name="trener_zlute" placeholder="Napiš jméno a příjmení" required>
 
-    <label>Který trenér obdrží nejvíce červených karet?</label>
+    <label>Který trenér obdrží nejvíce červených karet? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Pavel Hapal</strong></span></span></label>
     <input type="text" name="trener_cervene" placeholder="Napiš jméno a příjmení" required>
 
     <label>Trenér jakého týmu bude odvolán jako první?</label>
@@ -381,12 +384,12 @@ fieldset legend {
     </select>
 
     <!-- NOVÉ OTÁZKY: ANALYTICKÉ OKÉNKO -->
-    <label>V zápase jakého týmu padne nejvíce branek?</label>
+    <label>V zápase jakého týmu padne nejvíce branek? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Plzeň - Slavia (3:5)<br>a Baník - Zlín (6:2)</strong></span></span></label>
     <select name="zapas_nejvice_branek" class="icon-select" required>
         <option value="">-- Vyber tým --</option>
     </select>
 
-    <label>V zápase jakého týmu padne nejvíce žlutých karet?</label>
+    <label>V zápase jakého týmu padne nejvíce žlutých karet? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Plzeň - Slavia (12)</strong></span></span></label>
     <select name="zapas_nejvice_zlutych" class="icon-select" required>
         <option value="">-- Vyber tým --</option>
     </select>
