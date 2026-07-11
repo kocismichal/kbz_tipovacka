@@ -227,71 +227,128 @@
                 </fieldset>
 
                 <fieldset>
-                    <legend><i class="fas fa-bullseye"></i> Bonusové tipy (povinné)</legend>
-                    
-                    <label>Kdo ovládne základní část soutěže? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Slavia Praha</strong></span></span></label>
-                    <select name="zakladnicast" class="icon-select" required>
-                        <option value="">-- Vyber tým --</option>
-                    </select>
+    <legend><i class="fas fa-bullseye"></i> Bonusové tipy (povinné)</legend>
+    
+    <label>Kdo ovládne základní část soutěže? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Slavia Praha</strong></span></span></label>
+    <select name="zakladnicast" class="icon-select" required>
+        <option value="">-- Vyber tým --</option>
+    </select>
 
-                    <label>Sestoupí prvoligový tým do druhé ligy po prohře v baráži? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Ne</strong></span></span></label>
-                    <select name="baraz" required>
-                        <option value="">-- Vyber odpověď ANO/NE --</option>
-                        <option value="Ano">Ano</option>
-                        <option value="Ne">Ne</option>
-                    </select>
+    <label>Sestoupí prvoligový tým do druhé ligy po prohře v baráži? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Ne</strong></span></span></label>
+    <select name="baraz" required>
+        <option value="">-- Vyber odpověď ANO/NE --</option>
+        <option value="Ano">Ano</option>
+        <option value="Ne">Ne</option>
+    </select>
 
-                    <label>Kolik bodů získá mistr Chance ligy během celé sezóny? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">80 bodů</strong></span></span></label>
-                    <input type="number" name="body_mistr" min="0" max="105" required placeholder="0 - 105">
+    <label>Kolik bodů získá mistr Chance ligy během celé sezóny? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">80 bodů</strong></span></span></label>
+    <input type="number" name="body_mistr" min="0" max="105" required placeholder="0 - 105">
 
-                    <label>Jaký bude bodový rozdíl mezi 1. a 2. místem? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">4 body</strong></span></span></label>
-                    <input type="number" name="rozdil_1_2" min="0" max="105" required placeholder="0 - 105">
+    <label>Jaký bude bodový rozdíl mezi 1. a 2. místem? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">4 body</strong></span></span></label>
+    <input type="number" name="rozdil_1_2" min="0" max="105" required placeholder="0 - 105">
 
-                    <label>Kolik bodů získá poslední tým tabulky během celé sezóny? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">26 bodů</strong></span></span></label>
-                    <input type="number" name="body_posledni" min="0" max="105" required placeholder="0 - 105">
+    <label>Kolik bodů získá poslední tým tabulky během celé sezóny? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">26 bodů</strong></span></span></label>
+    <input type="number" name="body_posledni" min="0" max="105" required placeholder="0 - 105">
 
-                    <div class="section-title">Nejlepší střelec soutěže</div>
-                    <label>Nejlepší střelec Chance ligy na konci sezóny: <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Tomáš Chorý</strong></span></span></label>
-                    <input type="text" name="strelec" placeholder="např. Jan Kliment (snaž se napsat celé jméno správně)" required>
+    <div class="section-title">Nejlepší střelec soutěže</div>
+    <label>Nejlepší střelec Chance ligy na konci sezóny: <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Tomáš Chorý</strong></span></span></label>
+    <input type="text" name="strelec" placeholder="např. Jan Kliment (snaž se napsat celé jméno správně)" required>
 
-                    <label>Kolik gólů vstřelí nejlepší střelec soutěže? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">17 gólů</strong></span></span></label>
-                    <input type="number" name="gol_strelec" min="0" max="100" required placeholder="0 - 100">
+    <label>Kolik gólů vstřelí nejlepší střelec soutěže? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">17 gólů</strong></span></span></label>
+    <input type="number" name="gol_strelec" min="0" max="100" required placeholder="0 - 100">
 
-                    <div class="section-title">Analytické okénko</div>
-                    <div class="note">
-                        Statistické údaje budou čerpány po konci celé sezóny z <a href="https://www.chanceliga.cz" target="_blank">oficiální stránky Chance ligy</a>.
-                    </div>
+    <!-- NOVÁ SEKCE: BRANKÁŘI -->
+    <div class="section-title">Brankáři</div>
+    <label>Který brankář odchytá nejvíce minut?</label>
+    <input type="text" name="brankar_minuty" placeholder="Napiš jméno a příjmení" required>
 
-                    <label>Který tým obdrží nejvíce žlutých karet? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Slovan Liberec</strong></span></span></label>
-                    <select name="zlute" class="icon-select" required>
-                        <option value="">-- Vyber tým --</option>
-                    </select>
+    <label>Který brankář bude mít největší úspěšnost zákroků? (min. 10 zápasů)</label>
+    <input type="text" name="brankar_uspesnost" placeholder="Napiš jméno a příjmení" required>
 
-                    <label>Který tým obdrží nejvíce červených karet? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Slavia Praha</strong></span></span></label>
-                    <select name="cervene" class="icon-select" required>
-                        <option value="">-- Vyber tým --</option>
-                    </select>
+    <label>Který brankář obdrží nejvíce gólů?</label>
+    <input type="text" name="brankar_obdrzene_goly" placeholder="Napiš jméno a příjmení" required>
 
-                    <label>Který tým bude mít největší úspěšnost přihrávek? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Sparta Praha</strong></span></span></label>
-                    <select name="prihavky" class="icon-select" required>
-                        <option value="">-- Vyber tým --</option>
-                    </select>
+    <label>Který brankář bude mít největší sérii bez gólu?</label>
+    <input type="text" name="brankar_serie" placeholder="Napiš jméno a příjmení" required>
 
-                    <label>Který tým bude mít na svém kontě nejvíce faulů? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Slovan Liberec</strong></span></span></label>
-                    <select name="fauly" class="icon-select" required>
-                        <option value="">-- Vyber tým --</option>
-                    </select>
+    <label>Vstřelí nějaký brankář v sezóně gól?</label>
+    <select name="brankar_gol" required>
+        <option value="">-- Vyber odpověď ANO/NE --</option>
+        <option value="Ano">Ano</option>
+        <option value="Ne">Ne</option>
+    </select>
 
-                    <label>Který tým bude v nejvíce ofsajdech? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Slovan Liberec</strong></span></span></label>
-                    <select name="ofsajdy" class="icon-select" required>
-                        <option value="">-- Vyber tým --</option>
-                    </select>
+    <!-- NOVÁ SEKCE: TRENÉŘI -->
+    <div class="section-title">Trenéři</div>
+    <label>Který trenér obdrží nejvíce žlutých karet?</label>
+    <input type="text" name="trener_zlute" placeholder="Napiš jméno a příjmení" required>
 
-                    <label>Který tým během zápasů získá nejvíce míčů od soupeře? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Slavia Praha</strong></span></span></label>
-                    <select name="zisky" class="icon-select" required>
-                        <option value="">-- Vyber tým --</option>
-                    </select>
-                </fieldset>
+    <label>Který trenér obdrží nejvíce červených karet?</label>
+    <input type="text" name="trener_cervene" placeholder="Napiš jméno a příjmení" required>
+
+    <label>Trenér jakého týmu bude odvolán jako první?</label>
+    <select name="trener_odvolan" class="icon-select" required>
+        <option value="">-- Vyber tým --</option>
+    </select>
+
+    <label>Bude mít Baník více než 2 trenéry v sezóně?</label>
+    <select name="trener_banik" required>
+        <option value="">-- Vyber odpověď ANO/NE --</option>
+        <option value="Ano">Ano</option>
+        <option value="Ne">Ne</option>
+    </select>
+
+    <label>Do jakého týmu Chance ligy bude povolán Radoslav Kováč?</label>
+    <select name="trener_kovac" class="icon-select" required>
+        <option value="">-- Vyber tým --</option>
+    </select>
+
+    <div class="section-title">Analytické okénko</div>
+    <div class="note">
+        Statistické údaje budou čerpány po konci celé sezóny z <a href="https://www.chanceliga.cz" target="_blank">oficiální stránky Chance ligy</a>.
+    </div>
+
+    <label>Který tým obdrží nejvíce žlutých karet? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Slovan Liberec</strong></span></span></label>
+    <select name="zlute" class="icon-select" required>
+        <option value="">-- Vyber tým --</option>
+    </select>
+
+    <label>Který tým obdrží nejvíce červených karet? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Slavia Praha</strong></span></span></label>
+    <select name="cervene" class="icon-select" required>
+        <option value="">-- Vyber tým --</option>
+    </select>
+
+    <label>Který tým bude mít největší úspěšnost přihrávek? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Sparta Praha</strong></span></span></label>
+    <select name="prihavky" class="icon-select" required>
+        <option value="">-- Vyber tým --</option>
+    </select>
+
+    <label>Který tým bude mít na svém kontě nejvíce faulů? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Slovan Liberec</strong></span></span></label>
+    <select name="fauly" class="icon-select" required>
+        <option value="">-- Vyber tým --</option>
+    </select>
+
+    <label>Který tým bude v nejvíce ofsajdech? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Slovan Liberec</strong></span></span></label>
+    <select name="ofsajdy" class="icon-select" required>
+        <option value="">-- Vyber tým --</option>
+    </select>
+
+    <label>Který tým během zápasů získá nejvíce míčů od soupeře? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Slavia Praha</strong></span></span></label>
+    <select name="zisky" class="icon-select" required>
+        <option value="">-- Vyber tým --</option>
+    </select>
+
+    <!-- NOVÉ OTÁZKY: ANALYTICKÉ OKÉNKO -->
+    <label>V zápase jakého týmu padne nejvíce branek?</label>
+    <select name="zapas_nejvice_branek" class="icon-select" required>
+        <option value="">-- Vyber tým --</option>
+    </select>
+
+    <label>V zápase jakého týmu padne nejvíce žlutých karet?</label>
+    <select name="zapas_nejvice_zlutych" class="icon-select" required>
+        <option value="">-- Vyber tým --</option>
+    </select>
+</fieldset>
 
                 <fieldset>
                     <legend><i class="fas fa-rabbit"></i> Bonusové otázky (nepovinné, nebodované)</legend>
@@ -440,16 +497,16 @@
             }
 
             function naplnitZakladniCastDropdown() {
-                const vsechny = document.querySelectorAll("select[name='zakladnicast'], select[name='fandim'], select[name='prihavky'], select[name='zlute'], select[name='cervene'], select[name='fauly'], select[name='ofsajdy'], select[name='zisky']");
-                vsechny.forEach(select => {
-                    tymy.forEach(tym => {
-                        const option = document.createElement("option");
-                        option.value = tym;
-                        option.textContent = tym;
-                        select.appendChild(option);
-                    });
-                });
-            }
+    const vsechny = document.querySelectorAll("select[name='zakladnicast'], select[name='fandim'], select[name='prihavky'], select[name='zlute'], select[name='cervene'], select[name='fauly'], select[name='ofsajdy'], select[name='zisky'], select[name='trener_odvolan'], select[name='trener_kovac'], select[name='zapas_nejvice_branek'], select[name='zapas_nejvice_zlutych']");
+    vsechny.forEach(select => {
+        tymy.forEach(tym => {
+            const option = document.createElement("option");
+            option.value = tym;
+            option.textContent = tym;
+            select.appendChild(option);
+        });
+    });
+}
 
             function initCustomSelects() {
                 document.querySelectorAll("select.icon-select").forEach(select => {
