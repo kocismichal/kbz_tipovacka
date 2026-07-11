@@ -18,7 +18,17 @@
             background-color: var(--accent-primary);
             color: #000;
         }
-
+        
+        /* Centrování a zvětšení legend (nadpisů sekcí ve formuláři) */
+fieldset legend {
+    margin: 0 auto;
+    display: table;
+    font-size: 1.5rem;
+    text-align: center;
+    color: var(--accent-primary);
+    padding: 0 15px;
+}
+        
         /* Navigace a zkratka (Vyhodnoť zimní přípravu) */
         .top-shortcut-menu {
             display: flex;
@@ -152,10 +162,6 @@
             <div class="logo-text">KBZ <span>TIPOVAČKA</span></div>
         </header>
 
-        <div class="top-shortcut-menu">
-            <a href="index.html"><i class="fas fa-home"></i> Domů</a>
-            <a href="#" onclick="alert('Spouštím vyhodnocení zimní přípravy...'); return false;"><i class="fas fa-bolt"></i> Vyhodnoť zimní přípravu</a>
-        </div>
 
         <div class="hlasovani-info">
             <h2>KONEC HLASOVÁNÍ - ZAČÁTEK PRVNÍHO KOLA</h2>
@@ -182,7 +188,7 @@
             <form id="tipForm">
                 
                 <fieldset>
-                    <legend><i class="fas fa-user"></i> Údaje o tobě (povinné)</legend>
+                    <legend>Údaje o tobě</legend>
                     <label for="jmeno">Jméno a příjmení:</label>
                     <input type="text" id="jmeno" name="jmeno" required>
 
@@ -196,7 +202,7 @@
                 </fieldset>
 
                 <fieldset>
-                    <legend><i class="fas fa-list-ol"></i> Tip na pořadí týmů na konci celé sezóny (povinné)</legend>
+                    <legend>Tip na pořadí týmů na konci celé sezóny</legend>
                     
                     <div style="text-align: right;">
                         <button type="button" class="btn-history" onclick="document.getElementById('hist-2526').style.display = document.getElementById('hist-2526').style.display === 'none' ? 'grid' : 'none'">
@@ -227,7 +233,7 @@
                 </fieldset>
 
                 <fieldset>
-    <legend><i class="fas fa-bullseye"></i> Bonusové tipy (povinné)</legend>
+    <legend>Bonusové tipy</legend>
     
     <label>Kdo ovládne základní část soutěže? <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);">Slavia Praha</strong></span></span></label>
     <select name="zakladnicast" class="icon-select" required>
@@ -351,7 +357,7 @@
 </fieldset>
 
                 <fieldset>
-                    <legend><i class="fas fa-rabbit"></i> Bonusové otázky (nepovinné, nebodované)</legend>
+                    <legend>Bonusové otázky (nepovinné, nebodované)</legend>
 
                     <label>Kdo vyhraje celosezónní Zajíc Tipovačku?</label>
                     <select name="zajic_vitez">
