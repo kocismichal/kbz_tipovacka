@@ -12,14 +12,9 @@
 
     <!-- UNIVERZÁLNÍ HORNÍ LIŠTA -->
     <nav class="main-navbar">
-        <div style="display: flex; gap: 10px;">
-            <a href="index.html" class="nav-home-btn" title="Domů">
-                <i class="fas fa-home"></i>
-            </a>
-            <a href="#" onclick="alert('Vyhodnocení zimní přípravy spuštěno!'); return false;" class="nav-home-btn" style="width: auto; padding: 0 15px; font-size: 0.85rem; font-family: 'Oswald', sans-serif; text-transform: uppercase; color: var(--accent-primary);">
-                <i class="fas fa-bolt" style="margin-right: 6px;"></i> Vyhodnoť zimní přípravu
-            </a>
-        </div>
+        <a href="index.html" class="nav-home-btn" title="Domů">
+            <i class="fas fa-home"></i>
+        </a>
         
         <div class="nav-center-wrap">
             <div class="nav-group">
@@ -51,7 +46,15 @@
 
     <div class="container">
         
-        <div class="stats-header" style="margin-top: 20px;">
+        <!-- HLAVNÍ NADPIS STRÁNKY S DLAŽDICÍ -->
+        <header style="margin-top: 10px; margin-bottom: 30px;">
+            <div class="logo-text">KBZ <span>TIPOVAČKA</span></div>
+            <div style="margin-top: 15px; text-align: center;">
+                <span class="nav-tile chnl-color" style="display: inline-block; font-size: 1.2rem; padding: 10px 30px; text-transform: uppercase;">Chance národní liga</span>
+            </div>
+        </header>
+
+        <div class="stats-header">
             <div class="stat-item">
                 <div class="stat-value" id="count-players">-</div>
                 <div class="stat-label">Počet tipujících</div>
@@ -232,8 +235,6 @@
     </div>
 
     <script>
-        // Nastavení exportu z nové tabulky pro CHNL s ID 1sSYexRnP2qdWN3cCIKgD9e4Oz-HuzLnGrjroFeMj4uM
-        // Pokud budou chybět data, uprav prosím čísla gid (např. 1446924552) podle konkrétních listů v tvé tabulce.
         const urlPrehled = 'https://docs.google.com/spreadsheets/d/1sSYexRnP2qdWN3cCIKgD9e4Oz-HuzLnGrjroFeMj4uM/export?format=csv&gid=1446924552';
         const urlTipy = 'https://docs.google.com/spreadsheets/d/1sSYexRnP2qdWN3cCIKgD9e4Oz-HuzLnGrjroFeMj4uM/export?format=csv&gid=0';
         const urlKontrola = 'https://docs.google.com/spreadsheets/d/1sSYexRnP2qdWN3cCIKgD9e4Oz-HuzLnGrjroFeMj4uM/export?format=csv&gid=1129220254';
@@ -275,7 +276,6 @@
         function getInitials(name) { const parts = name.trim().split(' '); return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase(); }
         function ziskejLogoKlubuHTML(clubName) { if (!clubName) return ''; const logo = teamLogos[clubName.trim()]; return logo ? `<img src="${logo}" class="fav-club-badge" title="Oblíbený klub: ${clubName}">` : ''; }
         
-        // Zajíci
         function getAvatarHTML(name, puvodniIndex) {
             const cleanName = name.toLowerCase();
             if (cleanName.includes("podry") || puvodniIndex === 2) return '<img src="podry.png" alt="Podry" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
@@ -332,7 +332,6 @@
 
         function vykresliZajice() {
             const container = document.getElementById('zajici-container'); container.innerHTML = '';
-            // Čte se řádek 2, 3, 4 a 5 z tabulky (Podry, Sodoma, Dvorka, Lars)
             const zajici = vsichniHraci.filter(h => [2, 3, 4, 5].includes(h.puvodniIndex));
             if(zajici.length === 0) { container.innerHTML = '<div class="loader">Data pro VIP Zajíce se připravují...</div>'; return; }
             let maxZajicPoints = -1; zajici.forEach(z => { if (z.celkem > maxZajicPoints) maxZajicPoints = z.celkem; });
@@ -424,7 +423,6 @@
 
             const bon = document.getElementById('modalBonuses'); bon.innerHTML = '';
             if (hrac.tipyData.length > 0 && hrac.kontrolaData.length > 0) {
-                // Přepnutý index: Čteme 6 otázek ze sloupců V (21) až AA (26)
                 for (let k = 0; k < 6; k++) {
                     const colIndex = 21 + k;
                     const tipOdpoved = hrac.tipyData[colIndex] ? hrac.tipyData[colIndex].replace(/"/g, '').trim() : 'Nevyplněno';
@@ -446,7 +444,6 @@
                     const spravnyTym = spravneOdpovediRow[j] ? spravneOdpovediRow[j].replace(/"/g, '').trim() : '';
                     tm.innerHTML += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j - 3}.</span><img src="${teamLogos[spravnyTym] || 'https://i.imgur.com/8N4Jp62.png'}" class="t-logo" title="${spravnyTym}"></div>`;
                 }
-                // Čteme 6 otázek ze sloupců V (21) až AA (26)
                 for (let k = 0; k < 6; k++) {
                     const colIndex = 21 + k; 
                     const spravnaOdpoved = spravneOdpovediRow[colIndex] ? spravneOdpovediRow[colIndex].replace(/"/g, '').trim() : 'Zatím neznámá';
@@ -493,7 +490,6 @@
         }
 
         function vykresliPrehledBonusy() {
-            // V CHNL se pro bonusy neřeší grafické týmové bloky (karty, fauly atd.), proto čistý fallback pro záložku:
             document.getElementById('prehled-bonusy').innerHTML = '<div style="padding: 30px; color: var(--text-muted); text-align: center; font-style: italic;">Detailní přehled grafických ikon u bonusů není pro Národní ligu k dispozici.</div>';
         }
 
