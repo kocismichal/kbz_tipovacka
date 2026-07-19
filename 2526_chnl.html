@@ -232,22 +232,32 @@
     </div>
 
     <script>
-        const urlPrehled = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=1446924552&single=true&output=csv';
-        const urlTipy = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=0&single=true&output=csv';
-        const urlKontrola = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=1129220254&single=true&output=csv';
-        const urlHotovo = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=1661482320&single=true&output=csv';
-        const urlVyskyt = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=236934267&single=true&output=csv';
+        // Nastavení exportu z nové tabulky pro CHNL s ID 1sSYexRnP2qdWN3cCIKgD9e4Oz-HuzLnGrjroFeMj4uM
+        // Pokud budou chybět data, uprav prosím čísla gid (např. 1446924552) podle konkrétních listů v tvé tabulce.
+        const urlPrehled = 'https://docs.google.com/spreadsheets/d/1sSYexRnP2qdWN3cCIKgD9e4Oz-HuzLnGrjroFeMj4uM/export?format=csv&gid=1446924552';
+        const urlTipy = 'https://docs.google.com/spreadsheets/d/1sSYexRnP2qdWN3cCIKgD9e4Oz-HuzLnGrjroFeMj4uM/export?format=csv&gid=0';
+        const urlKontrola = 'https://docs.google.com/spreadsheets/d/1sSYexRnP2qdWN3cCIKgD9e4Oz-HuzLnGrjroFeMj4uM/export?format=csv&gid=1129220254';
+        const urlHotovo = 'https://docs.google.com/spreadsheets/d/1sSYexRnP2qdWN3cCIKgD9e4Oz-HuzLnGrjroFeMj4uM/export?format=csv&gid=1661482320';
+        const urlVyskyt = 'https://docs.google.com/spreadsheets/d/1sSYexRnP2qdWN3cCIKgD9e4Oz-HuzLnGrjroFeMj4uM/export?format=csv&gid=236934267';
 
         const teamLogos = {
-            "Zlín": "https://i.imgur.com/7EseGiq.png", "Zbrojovka Brno": "https://i.imgur.com/VNzY5Ew.png",
-            "Artis Brno": "https://i.imgur.com/6hcOo7w.png", "Dukla Praha": "https://i.imgur.com/FZ2Lzu2.png",
-            "Slavia Praha B": "https://i.imgur.com/g1Zkhwg.png", "Baník Ostrava B": "https://i.imgur.com/fhj9qlu.png",
-            "Příbram": "https://i.imgur.com/W5HbNQn.png", "Táborsko": "https://i.imgur.com/R3QUiqz.png",
-            "Vlašim": "https://i.imgur.com/RCmUHo8.png", "Viktoria Žižkov": "https://i.imgur.com/iIke5cO.png",
-            "Jihlava": "https://i.imgur.com/39RJLEC.png", "Prostějov": "https://i.imgur.com/9AvvE6n.png",
-            "Opava": "https://i.imgur.com/Jn95z2w.png", "Kroměříž": "https://i.imgur.com/s637GEc.png",
-            "Ústí nad Labem": "https://i.imgur.com/Ep5p3Xb.png", "Třinec": "https://i.imgur.com/rxmY9If.png",
-            "Kladno": "https://i.imgur.com/fuoQwTS.png", "Česká Lípa": "https://i.imgur.com/ccLgaLt.png"
+            "Slavia Praha B": "https://i.imgur.com/g1Zkhwg.png",
+            "Sparta Praha B": "https://i.imgur.com/NlyfFAC.png",
+            "Baník Ostrava B": "https://i.imgur.com/fhj9qlu.png",
+            "Chrudim": "https://i.imgur.com/GaaC0ox.png",
+            "Vyškov": "https://i.imgur.com/2gWNEbi.png",
+            "Příbram": "https://i.imgur.com/W5HbNQn.png",
+            "Táborsko": "https://i.imgur.com/R3QUiqz.png",
+            "Vlašim": "https://i.imgur.com/RCmUHo8.png",
+            "Zbrojovka Brno": "https://i.imgur.com/vJnfcFS.png",
+            "Artis Brno": "https://i.imgur.com/6hcOo7w.png",
+            "Viktoria Žižkov": "https://i.imgur.com/iIke5cO.png",
+            "Jihlava": "https://i.imgur.com/39RJLEC.png",
+            "Prostějov": "https://i.imgur.com/9AvvE6n.png",
+            "Opava": "https://i.imgur.com/Jn95z2w.png",
+            "Kroměříž": "https://i.imgur.com/s637GEc.png",
+            "Ústí nad Labem": "https://i.imgur.com/Ep5p3Xb.png",
+            "České Budějovice": "https://i.imgur.com/yUpY8bX.png"
         };
 
         const bonusQuestionsText = [
@@ -265,7 +275,7 @@
         function getInitials(name) { const parts = name.trim().split(' '); return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase(); }
         function ziskejLogoKlubuHTML(clubName) { if (!clubName) return ''; const logo = teamLogos[clubName.trim()]; return logo ? `<img src="${logo}" class="fav-club-badge" title="Oblíbený klub: ${clubName}">` : ''; }
         
-        // Aktualizované mapování Zajíců (řádky 2 až 5)
+        // Zajíci
         function getAvatarHTML(name, puvodniIndex) {
             const cleanName = name.toLowerCase();
             if (cleanName.includes("podry") || puvodniIndex === 2) return '<img src="podry.png" alt="Podry" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
@@ -296,7 +306,7 @@
                     fetch(urlPrehled), fetch(urlTipy), fetch(urlKontrola), fetch(urlHotovo).catch(() => null), fetch(urlVyskyt).catch(() => null)
                 ]);
                 zpracujVsechnaData(await resPrehled.text(), await resTipy.text(), await resKontrola.text(), resHotovo ? await resHotovo.text() : '', resVyskyt ? await resVyskyt.text() : '');
-            } catch (error) { document.getElementById('tabulka-telo').innerHTML = '<tr><td colspan="5" class="loader">Chyba při stahování dat z Google tabulek.</td></tr>'; }
+            } catch (error) { document.getElementById('tabulka-telo').innerHTML = '<tr><td colspan="5" class="loader">Chyba při stahování dat z Google tabulek. Zkontrolujte prosím GID v odkazech na řádcích kódu.</td></tr>'; }
         }
 
         function zpracujVsechnaData(csvPrehled, csvTipy, csvKontrola, csvHotovo, csvVyskyt) {
@@ -322,7 +332,7 @@
 
         function vykresliZajice() {
             const container = document.getElementById('zajici-container'); container.innerHTML = '';
-            // Nyní se čtou řádky 2, 3, 4 a 5
+            // Čte se řádek 2, 3, 4 a 5 z tabulky (Podry, Sodoma, Dvorka, Lars)
             const zajici = vsichniHraci.filter(h => [2, 3, 4, 5].includes(h.puvodniIndex));
             if(zajici.length === 0) { container.innerHTML = '<div class="loader">Data pro VIP Zajíce se připravují...</div>'; return; }
             let maxZajicPoints = -1; zajici.forEach(z => { if (z.celkem > maxZajicPoints) maxZajicPoints = z.celkem; });
