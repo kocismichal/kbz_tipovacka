@@ -2,12 +2,14 @@
 .main-navbar {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Rozmístí obsah vlevo - střed - vpravo */
+    justify-content: space-between;
     background-color: rgba(22, 29, 43, 0.95);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 10px 20px;
-    margin-bottom: 30px;
+    /* TYTO DVA ŘÁDKY ZAJISTÍ SPRÁVNOU ŠÍŘKU A VYCENTROVÁNÍ: */
+    max-width: 1200px;
+    margin: 0 auto 30px auto;
     overflow-x: auto;
     white-space: nowrap;
     scrollbar-width: none;
