@@ -10,40 +10,6 @@
 </head>
 <body>
 
-    <!-- UNIVERZÁLNÍ HORNÍ LIŠTA -->
-    <nav class="main-navbar">
-        <a href="index.html" class="nav-home-btn" title="Domů">
-            <i class="fas fa-home"></i>
-        </a>
-        
-        <div class="nav-center-wrap">
-            <div class="nav-group">
-                <span class="nav-group-title">Aktivní tipovačky</span>
-                <div class="nav-group-links">
-                    <a href="2627_formchanceliga.html" class="nav-tile chance-color">Chance liga</a>
-                    <a href="2627_formchancenarodniliga.html" class="nav-tile chnl-color">Chance národní liga</a>
-                </div>
-            </div>
-            <div class="nav-separator"></div>
-            <div class="nav-group">
-                <span class="nav-group-title">Vyhodnocené soutěže</span>
-                <div class="nav-group-links">
-                    <a href="2526_chanceliga.html" class="nav-tile chance-color">Chance liga</a>
-                    <a href="2526_chnl.html" class="nav-tile chnl-color">Chance národní liga</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="nav-right-wrap">
-            <a href="https://discord.gg/p8WEPtjahD" target="_blank" class="nav-discord-btn">
-                <i class="fab fa-discord"></i> KBZ DISCORD
-            </a>
-            <a href="https://www.kudybezizajic.com/" target="_blank" class="nav-shop-btn">
-                <i class="fas fa-shopping-cart"></i> KBZ SHOP
-            </a>
-        </div>
-    </nav>
-
     <div class="container">
         
         <!-- HLAVNÍ NADPIS STRÁNKY S DLAŽDICÍ -->
@@ -53,6 +19,40 @@
                 <span class="nav-tile chnl-color" style="display: inline-block; font-size: 1.2rem; padding: 10px 30px; text-transform: uppercase;">Chance národní liga</span>
             </div>
         </header>
+
+        <!-- UNIVERZÁLNÍ HORNÍ LIŠTA -->
+        <nav class="main-navbar">
+            <a href="index.html" class="nav-home-btn" title="Domů">
+                <i class="fas fa-home"></i>
+            </a>
+            
+            <div class="nav-center-wrap">
+                <div class="nav-group">
+                    <span class="nav-group-title">Aktivní tipovačky</span>
+                    <div class="nav-group-links">
+                        <a href="2627_formchanceliga.html" class="nav-tile chance-color">Chance liga</a>
+                        <a href="2627_formchancenarodniliga.html" class="nav-tile chnl-color">Chance národní liga</a>
+                    </div>
+                </div>
+                <div class="nav-separator"></div>
+                <div class="nav-group">
+                    <span class="nav-group-title">Vyhodnocené soutěže</span>
+                    <div class="nav-group-links">
+                        <a href="2526_chanceliga.html" class="nav-tile chance-color">Chance liga</a>
+                        <a href="2526_chnl.html" class="nav-tile chnl-color">Chance národní liga</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-right-wrap">
+                <a href="https://discord.gg/p8WEPtjahD" target="_blank" class="nav-discord-btn">
+                    <i class="fab fa-discord"></i> KBZ DISCORD
+                </a>
+                <a href="https://www.kudybezizajic.com/" target="_blank" class="nav-shop-btn">
+                    <i class="fas fa-shopping-cart"></i> KBZ SHOP
+                </a>
+            </div>
+        </nav>
 
         <div class="stats-header">
             <div class="stat-item">
@@ -320,7 +320,7 @@
                     const jmeno = bunkyP[2].replace(/"/g, '').trim(); 
                     if (jmeno === "") continue;
                     vsichniHraci.push({
-                        puvodniIndex: i + 1, // Opraveno: Nyní puvodniIndex přesně odpovídá číslu řádku v tabulce!
+                        puvodniIndex: i + 1,
                         jmeno: jmeno, oblubenyKlub: bunkyP[3] ? bunkyP[3].replace(/"/g, '').trim() : '',
                         bodyUmisteni: vycistiCislo(bunkyP[39]), bodyBonus: vycistiCislo(bunkyP[40]), celkem: vycistiCislo(bunkyP[41]),       
                         poradiUmisteni: parseInt(bunkyP[42].replace(/"/g, '')) || 999, poradiBonus: parseInt(bunkyP[43].replace(/"/g, '')) || 999, poradiCelkem: parseInt(bunkyP[44].replace(/"/g, '')) || 999,
