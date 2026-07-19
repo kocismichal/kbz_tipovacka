@@ -47,9 +47,9 @@
     <div class="container">
         
         <!-- HLAVNÍ NADPIS STRÁNKY S DLAŽDICÍ -->
-        <header style="margin-top: 10px; margin-bottom: 30px;">
-            <div class="logo-text">KBZ <span>TIPOVAČKA</span></div>
-            <div style="margin-top: 15px; text-align: center;">
+        <header style="margin-top: 10px; margin-bottom: 30px; text-align: center;">
+            <div class="logo-text">KBZ <span>VYHODNOCENÍ 2025/2026</span></div>
+            <div style="margin-top: 15px;">
                 <span class="nav-tile chnl-color" style="display: inline-block; font-size: 1.2rem; padding: 10px 30px; text-transform: uppercase;">Chance národní liga</span>
             </div>
         </header>
@@ -320,7 +320,8 @@
                     const jmeno = bunkyP[2].replace(/"/g, '').trim(); 
                     if (jmeno === "") continue;
                     vsichniHraci.push({
-                        puvodniIndex: i, jmeno: jmeno, oblubenyKlub: bunkyP[3] ? bunkyP[3].replace(/"/g, '').trim() : '',
+                        puvodniIndex: i + 1, // Opraveno: Nyní puvodniIndex přesně odpovídá číslu řádku v tabulce!
+                        jmeno: jmeno, oblubenyKlub: bunkyP[3] ? bunkyP[3].replace(/"/g, '').trim() : '',
                         bodyUmisteni: vycistiCislo(bunkyP[39]), bodyBonus: vycistiCislo(bunkyP[40]), celkem: vycistiCislo(bunkyP[41]),       
                         poradiUmisteni: parseInt(bunkyP[42].replace(/"/g, '')) || 999, poradiBonus: parseInt(bunkyP[43].replace(/"/g, '')) || 999, poradiCelkem: parseInt(bunkyP[44].replace(/"/g, '')) || 999,
                         tipyData: bunkyT, kontrolaData: bunkyK
@@ -490,7 +491,7 @@
         }
 
         function vykresliPrehledBonusy() {
-            document.getElementById('prehled-bonusy').innerHTML = '<div style="padding: 30px; color: var(--text-muted); text-align: center; font-style: italic;">Detailní přehled grafických ikon u bonusů není pro Národní ligu k dispozici.</div>';
+            document.getElementById('prehled-bonusy').innerHTML = '<div style="padding: 30px; color: var(--text-muted); text-align: center; font-style: italic;">Detailní přehled grafických ikon u bonusů není pro Chance národní ligu k dispozici.</div>';
         }
 
         function vykresliPrehledStrelci() {
