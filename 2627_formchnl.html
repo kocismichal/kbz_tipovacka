@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chance národní liga - KBZ tipovačka (Formulář)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Úprava dlaždic - plně vybarvené aktivní a najeté */
+        .eval-tile-link.active {
+            background-color: var(--accent-primary) !important;
+            color: #000 !important;
+            border-color: var(--accent-primary) !important;
+        }
+        .eval-tile-link:hover {
+            background-color: var(--accent-primary);
+            color: #000;
+        }
+        
+        /* Centrování a zvětšení legend (nadpisů sekcí ve formuláři) */
+        fieldset legend {
+            margin: 0 auto;
+            display: table;
+            font-size: 1.5rem;
+            text-align: center;
+            color: var(--accent-primary);
+            padding: 0 15px;
+        }
+        
+        /* Custom dropdown focus (klávesnicová navigace) */
+        .custom-select-trigger:focus {
+            border-color: var(--accent-primary);
+            outline: none;
+            box-shadow: 0 0 10px rgba(1, 254, 1, 0.3);
+        }
+        .custom-option.focused {
+            background-color: rgba(255,255,255,0.1);
+            border-left: 3px solid var(--accent-primary);
+        }
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .history-team {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px 5px;
+        }
+        .history-team span.pos { font-family: 'Oswald'; color: var(--text-muted); margin-bottom: 5px; }
+        .history-team img { width: 35px; height: 35px; object-fit: contain; }
+        
+        @media (max-width: 768px) {
+            .history-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        
+        <!-- HLAVNÍ NADPIS STRÁNKY S DLAŽDICÍ -->
+        <header style="margin-top: 10px; margin-bottom: 30px; text-align: center;">
+            <div class="logo-text">KBZ <span>TIPOVAČKA 2026/2027</span></div>
+            <div style="margin-top: 15px;">
+                <span class="nav-tile chnl-color" style="display: inline-block; font-size: 1.2rem; padding: 10px 30px; text-transform: uppercase;">Chance národní liga</span>
+            </div>
+        </header>
+        
+        <!-- UNIVERZÁLNÍ HORNÍ LIŠTA -->
+        <nav class="main-navbar">
+            
+            <!-- Vlevo: Tlačítko Domů -->
+            <a href="index.html" class="nav-home-btn" title="Domů">
+                <i class="fas fa-home"></i>
+            </a>
+            
+            <!-- Uprostřed: Vycentrované kategorie a barevné dlaždice -->
+            <div class="nav-center-wrap">
+                <div class="nav-group">
+                    <span class="nav-group-title">Aktivní tipovačky</span>
+                    <div class="nav-group-links">
+                        <a href="2627_formchanceliga.html" class="nav-tile chance-color">Chance liga</a>
+                        <a href="2627_formchnl.html" class="nav-tile chnl-color">Chance národní liga</a>
+                    </div>
+                </div>
+                <div class="nav-separator"></div>
+                <div class="nav-group">
+                    <span class="nav-group-title">Vyhodnocené soutěže</span>
+                    <div class="nav-group-links">
+                        <a href="2526_chanceliga.html" class="nav-tile chance-color">Chance liga</a>
+                        <a href="2526_chnl.html" class="nav-tile chnl-color">Chance národní liga</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vpravo: Tlačítka DISCORD a KBZ SHOP -->
+            <div class="nav-right-wrap">
+                <a href="https://discord.gg/p8WEPtjahD" target="_blank" class="nav-discord-btn">
+                    <i class="fab fa-discord"></i> KBZ DISCORD
+                </a>
+                <a href="https://www.kudybezizajic.com/" target="_blank" class="nav-shop-btn">
+                    <i class="fas fa-shopping-cart"></i> KBZ SHOP
+                </a>
+            </div>
+
+        </nav>
+
+        <div class="hlasovani-info">
+            <h2>KONEC HLASOVÁNÍ - ZAČÁTEK PRVNÍHO KOLA</h2>
+            <h3>PONDĚLÍ 10.8.2026 17:00</h3>
+            
+            <h4>PRAVIDLA SOUTĚŽE</h4>
+            <div class="note">Každý může zaslat pouze 1 hlas. Zadání e-mailu slouží pro kontakt při případné výhře.</div>
+            <div class="note">Pokud chceš změnit své hlasování, vyplň formulář znovu se svým e-mailem a tvůj tip bude přepsán.</div>
+            <div class="note">Tabulka bude veřejná a bude v ní vidět tvůj tip s tvým jménem. Svým vyplněním souhlasíš s případným zveřejněním tvého jména na konci soutěže.</div>
+            <div class="note"><a href="https://docs.google.com/spreadsheets/d/1-x49PpV3SJNl57PGGNwqqR-q5lKLsxuICqoRzTCmrF8/edit?usp=sharing" target="_blank"><i class="fas fa-table"></i> Odkaz na tabulku</a>.</div>
+
+            <h4>SYSTÉM BODOVÁNÍ</h4>
+            <div class="note"><strong>📊 TIPY NA POŘADÍ TÝMŮ:</strong><br> Přesně = <strong>10 b.</strong> // o 1 místo = <strong>8 b.</strong> // o 2 místa = <strong>6 b.</strong> // o 3 místa = <strong>4 b.</strong> // o 4 místa = <strong>2 b.</strong> // o 5 a víc = <strong>0 b.</strong></div>
+            <div class="note" style="margin-top: 5px;"><strong>Bonusové násobky:</strong><br> 14 až 16 přesně = <strong style="color:var(--accent-primary);">1.3x</strong> // 11 až 13 přesně = <strong style="color:var(--accent-primary);">1.2x</strong> // 8 až 10 přesně = <strong style="color:var(--accent-primary);">1.1x</strong></div>
+            
+            <div class="note" style="margin: 15px 0;">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</div>
+            
+            <div class="note"><strong>🎯 BONUSOVÉ OTÁZKY:</strong></div>
+            <div class="note"><strong>Textové:</strong> 10 bodů <span style="font-style:italic;">(s tolerancí překlepu)</span></div>
+            <div class="note"><strong>Číselné:</strong> Přesně = <strong>10 b.</strong> // o 1 vedle = <strong>8 b.</strong> // o 2 vedle = <strong>6 b.</strong> // o 3 vedle = <strong>4 b.</strong> // o 4 vedle = <strong>2 b.</strong></div>
+        </div>
+
+        <div id="formularContainer">
+            <form id="tipForm">
+                
+                <fieldset>
+                    <legend>Údaje o tobě</legend>
+                    <label for="jmeno">Jméno a příjmení:</label>
+                    <input type="text" id="jmeno" name="jmeno" required>
+
+                    <label for="email">E-mail: <span style="font-weight: normal; font-style: italic;">(budeš na něj kontaktován při výhře)</span></label>
+                    <input type="email" id="email" name="email" required>
+
+                    <label for="fandim">Který tým je tvůj oblíbený v Chance národní lize?</label>
+                    <select name="fandim" id="fandim" required class="icon-select">
+                        <option value="">-- Vyber tým --</option>
+                    </select>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Tip na pořadí týmů na konci celé sezóny</legend>
+                    
+                    <div id="dropdowns" class="dropdown-grid"></div>
+
+                    <div class="section-title" style="margin-top: 30px; border-top: 1px dashed var(--border-color); padding-top: 15px;">Tvůj aktuální tip pořadí</div>
+                    <div id="live-grid" class="history-grid"></div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Bonusové tipy</legend>
+                    
+                    <label>Postoupí druholigový tým přes baráž do první ligy?</label>
+                    <select name="baraz" required>
+                        <option value="">-- Vyber odpověď ANO/NE --</option>
+                        <option value="Ano">Ano</option>
+                        <option value="Ne">Ne</option>
+                    </select>
+
+                    <label>Kolik bodů získá mistr Chance národní ligy během celé sezóny?</label>
+                    <input type="number" name="body_mistr" min="0" max="105" required placeholder="0 - 105">
+
+                    <label>Jaký bude bodový rozdíl mezi 1. a 2. místem?</label>
+                    <input type="number" name="rozdil_1_2" min="0" max="105" required placeholder="0 - 105">
+
+                    <label>Kolik bodů získá poslední tým tabulky během celé sezóny?</label>
+                    <input type="number" name="body_posledni" min="0" max="105" required placeholder="0 - 105">
+
+                    <div class="section-title">Nejlepší střelec soutěže</div>
+                    <label>Nejlepší střelec Chance národní ligy na konci sezóny:</label>
+                    <input type="text" name="strelec" placeholder="např. Jan Kliment (snaž se napsat celé jméno správně)" required>
+
+                    <label>Kolik gólů vstřelí nejlepší střelec soutěže?</label>
+                    <input type="number" name="gol_strelec" min="0" max="100" required placeholder="0 - 100">
+                </fieldset>
+
+                <fieldset>
+                    <legend>Bonusové otázky (nepovinné, nebodované)</legend>
+
+                    <label>Kdo vyhraje celosezónní Zajíc Tipovačku?</label>
+                    <select name="zajic_vitez">
+                        <option value="">-- Vyber jednu z možností --</option>
+                        <option value="Ondra">Ondra</option>
+                        <option value="Podry">Podry</option>
+                        <option value="Vacíno">Vacíno</option>
+                        <option value="Folpi">Folpi</option>
+                    </select>
+
+                    <label>Máš něco na srdci?</label>
+                    <textarea name="poznamky" rows="3" placeholder="Chceš nám něco vzkázat? Máš možnost!!"></textarea>
+                </fieldset>
+
+                <div style="text-align: center; font-style: italic; margin-bottom: 20px;">
+                    <label id="souhlas-label">
+                        <input type="checkbox" name="souhlas" id="souhlas" required style="margin-right: 6px; margin-top: 10px; width: auto; display: inline-block;">
+                        Souhlasím se zveřejněním svého jména ve veřejné tabulce<br> a zveřejněním na sociálních sítích v případě výhry.
+                    </label>
+                </div>
+
+                <div style="text-align: center;">
+                    <button type="submit"><i class="fas fa-paper-plane"></i> Odeslat tip</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="vysledek"></div>
+    </div>
+
+    <script>
+        // Nový odkaz na Google Apps Script pro CHNL
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzB0umEOh5MDwma3zOU6Hqu2JyclNnq0nVa2ihjVq0daZ1inLmFY2N6KBYxfPpXJ1LmYg/exec";
+        
+        const deadline = new Date("2026-08-10T17:00:00");
+        const now = new Date();
+
+        if (now >= deadline) {
+            document.getElementById("formularContainer").innerHTML =
+                "<h3 style='color: var(--accent-red); text-align: center; font-family: Oswald; font-size: 1.5rem;'>Omlouváme se, ale dohopsal jsi pozdě.</h3>";
+        } else {
+            // Aktualizovaná loga pro CHNL 26/27
+            const teamLogos = {
+                "Dukla Praha": "https://i.imgur.com/FZ2Lzu2.png",
+                "Karviná": "https://i.imgur.com/j7hx1cA.png",
+                "Slavia Praha B": "https://i.imgur.com/g1Zkhwg.png",
+                "Baník Ostrava B": "https://i.imgur.com/fhj9qlu.png",
+                "Příbram": "https://i.imgur.com/W5HbNQn.png",
+                "Táborsko": "https://i.imgur.com/R3QUiqz.png",
+                "Vlašim": "https://i.imgur.com/RCmUHo8.png",
+                "Viktoria Žižkov": "https://i.imgur.com/iIke5cO.png",
+                "Jihlava": "https://i.imgur.com/39RJLEC.png",
+                "Prostějov": "https://i.imgur.com/9AvvE6n.png",
+                "Opava": "https://i.imgur.com/Jn95z2w.png",
+                "Kroměříž": "https://i.imgur.com/s637GEc.png",
+                "Ústí nad Labem": "https://i.imgur.com/Ep5p3Xb.png",
+                "Třinec": "https://i.imgur.com/rxmY9If.png",
+                "Kladno": "https://i.imgur.com/fuoQwTS.png",
+                "Česká Lípa": "https://i.imgur.com/ccLgaLt.png"
+            };
+
+            const tymy = Object.keys(teamLogos);
+
+            function vytvorDropdowny() {
+                const dropdownsDiv = document.getElementById("dropdowns");
+                for (let i = 0; i < 16; i++) {
+                    const item = document.createElement("div");
+                    item.className = "grid-item";
+
+                    const label = document.createElement("label");
+                    label.textContent = `${i + 1}. místo:`;
+                    
+                    const select = document.createElement("select");
+                    select.name = `misto${i + 1}`;
+                    select.className = "icon-select";
+                    select.required = true;
+                    select.dataset.index = i;
+
+                    const emptyOption = document.createElement("option");
+                    emptyOption.value = "";
+                    emptyOption.textContent = "-- Vyber tým --";
+                    select.appendChild(emptyOption);
+
+                    tymy.forEach(tym => {
+                        const option = document.createElement("option");
+                        option.value = tym;
+                        option.textContent = tym;
+                        select.appendChild(option);
+                    });
+
+                    select.addEventListener("change", aktualizujDropdowny);
+                    item.appendChild(label);
+                    item.appendChild(select);
+                    dropdownsDiv.appendChild(item);
+                }
+            }
+            
+            // Vytvoří prázdná políčka pro živý náhled (volá se na začátku)
+            function vytvorLiveGrid() {
+                const liveGridDiv = document.getElementById("live-grid");
+                liveGridDiv.innerHTML = "";
+                for (let i = 1; i <= 16; i++) {
+                    const teamDiv = document.createElement("div");
+                    teamDiv.className = "history-team";
+                    teamDiv.id = `live-pos-${i}`;
+                    // Zde je tvůj nový obrázek nastaven jako výchozí
+                    teamDiv.innerHTML = `<span class="pos">${i}.</span><img src="https://i.imgur.com/1fk6XQE.png" alt="Zatím nevybráno" style="opacity: 0.2; transition: opacity 0.3s;">`;
+                    liveGridDiv.appendChild(teamDiv);
+                }
+            }
+
+            // Aktualizuje živý náhled na základě vybraných hodnot
+            function aktualizujLiveGrid() {
+                for (let i = 1; i <= 16; i++) {
+                    const select = document.querySelector(`select[name='misto${i}']`);
+                    const liveSlot = document.getElementById(`live-pos-${i}`);
+                    if (!liveSlot) continue;
+                    
+                    const img = liveSlot.querySelector('img');
+                    
+                    if (select && select.value && teamLogos[select.value]) {
+                        // Pokud je vybrán tým, zobraz jeho logo a dej viditelnost na 100%
+                        img.src = teamLogos[select.value];
+                        img.title = select.value;
+                        img.style.opacity = '1';
+                    } else {
+                        // Pokud výběr zrušíš, vrátí se tam tvůj nový zástupný obrázek
+                        img.src = 'https://i.imgur.com/1fk6XQE.png';
+                        img.title = '';
+                        img.style.opacity = '0.2';
+                    }
+                }
+            }
+            
+            function aktualizujDropdowny() {
+                const selecty = Array.from(document.querySelectorAll("select[name^='misto']"));
+                const tymPozice = {};
+
+                selecty.forEach((s, idx) => {
+                    if (s.value) tymPozice[s.value] = idx + 1;
+                });
+
+                selecty.forEach(select => {
+                    const aktualni = select.value;
+                    Array.from(select.options).forEach(option => {
+                        option.classList.remove("used");
+                        if (option.value === "") return;
+                        
+                        if (tymPozice[option.value] && option.value !== aktualni) {
+                            option.disabled = true;
+                            option.classList.add("used");
+                            option.textContent = `${option.value} (${tymPozice[option.value]}. místo)`;
+                        } else {
+                            option.disabled = false;
+                            option.textContent = option.value;
+                        }
+                    });
+                    
+                    select.dispatchEvent(new Event('custom-update'));
+                });
+                aktualizujLiveGrid();
+            }
+
+            function naplnitZakladniCastDropdown() {
+                // Pro CHNL máme pouze dropdown "fandim" (ostatní bonusy jsou text/číslo)
+                const vsechny = document.querySelectorAll("select[name='fandim']");
+                vsechny.forEach(select => {
+                    tymy.forEach(tym => {
+                        const option = document.createElement("option");
+                        option.value = tym;
+                        option.textContent = tym;
+                        select.appendChild(option);
+                    });
+                });
+            }
+
+            function initCustomSelects() {
+                document.querySelectorAll("select.icon-select").forEach(select => {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'custom-select-wrapper';
+                    select.parentNode.insertBefore(wrapper, select);
+                    wrapper.appendChild(select);
+
+                    const trigger = document.createElement('div');
+                    trigger.className = 'custom-select-trigger';
+                    trigger.setAttribute('tabindex', '0'); // Povolí focus pro ovládání klávesnicí
+                    trigger.innerHTML = '<span>-- Vyber tým --</span>';
+                    wrapper.appendChild(trigger);
+
+                    const optionsDiv = document.createElement('div');
+                    optionsDiv.className = 'custom-select-options';
+                    wrapper.appendChild(optionsDiv);
+
+                    // LOGIKA OTEVŘENÍ / VYTVOŘENÍ POLOŽEK
+                    trigger.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Zabrání tomu, aby se kliknutí propadlo do document.click
+                        document.querySelectorAll('.custom-select-wrapper').forEach(w => {
+                            if(w !== wrapper) w.classList.remove('open');
+                        });
+
+                        optionsDiv.innerHTML = '';
+                        
+                        // Pokud je už něco vybráno, přidáme nahoru možnost "Zrušit výběr"
+                        if (select.value !== "") {
+                            const clearDiv = document.createElement('div');
+                            clearDiv.className = 'custom-option';
+                            clearDiv.innerHTML = `<i class="fas fa-times" style="color: var(--accent-red); margin-right: 8px; width: 22px; text-align: center;"></i> <strong style="color: var(--accent-red);">Zrušit výběr</strong>`;
+                            clearDiv.addEventListener('click', (ev) => {
+                                ev.stopPropagation(); // Zabrání probliknutí
+                                select.selectedIndex = 0; // Nastaví prázdnou volbu
+                                select.dispatchEvent(new Event('change'));
+                                trigger.innerHTML = '<span>-- Vyber tým --</span>';
+                                wrapper.classList.remove('open');
+                                trigger.focus();
+                            });
+                            optionsDiv.appendChild(clearDiv);
+                        }
+                        
+                        // Rozdělení položek na aktivní (volné) a použité, pro přesun použitých dospod
+                        const availableOptions = [];
+                        const usedOptions = [];
+                        
+                        Array.from(select.options).forEach((opt, index) => {
+                            if (opt.value === "") return;
+                            if (opt.disabled) {
+                                usedOptions.push({opt, index});
+                            } else {
+                                availableOptions.push({opt, index});
+                            }
+                        });
+
+                        const sortedOptions = [...availableOptions, ...usedOptions];
+
+                        sortedOptions.forEach(item => {
+                            const opt = item.opt;
+                            const index = item.index;
+                            const optDiv = document.createElement('div');
+                            
+                            // Detekce, zda se jedná o právě vybraný tým v tomto poli
+                            const isCurrentSelection = (opt.value === select.value);
+                            
+                            optDiv.className = 'custom-option' + (opt.disabled ? ' disabled' : '') + (isCurrentSelection ? ' focused' : '');
+                            optDiv.dataset.index = index;
+                            
+                            let logoHtml = teamLogos[opt.value] ? `<img src="${teamLogos[opt.value]}" class="opt-logo">` : '';
+                            optDiv.innerHTML = `${logoHtml} ${opt.text}`;
+                            
+                            if(!opt.disabled) {
+                                optDiv.addEventListener('click', (ev) => {
+                                    ev.stopPropagation(); // Zabrání okamžitému zavření celého dokumentu a chybám
+                                    
+                                    // Zvolí tým (i kdyby to byl ten samý, nic se neresetuje)
+                                    select.selectedIndex = index;
+                                    trigger.innerHTML = `<span>${logoHtml} ${opt.text}</span>`;
+                                    
+                                    select.dispatchEvent(new Event('change'));
+                                    wrapper.classList.remove('open');
+                                    trigger.focus();
+                                });
+                            }
+                            optionsDiv.appendChild(optDiv);
+                        });
+
+                        wrapper.classList.toggle('open');
+                    });
+                    
+                    // OVLÁDÁNÍ KLÁVESNICÍ (Šipky, Enter, Esc)
+                    trigger.addEventListener('keydown', (e) => {
+                        if (!wrapper.classList.contains('open')) {
+                            if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+                                e.preventDefault();
+                                trigger.click();
+                            }
+                            return;
+                        }
+
+                        const options = Array.from(optionsDiv.querySelectorAll('.custom-option:not(.disabled)'));
+                        if (options.length === 0) return;
+
+                        let currentIndex = options.findIndex(opt => opt.classList.contains('focused'));
+
+                        if (e.key === 'ArrowDown') {
+                            e.preventDefault();
+                            currentIndex = (currentIndex + 1) % options.length;
+                        } else if (e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            currentIndex = currentIndex <= 0 ? options.length - 1 : currentIndex - 1;
+                        } else if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (currentIndex >= 0) options[currentIndex].click();
+                            return;
+                        } else if (e.key === 'Escape') {
+                            wrapper.classList.remove('open');
+                            trigger.focus();
+                            return;
+                        } else {
+                            return; // Jiné klávesy ignorujeme
+                        }
+
+                        options.forEach(opt => opt.classList.remove('focused'));
+                        if (currentIndex >= 0) {
+                            options[currentIndex].classList.add('focused');
+                            options[currentIndex].scrollIntoView({ block: 'nearest' });
+                        }
+                    });
+                    
+                    select.addEventListener('custom-update', () => {
+                        const opt = select.options[select.selectedIndex];
+                        if(opt && opt.value !== "") {
+                            let logoHtml = teamLogos[opt.value] ? `<img src="${teamLogos[opt.value]}" class="opt-logo">` : '';
+                            trigger.innerHTML = `<span>${logoHtml} ${opt.text}</span>`;
+                        } else {
+                            trigger.innerHTML = '<span>-- Vyber tým --</span>';
+                        }
+                    });
+                });
+
+                // Kliknutí kamkoliv jinam na stránce zavře všechny otevřené roletky,
+                // aniž by to změnilo to, co v nich máš zrovna vybrané.
+                document.addEventListener('click', () => {
+                    document.querySelectorAll('.custom-select-wrapper').forEach(w => w.classList.remove('open'));
+                });
+            }
+            
+            document.getElementById("souhlas").addEventListener("change", function() {
+                const label = document.getElementById("souhlas-label");
+                if (this.checked) {
+                    label.classList.add("green");
+                } else {
+                    label.classList.remove("green");
+                }
+            });
+
+            document.getElementById("tipForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: formData,
+                    mode: "no-cors"
+                });
+
+                document.getElementById("vysledek").innerHTML = "<h3 style='color: var(--accent-primary);'>Děkujeme! Tip byl úspěšně odeslán.</h3>";
+                this.reset();
+                setTimeout(() => { 
+                    aktualizujDropdowny(); 
+                    document.querySelectorAll("select.icon-select").forEach(s => s.dispatchEvent(new Event('custom-update')));
+                }, 100);
+            });
+
+            vytvorDropdowny();
+            vytvorLiveGrid(); 
+            naplnitZakladniCastDropdown();
+            initCustomSelects();
+        }
+    </script>
+</body>
+</html>
