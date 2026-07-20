@@ -254,29 +254,30 @@ header { text-align: center; margin: 20px 0 20px 0; }
     position: relative;
     max-width: 400px;
     margin: 0 auto 30px auto;
+    display: flex;
+    align-items: center;
 }
 
 .search-container .fa-search {
     position: absolute;
     left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
     color: var(--text-muted);
     font-size: 1.1rem;
-    pointer-events: none; /* Zajistí, že přes lupu půjde normálně kliknout do pole */
+    pointer-events: none;
+    z-index: 10;
 }
 
 .search-input {
     width: 100%;
-    /* Tady je kouzlo: 45px zleva odtlačí text od ikonky lupy */
-    padding: 12px 15px 12px 45px; 
+    /* Tady je klíč: 45px zleva natvrdo odtlačí text od lupy */
+    padding: 12px 15px 12px 45px !important; 
     border: 1px solid var(--border-color);
     border-radius: 8px;
     background-color: var(--bg-main);
     color: var(--text-main);
     font-family: 'Inter', sans-serif;
     font-size: 1rem;
-    box-sizing: border-box; /* Zajistí, že se pole neroztáhne mimo kontejner */
+    box-sizing: border-box;
 }
 
 .search-input:focus {
