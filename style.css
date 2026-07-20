@@ -131,31 +131,26 @@
 
 /* ZÁKLADNÍ BARVY A PROMĚNNÉ */
 :root {
-    --bg-main: #0b111e;
-    --bg-card: #161d2b;
-    --border-color: #232b38;
+    /* Nové KBZ zelené barvy inspirované vizuálem */
+    --bg-main: #061709; /* Velmi tmavá zelená jako základ */
+    --bg-card: rgba(10, 35, 15, 0.7); /* Poloprůhledná zelená pro panely */
     --text-main: #ffffff;
-    --text-muted: #8b95a5;
-    --accent-primary: #01fe01; /* Tvá nová neonově zelená */
-    --accent-red: #ff4d4d;     /* Červená zůstává */
+    --text-muted: #8892b0;
+    --border-color: rgba(1, 254, 1, 0.2);
+    /* Výrazná KBZ neonová zelená (převzatá z původní Chance barvy) */
+    --accent-primary: #01fe01; 
+    --accent-red: #ff4d4d;
 }
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--bg-main);
     color: var(--text-main);
-    line-height: 1.5;
-    padding: 20px;
-    padding-bottom: 50px;
-    background-image: url('pozadi.jpeg');
+    /* Gradient přecházející z lesní zelené do téměř černé, prolnutý přes tvůj obrázek */
+    background: linear-gradient(135deg, rgba(3, 35, 12, 0.88) 0%, rgba(1, 10, 3, 0.96) 100%), url('pozadi.jpeg') no-repeat center center fixed;
     background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
 }
 
 .wrapper, .container { width: 100%; max-width: 1200px; margin: 0 auto; position: relative; }
