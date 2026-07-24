@@ -8,18 +8,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
+        /* Úprava horního panelu s počtem a větším vyhledáváním */
         .top-controls {
             display: flex; justify-content: space-between; align-items: center; max-width: 1000px; margin: 0 auto 30px auto; flex-wrap: wrap; gap: 20px;
         }
         .total-fans { font-size: 1.5rem; font-family: 'Oswald', sans-serif; color: var(--accent-primary); display: flex; align-items: center; gap: 10px; }
-        .top-controls .search-container { margin: 0; max-width: 350px; }
         
+        /* Zvětšené vyhledávací pole */
+        .top-controls .search-container { margin: 0; max-width: 450px; width: 100%; display: flex; align-items: center; position: relative; }
+        .top-controls .search-container .fa-search { position: absolute; left: 15px; color: var(--text-muted); font-size: 1.2rem; pointer-events: none; z-index: 10; }
+        .top-controls .search-input { width: 100%; padding: 14px 15px 14px 50px !important; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-main); color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 1.1rem; box-sizing: border-box; }
+        .top-controls .search-input:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 10px rgba(1, 254, 1, 0.2); }
+        
+        /* Seznam fanoušků */
         .fan-row {
             background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; margin-bottom: 10px;
             display: flex; align-items: center; cursor: pointer; transition: all 0.2s; max-width: 1000px; margin-left: auto; margin-right: auto;
         }
         .fan-row:hover { border-color: var(--accent-primary); box-shadow: 0 0 15px rgba(1, 254, 1, 0.15); transform: scale(1.01); }
-        .fan-name { font-weight: 700; font-size: 1.1rem; width: 180px; flex-shrink: 0; color: #fff; }
+        .fan-name { font-weight: 700; font-size: 1.1rem; width: 200px; flex-shrink: 0; color: #fff; }
         
         .fan-logos { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 5px; align-items: center; flex-grow: 1; }
         .fan-logos::-webkit-scrollbar { height: 6px; }
@@ -55,10 +62,38 @@
 </head>
 <body>
 
+    <!-- Zkopírovaná přesná navigační lišta -->
+    <nav class="main-navbar">
+        <div class="nav-left">
+            <a href="index.html" class="home-btn"><i class="fas fa-home"></i></a>
+        </div>
+        <div class="nav-center-wrap">
+            <div class="nav-group">
+                <span class="nav-group-title">Aktivní tipovačky</span>
+                <div class="nav-group-links">
+                    <a href="2627_formchanceliga.html" class="nav-tile chance-color">Chance liga</a>
+                    <a href="2627_formchnl.html" class="nav-tile chnl-color">Chance národní liga</a>
+                </div>
+            </div>
+            <div class="nav-group">
+                <span class="nav-group-title">Vyhodnocené soutěže</span>
+                <div class="nav-group-links">
+                    <a href="2526_chanceliga.html" class="nav-tile chance-color">Chance liga</a>
+                    <a href="2526_chnl.html" class="nav-tile chnl-color">Chance národní liga</a>
+                </div>
+            </div>
+        </div>
+        <div class="nav-right">
+            <a href="https://discord.gg/kbz" target="_blank" class="discord-btn"><i class="fab fa-discord"></i> KBZ DISCORD</a>
+            <a href="https://shop.kudybezizajic.cz/" target="_blank" class="shop-btn"><i class="fas fa-shopping-cart"></i> KBZ SHOP</a>
+        </div>
+    </nav>
+
     <div class="container">
-        <!-- Hlavička -->
+        <!-- Přesně stejná hlavička jako u vyhodnocení -->
         <header style="display: flex; align-items: center; justify-content: center; gap: 50px; margin-top: 10px; margin-bottom: 40px;">
             <img src="KBZ_basic.png" alt="KBZ Logo" style="height: 180px; object-fit: contain;">
+            
             <div style="text-align: center;">
                 <div class="logo-text" style="margin: 0;">KBZ <span>PROBÍHAJÍCÍ TIPOVAČKA</span></div>
                 <div style="margin-top: 15px;">
@@ -67,7 +102,7 @@
             </div>
         </header>
 
-        <!-- Horní panel -->
+        <!-- Horní panel: Počet tipujících + Velké hledání -->
         <div class="top-controls">
             <div class="total-fans" id="fans-count">
                 <i class="fas fa-spinner fa-spin"></i> Načítám data...
@@ -79,10 +114,10 @@
             </div>
         </div>
 
-        <div class="section-title">Zajíci (Odborníci)</div>
+        <div class="section-title" style="border: none;">Zajíci (Odborníci)</div>
         <div id="zajici-list" style="margin-bottom: 40px;"></div>
 
-        <div class="section-title">Fanoušci</div>
+        <div class="section-title" style="border: none;">Fanoušci</div>
         <div id="fans-list"></div>
     </div>
 
@@ -102,11 +137,11 @@
 
     <script>
         // -------------------------------------------------------------
-        // DŮLEŽITÉ: Zde vlož odkaz na své veřejné CSV "Přehled fans"
+        // DŮLEŽITÉ: Zde vlož odkaz na své veřejné CSV (končí na &output=csv)
         // -------------------------------------------------------------
         const CSV_URL = "https://script.google.com/macros/s/AKfycbxl_tJGW9-uIULtF44NDxCcRqB2COfSGrjC17CHLqQXiWgh2vFgx7PvKIsP8nj9ZYeJ/exec"; 
 
-        // Definice otázek a jejich indexů podle Google Apps Scriptu
+        // Definice otázek (indexy odpovídají sloupcům v tabulce)
         const bonusQuestions = [
             { index: 20, label: "Kdo vyhraje základní část" },
             { index: 21, label: "Kdo vyhraje baráž" },
@@ -140,11 +175,9 @@
 
         let allData = [];
 
-        // Funkce pro rozluštění buňky z Google CSV (pokud je to vzorec obrazku, vyndá url)
         function parseCell(cellValue) {
             if (!cellValue) return "-";
             let val = cellValue.trim();
-            // Najde text: =IMAGE("https://...")
             let imgMatch = val.match(/=IMAGE\("([^"]+)"/i);
             if (imgMatch && imgMatch[1]) {
                 return `<img src="${imgMatch[1]}" alt="Logo">`;
@@ -152,7 +185,6 @@
             return val;
         }
 
-        // Vlastní CSV parser (poradí si s uvozovkami)
         function parseCSV(text) {
             let rows = [];
             let row = [];
@@ -185,7 +217,6 @@
             return rows;
         }
 
-        // Vykreslení řádku
         function createRowHTML(row, idIndex) {
             const jmeno = parseCell(row[2]);
             const fandim = parseCell(row[3]);
@@ -211,14 +242,14 @@
                 .then(res => res.text())
                 .then(text => {
                     const parsed = parseCSV(text);
-                    allData = parsed.slice(1).filter(r => r.length > 10 && r[2]); // odstranit hlavičku a prázdné
+                    allData = parsed.slice(1).filter(r => r.length > 10 && r[2]); 
                     
                     document.getElementById('fans-count').innerHTML = `<i class="fas fa-users"></i> ${allData.length} Tipujících`;
                     renderLists();
                 })
                 .catch(err => {
                     console.error(err);
-                    document.getElementById('fans-count').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Chyba načítání`;
+                    document.getElementById('fans-count').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Chyba načítání (Zkontroluj odkaz na CSV!)`;
                 });
         }
 
@@ -236,7 +267,7 @@
 
                 const rowHTML = createRowHTML(row, idx);
                 
-                // Určení zajíců (pokud obsahují jména)
+                // Jména Zajícu se přesunou do horní sekce
                 if (["Jan Podroužek", "Zdeněk Folprecht", "Jan Vacek", "Martin Novotný"].includes(jmeno)) {
                     listZajici.innerHTML += rowHTML;
                 } else {
@@ -245,28 +276,24 @@
             });
         }
 
-        // Vyhledávání
         document.getElementById('searchInput').addEventListener('input', (e) => {
             renderLists(e.target.value);
         });
 
-        // Ovládání Modalu
         function openModal(dataIndex) {
             const row = allData[dataIndex];
-            document.getElementById('modal-name').innerHTML = parseCell(row[2]) + ` <span style="font-size:1rem; color:var(--text-muted); text-transform:none;">(Fandí: ${parseCell(row[3])})</span>`;
+            document.getElementById('modal-name').innerHTML = parseCell(row[2]) + ` <span style="font-size:1.2rem; color:var(--text-muted); text-transform:none;">(Fandí: ${parseCell(row[3])})</span>`;
             
-            // Vypsání 1-16
             let posHTML = "";
             for (let i = 4; i <= 19; i++) {
                 posHTML += `<div class="pos-item"><span style="color:var(--accent-primary)">${i - 3}.</span> ${parseCell(row[i])}</div>`;
             }
             document.getElementById('modal-positions').innerHTML = posHTML;
 
-            // Vypsání bonusovek
             let bonusHTML = "";
             bonusQuestions.forEach(bq => {
                 const answer = parseCell(row[bq.index]);
-                if (answer && answer !== "-") {
+                if (answer && answer !== "-" && answer !== "") {
                     bonusHTML += `
                         <div class="bonus-item">
                             <div class="bonus-label">${bq.label}</div>
@@ -284,12 +311,10 @@
             document.getElementById('detailModal').style.display = 'none';
         }
 
-        // Zavřít kliknutím mimo okno
         window.onclick = function(event) {
             if (event.target == document.getElementById('detailModal')) closeModal();
         }
 
-        // Spuštění po načtení
         window.addEventListener('DOMContentLoaded', loadData);
     </script>
 </body>
