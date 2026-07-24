@@ -49,6 +49,24 @@
     color: #000;
 }
 
+/* Zajištění, že se absolutní prvek uvnitř neodtrhne od dlaždice */
+.nav-group-links a.nav-tile {
+    position: relative;
+    padding-bottom: 25px; /* Větší místo dole, aby text nenarazil do čísla */
+}
+
+/* Malé počítadlo v pravém dolním rohu */
+.participant-count {
+    position: absolute;
+    bottom: 5px;
+    right: 8px;
+    font-size: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    color: rgba(0, 0, 0, 0.7); /* Mírně průhledná černá (na zelených dlaždicích vypadá dobře) */
+    font-weight: 600;
+    text-transform: none;
+}
+
 /* Středový blok s kategoriemi */
 .nav-center-wrap {
     display: flex;
