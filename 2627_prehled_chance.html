@@ -12,7 +12,7 @@
 
     <div class="container">
         
-        <!-- HLAVIČKA: Správně nahoře nad lištou -->
+        <!-- HLAVIČKA -->
         <header style="display: flex; align-items: center; justify-content: center; gap: 50px; margin-top: 10px; margin-bottom: 30px;">
             <img src="KBZ_basic.png" alt="KBZ Logo" style="height: 180px; object-fit: contain;">
             <div style="text-align: center;">
@@ -51,7 +51,7 @@
             </div>
         </nav>
 
-        <!-- POČET TIPUJÍCÍCH (Přebírá vzhled z vyhodnocení) -->
+        <!-- POČET TIPUJÍCÍCH -->
         <div class="stats-header" style="justify-content: center;">
             <div class="stat-item">
                 <div class="stat-value" id="count-players"><i class="fas fa-spinner fa-spin"></i></div>
@@ -101,11 +101,9 @@
             <div class="modal-content">
                 
                 <div class="modal-subtitle" style="margin-top: 10px;">Tip na konečné umístění týmů</div>
-                <!-- Mřížka pro loga (převzatá z tvého CSS pro vyhodnocení) -->
                 <div class="teams-grid-8x2" id="modalUserTeams"></div>
 
                 <div class="modal-subtitle">Bonusové otázky</div>
-                <!-- Seznam bonusů (převzato z tvého CSS) -->
                 <div class="bonus-list" id="modalBonuses"></div>
                 
             </div>
@@ -113,12 +111,10 @@
     </div>
 
     <script>
-        // -------------------------------------------------------------
-        // Zde vlož odkaz na své veřejné CSV "Přehled fans"
-        // (Odkaz musí končit na pub?gid=XXXXX&single=true&output=csv)
-        // -------------------------------------------------------------
+        // Odkaz pro Chance ligu
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRUxumfQeidDrjcs1T3d2HftSnwGv93G-mMlqw3wpaLe_Kae0XSvSqMRTSRWiNmZIhgboprShotvxI6/pub?gid=1446924552&single=true&output=csv"; 
 
+        // Otázky bez "Vzkaz" na konci (celkem 27 otázek)
         const bonusQuestionsText = [
             "Kdo ovládne základní část soutěže?", 
             "Sestoupí prvoligový tým do druhé ligy po prohře v baráži?",
@@ -146,8 +142,7 @@
             "Který tým během zápasů získá nejvíce míčů od soupeře?",
             "V zápase jakého týmu padne nejvíce branek?",
             "V zápase jakého týmu padne nejvíce žlutých karet?",
-            "Kdo vyhraje celosezónní Zajíc Tipovačku?",
-            "Máš něco na srdci?"
+            "Kdo vyhraje celosezónní Zajíc Tipovačku?"
         ];
 
         const teamLogos = {
@@ -166,7 +161,19 @@
 
         function odstranDiakritiku(text) { return text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : ""; }
         function getInitials(name) { const parts = name.trim().split(' '); return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase(); }
-        function ziskejLogoKlubuHTML(clubName) { if (!clubName) return ''; const logo = teamLogos[clubName.trim()]; return logo ? `<img src="${logo}" class="fav-club-badge" title="Oblíbený klub: ${clubName}">` : ''; }
+        
+        // Pomocná funkce pro bezpečné získání odkazu na logo
+        function getLogoSrc(cellValue) {
+            if (!cellValue || cellValue === "-") return '';
+            if (cellValue.startsWith('http')) return cellValue;
+            if (teamLogos[cellValue]) return teamLogos[cellValue];
+            return '';
+        }
+
+        function ziskejLogoKlubuHTML(clubName) { 
+            let src = getLogoSrc(clubName.trim());
+            return src ? `<img src="${src}" class="fav-club-badge" title="Oblíbený klub: ${clubName}">` : ''; 
+        }
         
         function getAvatarHTML(name) {
             const cleanName = name.toLowerCase();
@@ -177,11 +184,12 @@
             return getInitials(name);
         }
 
+        // Opravený parser, který správně louská URL z Google vzorců bez chyb
         function parseCell(cellValue) {
             if (!cellValue) return "-";
-            let val = cellValue.trim().replace(/"/g, '');
-            let imgMatch = val.match(/=IMAGE\("([^"]+)"/i);
-            if (imgMatch && imgMatch[1]) return imgMatch[1]; 
+            let val = cellValue.toString().trim().replace(/^"|"$/g, '').replace(/""/g, '"');
+            let imgMatch = val.match(/IMAGE\(\s*"([^"]+)"/i);
+            if (imgMatch && imgMatch[1]) return imgMatch[1].trim(); 
             return val;
         }
 
@@ -199,16 +207,11 @@
         }
 
         function nactiData() {
-            if (CSV_URL.includes("VLOZ_ODKAZ")) {
-                document.getElementById('tabulka-telo').innerHTML = '<tr><td colspan="3" class="loader" style="color:var(--accent-red)">Zadejte prosím URL odkaz na CSV do kódu.</td></tr>';
-                return;
-            }
             fetch(CSV_URL)
                 .then(res => res.text())
                 .then(text => {
                     const parsed = parseCSVData(text);
                     vsichniHraci = [];
-                    // Přeskočíme hlavičku tabulky (i = 1)
                     let p = 1;
                     for (let i = 1; i < parsed.length; i++) {
                         const r = parsed[i];
@@ -229,7 +232,6 @@
 
         function vykresliZajice() {
             const container = document.getElementById('zajici-container'); container.innerHTML = '';
-            // Filtrace Zajíců
             const zajici = vsichniHraci.filter(h => parseCell(h[2]).toLowerCase().match(/(podroužek|folpi|folprecht|sodoma|vacek|dvorka|novotný)/));
             if(zajici.length === 0) { container.innerHTML = '<div class="loader">Zajíci ještě netipovali...</div>'; return; }
             
@@ -253,14 +255,11 @@
 
         function vykresliTabulku() {
             const tbody = document.getElementById('tabulka-telo'); tbody.innerHTML = ''; 
-            
-            // Filtrujeme fanoušky, co nejsou Zajíci
             const fanousci = vsichniHraci.filter(h => !parseCell(h[2]).toLowerCase().match(/(podroužek|folpi|folprecht|sodoma|vacek|dvorka|novotný)/));
             
             fanousci.forEach(hrac => {
                 const jmeno = parseCell(hrac[2]);
                 const klub = parseCell(hrac[3]);
-                
                 const tr = document.createElement('tr'); 
                 tr.onclick = () => otevriModal(hrac); 
                 
@@ -322,7 +321,7 @@
             usrT.innerHTML = '';
             for (let j = 4; j <= 19; j++) {
                 let cellVal = parseCell(hrac[j]);
-                let src = cellVal.startsWith('http') ? cellVal : (teamLogos[cellVal] || 'https://i.imgur.com/8N4Jp62.png');
+                let src = getLogoSrc(cellVal) || 'https://i.imgur.com/8N4Jp62.png';
                 let nazev = cellVal.startsWith('http') ? 'Tým' : cellVal;
                 
                 usrT.innerHTML += `
@@ -333,13 +332,16 @@
                 `;
             }
 
-            // Bonusové otázky
+            // Bonusové otázky (zobrazeny bez Vzkazu)
             const bon = document.getElementById('modalBonuses');
             bon.innerHTML = '';
             for (let k = 0; k < bonusQuestionsText.length; k++) {
                 const colIndex = 20 + k;
                 const odpoved = parseCell(hrac[colIndex]);
                 if (odpoved && odpoved !== "-" && odpoved !== "") {
+                    let logoSrc = getLogoSrc(odpoved);
+                    let logoHtml = logoSrc ? `<img src="${logoSrc}" style="width:32px; height:32px; object-fit:contain;">` : '';
+                    
                     bon.innerHTML += `
                         <div class="bonus-item">
                             <div class="bonus-text">
@@ -347,7 +349,7 @@
                                 <div class="b-answer">${odpoved}</div>
                             </div>
                             <div class="b-pts" style="display:flex; align-items:center;">
-                                ${teamLogos[odpoved] ? `<img src="${teamLogos[odpoved]}" style="width:32px; height:32px; object-fit:contain;">` : ``}
+                                ${logoHtml}
                             </div>
                         </div>
                     `;
