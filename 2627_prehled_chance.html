@@ -7,69 +7,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Panel pro vyhledávání a počet uživatelů (Zvětšený) */
-        .top-controls {
-            display: flex; justify-content: space-between; align-items: center; max-width: 1000px; margin: 0 auto 40px auto; flex-wrap: wrap; gap: 20px;
-        }
-        .total-fans { font-size: 1.5rem; font-family: 'Oswald', sans-serif; color: var(--accent-primary); display: flex; align-items: center; gap: 10px; }
-        .top-controls .search-container { margin: 0; max-width: 450px; width: 100%; display: flex; align-items: center; position: relative; }
-        .top-controls .search-container .fa-search { position: absolute; left: 15px; color: var(--text-muted); font-size: 1.2rem; pointer-events: none; z-index: 10; }
-        .top-controls .search-input { width: 100%; padding: 14px 15px 14px 50px !important; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-main); color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 1.1rem; box-sizing: border-box; }
-        .top-controls .search-input:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 10px rgba(1, 254, 1, 0.2); }
-        
-        /* Styl pro jeden řádek fanouška v seznamu */
-        .fan-row {
-            background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 15px; margin-bottom: 10px;
-            display: flex; align-items: center; cursor: pointer; transition: all 0.2s; max-width: 1000px; margin-left: auto; margin-right: auto;
-        }
-        .fan-row:hover { border-color: var(--accent-primary); box-shadow: 0 0 15px rgba(1, 254, 1, 0.15); transform: scale(1.01); }
-        .fan-name { font-weight: 700; font-size: 1.1rem; width: 220px; flex-shrink: 0; color: #fff; display: flex; align-items: center; gap: 10px; }
-        .fan-name .fav-club-badge { width: 25px; height: 25px; object-fit: contain; }
-        
-        /* Horizontální rolování pro 16 log na řádku */
-        .fan-logos { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; align-items: center; flex-grow: 1; }
-        .fan-logos::-webkit-scrollbar { height: 6px; }
-        .fan-logos::-webkit-scrollbar-thumb { background-color: var(--accent-primary); border-radius: 10px; }
-        .fan-logos::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
-        
-        .logo-item { display: flex; flex-direction: column; align-items: center; min-width: 35px; }
-        .logo-item span { font-size: 0.7rem; color: var(--text-muted); font-family: 'Oswald', sans-serif; margin-bottom: 2px; }
-        .logo-item img { width: 32px; height: 32px; object-fit: contain; }
-        .logo-divider { width: 2px; height: 35px; background-color: rgba(255,255,255,0.1); margin: 0 10px; flex-shrink: 0; }
-    </style>
 </head>
 <body>
 
-    <!-- Přesná kopie tvé horní navigační lišty -->
-    <nav class="main-navbar">
-        <a href="index.html" class="nav-home-btn" title="Domů"><i class="fas fa-home"></i></a>
-        <div class="nav-center-wrap">
-            <div class="nav-group">
-                <span class="nav-group-title">Aktivní tipovačky</span>
-                <div class="nav-group-links">
-                    <a href="2627_formchanceliga.html" class="nav-tile chance-color">Chance liga</a>
-                    <a href="2627_formchancenarodniliga.html" class="nav-tile chnl-color">Chance národní liga</a>
-                </div>
-            </div>
-            <div class="nav-separator"></div>
-            <div class="nav-group">
-                <span class="nav-group-title">Vyhodnocené soutěže</span>
-                <div class="nav-group-links">
-                    <a href="2526_chanceliga.html" class="nav-tile chance-color">Chance liga</a>
-                    <a href="2526_chnl.html" class="nav-tile chnl-color">Chance národní liga</a>
-                </div>
-            </div>
-        </div>
-        <div class="nav-right-wrap">
-            <a href="https://discord.gg/p8WEPtjahD" target="_blank" class="nav-discord-btn"><i class="fab fa-discord"></i> KBZ DISCORD</a>
-            <a href="https://www.kudybezizajic.com/" target="_blank" class="nav-shop-btn"><i class="fas fa-shopping-cart"></i> KBZ SHOP</a>
-        </div>
-    </nav>
-
     <div class="container">
         
-        <!-- Přesná kopie hlavičky, upravený text -->
+        <!-- HLAVIČKA: Správně nahoře nad lištou -->
         <header style="display: flex; align-items: center; justify-content: center; gap: 50px; margin-top: 10px; margin-bottom: 30px;">
             <img src="KBZ_basic.png" alt="KBZ Logo" style="height: 180px; object-fit: contain;">
             <div style="text-align: center;">
@@ -80,27 +23,74 @@
             </div>
         </header>
 
-        <!-- Horní panel: Počet tipujících + Velké hledání -->
-        <div class="top-controls">
-            <div class="total-fans" id="fans-count">
-                <i class="fas fa-spinner fa-spin"></i> Načítám data...
+        <!-- NAVIGAČNÍ LIŠTA -->
+        <nav class="main-navbar">
+            <a href="index.html" class="nav-home-btn" title="Domů">
+                <i class="fas fa-home"></i>
+            </a>
+            <div class="nav-center-wrap">
+                <div class="nav-group">
+                    <span class="nav-group-title">Aktivní tipovačky</span>
+                    <div class="nav-group-links">
+                        <a href="2627_formchanceliga.html" class="nav-tile chance-color">Chance liga</a>
+                        <a href="2627_formchancenarodniliga.html" class="nav-tile chnl-color">Chance národní liga</a>
+                    </div>
+                </div>
+                <div class="nav-separator"></div>
+                <div class="nav-group">
+                    <span class="nav-group-title">Vyhodnocené soutěže</span>
+                    <div class="nav-group-links">
+                        <a href="2526_chanceliga.html" class="nav-tile chance-color">Chance liga</a>
+                        <a href="2526_chnl.html" class="nav-tile chnl-color">Chance národní liga</a>
+                    </div>
+                </div>
             </div>
-            <div class="search-container">
-                <i class="fas fa-search"></i>
-                <input type="text" class="search-input" id="searchInput" placeholder="Vyhledej jméno..." oninput="hledejHrace()">
+            <div class="nav-right-wrap">
+                <a href="https://discord.gg/p8WEPtjahD" target="_blank" class="nav-discord-btn"><i class="fab fa-discord"></i> KBZ DISCORD</a>
+                <a href="https://www.kudybezizajic.com/" target="_blank" class="nav-shop-btn"><i class="fas fa-shopping-cart"></i> KBZ SHOP</a>
+            </div>
+        </nav>
+
+        <!-- POČET TIPUJÍCÍCH (Přebírá vzhled z vyhodnocení) -->
+        <div class="stats-header" style="justify-content: center;">
+            <div class="stat-item">
+                <div class="stat-value" id="count-players"><i class="fas fa-spinner fa-spin"></i></div>
+                <div class="stat-label">Počet tipujících pro sezónu 26/27</div>
             </div>
         </div>
 
+        <!-- VYHLEDÁVÁNÍ -->
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Napiš jméno a hned uvidíš tipy..." oninput="hledejHrace()">
+            <div class="autocomplete-results" id="searchResults"></div>
+        </div>
+
+        <!-- ZAJÍCI -->
         <h2 class="section-title">🎙️ Tipy Zajíců</h2>
-        <div id="zajici-list" style="margin-bottom: 40px;">
+        <div class="zajici-grid" id="zajici-container">
             <div class="loader">Načítám Zajíce...</div>
         </div>
 
-        <h2 class="section-title">👥 Fanoušci</h2>
-        <div id="fans-list"></div>
+        <!-- TABULKA FANOUŠKŮ -->
+        <h2 class="section-title">👥 Všichni tipující</h2>
+        <div class="table-container">
+            <table>
+                <thead id="tabulka-hlavicka-container">
+                    <tr id="tabulka-hlavicka">
+                        <th style="text-align:center;">#</th>
+                        <th>Jméno tipujícího</th>
+                        <th style="text-align:right;">Oblíbený klub</th>
+                    </tr>
+                </thead>
+                <tbody id="tabulka-telo">
+                    <tr><td colspan="3" class="loader">Načítám data... Může to chvíli trvat.</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Modální okno pro detail hráče -->
+    <!-- MODÁLNÍ OKNO PRO DETAIL HRÁČE -->
     <div class="modal-overlay" id="playerModal" onclick="zavriModal(event)">
         <div class="modal-card">
             <i class="fas fa-times close-btn" onclick="document.getElementById('playerModal').style.display='none'"></i>
@@ -110,12 +100,12 @@
             </div>
             <div class="modal-content">
                 
-                <div class="modal-subtitle" style="margin-top: 10px;">Tipy na konečné umístění týmů</div>
-                <!-- Využita existující CSS třída teams-grid-8x2 z tvého vyhodnocení -->
+                <div class="modal-subtitle" style="margin-top: 10px;">Tip na konečné umístění týmů</div>
+                <!-- Mřížka pro loga (převzatá z tvého CSS pro vyhodnocení) -->
                 <div class="teams-grid-8x2" id="modalUserTeams"></div>
 
                 <div class="modal-subtitle">Bonusové otázky</div>
-                <!-- Využita existující CSS třída bonus-list z tvého vyhodnocení -->
+                <!-- Seznam bonusů (převzato z tvého CSS) -->
                 <div class="bonus-list" id="modalBonuses"></div>
                 
             </div>
@@ -124,12 +114,11 @@
 
     <script>
         // -------------------------------------------------------------
-        // DŮLEŽITÉ: Zde vlož odkaz na své veřejné CSV "Přehled fans"
+        // Zde vlož odkaz na své veřejné CSV "Přehled fans"
         // (Odkaz musí končit na pub?gid=XXXXX&single=true&output=csv)
         // -------------------------------------------------------------
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRUxumfQeidDrjcs1T3d2HftSnwGv93G-mMlqw3wpaLe_Kae0XSvSqMRTSRWiNmZIhgboprShotvxI6/pub?gid=1446924552&single=true&output=csv"; 
 
-        // Definice otázek přesně podle formuláře Chance Ligy 26/27
         const bonusQuestionsText = [
             "Kdo ovládne základní část soutěže?", 
             "Sestoupí prvoligový tým do druhé ligy po prohře v baráži?",
@@ -161,7 +150,6 @@
             "Máš něco na srdci?"
         ];
 
-        // Definice log převzatá z tvého vyhodnocení
         const teamLogos = {
             "Slavia Praha": "https://i.imgur.com/g1Zkhwg.png", "Sparta Praha": "https://i.imgur.com/NlyfFAC.png",
             "Viktoria Plzeň": "https://i.imgur.com/SPtzSGy.png", "Baník Ostrava": "https://i.imgur.com/fhj9qlu.png",
@@ -178,6 +166,7 @@
 
         function odstranDiakritiku(text) { return text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : ""; }
         function getInitials(name) { const parts = name.trim().split(' '); return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase(); }
+        function ziskejLogoKlubuHTML(clubName) { if (!clubName) return ''; const logo = teamLogos[clubName.trim()]; return logo ? `<img src="${logo}" class="fav-club-badge" title="Oblíbený klub: ${clubName}">` : ''; }
         
         function getAvatarHTML(name) {
             const cleanName = name.toLowerCase();
@@ -188,12 +177,11 @@
             return getInitials(name);
         }
 
-        // Parsování buněk (odstranění =IMAGE vzorců, pokud je zanechal starý skript)
         function parseCell(cellValue) {
             if (!cellValue) return "-";
             let val = cellValue.trim().replace(/"/g, '');
             let imgMatch = val.match(/=IMAGE\("([^"]+)"/i);
-            if (imgMatch && imgMatch[1]) return imgMatch[1]; // Vrátí jen URL z IMAGE vzorce
+            if (imgMatch && imgMatch[1]) return imgMatch[1]; 
             return val;
         }
 
@@ -212,7 +200,7 @@
 
         function nactiData() {
             if (CSV_URL.includes("VLOZ_ODKAZ")) {
-                document.getElementById('fans-count').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Doplň URL adresu CSV!`;
+                document.getElementById('tabulka-telo').innerHTML = '<tr><td colspan="3" class="loader" style="color:var(--accent-red)">Zadejte prosím URL odkaz na CSV do kódu.</td></tr>';
                 return;
             }
             fetch(CSV_URL)
@@ -220,102 +208,123 @@
                 .then(text => {
                     const parsed = parseCSVData(text);
                     vsichniHraci = [];
-                    // Začínáme od indexu 1, abychom přeskočili hlavičku tabulky
+                    // Přeskočíme hlavičku tabulky (i = 1)
+                    let p = 1;
                     for (let i = 1; i < parsed.length; i++) {
                         const r = parsed[i];
                         if(r.length > 10 && parseCell(r[2]) !== "-") {
-                            vsichniHraci.push(r);
+                            vsichniHraci.push({ ...r, originalIndex: i, pPoradi: p });
+                            p++;
                         }
                     }
-                    document.getElementById('count-players') ? document.getElementById('count-players').innerText = vsichniHraci.length : null;
-                    document.getElementById('fans-count').innerHTML = `<i class="fas fa-users"></i> ${vsichniHraci.length} Tipujících`;
-                    vykresliSeznamy();
+                    document.getElementById('count-players').innerText = vsichniHraci.length;
+                    vykresliZajice();
+                    vykresliTabulku();
                 })
                 .catch(err => {
                     console.error(err);
-                    document.getElementById('fans-count').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Chyba načítání (Zkontroluj odkaz na CSV!)`;
+                    document.getElementById('tabulka-telo').innerHTML = '<tr><td colspan="3" class="loader">Chyba při stahování dat z tabulky.</td></tr>';
                 });
         }
 
-        function vytvorRadek(hracData, originalIndex) {
-            const jmeno = parseCell(hracData[2]);
-            const fandimText = parseCell(hracData[3]);
-            const fandimLogo = teamLogos[fandimText] ? `<img src="${teamLogos[fandimText]}" class="fav-club-badge" title="Fandí: ${fandimText}">` : '';
+        function vykresliZajice() {
+            const container = document.getElementById('zajici-container'); container.innerHTML = '';
+            // Filtrace Zajíců
+            const zajici = vsichniHraci.filter(h => parseCell(h[2]).toLowerCase().match(/(podroužek|folpi|folprecht|sodoma|vacek|dvorka|novotný)/));
+            if(zajici.length === 0) { container.innerHTML = '<div class="loader">Zajíci ještě netipovali...</div>'; return; }
             
-            let logosHtml = '';
-            // Sloupce pro umístění jsou na indexech 4 až 19
-            for (let i = 4; i <= 19; i++) {
-                let cellVal = parseCell(hracData[i]);
-                let src = cellVal.startsWith('http') ? cellVal : (teamLogos[cellVal] || 'https://i.imgur.com/8N4Jp62.png');
-                let title = cellVal.startsWith('http') ? `Tým ${i-3}` : cellVal;
-                logosHtml += `
-                    <div class="logo-item">
-                        <span>${i - 3}.</span>
-                        <img src="${src}" title="${title}">
+            zajici.forEach(zajic => {
+                const jmeno = parseCell(zajic[2]);
+                const klub = parseCell(zajic[3]);
+                const card = document.createElement('div'); card.className = 'zajic-card'; card.onclick = () => otevriModal(zajic);
+                
+                card.innerHTML = `
+                    <div class="zajic-avatar-container">
+                        <div class="zajic-avatar" style="background: transparent;">${getAvatarHTML(jmeno)}</div>
+                    </div>
+                    <div class="zajic-name" style="margin-bottom: 5px;">${jmeno}</div>
+                    <div style="font-size:0.9rem; color:var(--text-muted); display:flex; align-items:center; justify-content:center; gap:5px;">
+                        Fandí: ${ziskejLogoKlubuHTML(klub)} 
                     </div>
                 `;
-            }
-
-            return `
-                <div class="fan-row" onclick="otevriModal(${originalIndex})">
-                    <div class="fan-name">${jmeno} ${fandimLogo}</div>
-                    <div class="logo-divider"></div>
-                    <div class="fan-logos">
-                        ${logosHtml}
-                    </div>
-                </div>
-            `;
+                container.appendChild(card);
+            });
         }
 
-        function vykresliSeznamy(filterText = "") {
-            const listFans = document.getElementById('fans-list');
-            const listZajici = document.getElementById('zajici-list');
-            listFans.innerHTML = ""; listZajici.innerHTML = "";
-
-            const searchLower = odstranDiakritiku(filterText.toLowerCase());
-
-            vsichniHraci.forEach((row, idx) => {
-                const jmeno = parseCell(row[2]);
-                if (filterText && !odstranDiakritiku(jmeno.toLowerCase()).includes(searchLower)) return;
-
-                const rowHTML = vytvorRadek(row, idx);
+        function vykresliTabulku() {
+            const tbody = document.getElementById('tabulka-telo'); tbody.innerHTML = ''; 
+            
+            // Filtrujeme fanoušky, co nejsou Zajíci
+            const fanousci = vsichniHraci.filter(h => !parseCell(h[2]).toLowerCase().match(/(podroužek|folpi|folprecht|sodoma|vacek|dvorka|novotný)/));
+            
+            fanousci.forEach(hrac => {
+                const jmeno = parseCell(hrac[2]);
+                const klub = parseCell(hrac[3]);
                 
-                // VIP Zajíci
-                if (jmeno.toLowerCase().match(/(podroužek|folpi|folprecht|sodoma|vacek|dvorka|novotný)/)) {
-                    listZajici.innerHTML += rowHTML;
-                } else {
-                    listFans.innerHTML += rowHTML;
-                }
+                const tr = document.createElement('tr'); 
+                tr.onclick = () => otevriModal(hrac); 
+                
+                tr.innerHTML = `
+                    <td class="rank-col">${hrac.pPoradi}.</td>
+                    <td style="font-weight: 600;">${jmeno}</td>
+                    <td style="text-align: right; display:flex; align-items:center; justify-content:flex-end; gap:8px;">${klub} ${ziskejLogoKlubuHTML(klub)}</td>
+                `;
+                tbody.appendChild(tr);
             });
-
-            if (listZajici.innerHTML === "") listZajici.innerHTML = '<span style="color:var(--text-muted);">Zajíci ještě netipovali.</span>';
-            if (listFans.innerHTML === "") listFans.innerHTML = '<span style="color:var(--text-muted);">Nikdo takový nebyl nalezen.</span>';
         }
 
         function hledejHrace() {
-            vykresliSeznamy(document.getElementById('searchInput').value);
+            const inputValue = odstranDiakritiku(document.getElementById('searchInput').value.toLowerCase());
+            const resultBox = document.getElementById('searchResults'); resultBox.innerHTML = '';
+            if (inputValue.length < 1) { resultBox.style.display = 'none'; return; }
+            
+            const shody = vsichniHraci.filter(h => odstranDiakritiku(parseCell(h[2]).toLowerCase()).includes(inputValue));
+            
+            if (shody.length > 0) {
+                resultBox.style.display = 'block';
+                shody.forEach(hrac => {
+                    const jmeno = parseCell(hrac[2]);
+                    const klub = parseCell(hrac[3]);
+                    const div = document.createElement('div'); div.className = 'autocomplete-item';
+                    const isCustomAvatar = jmeno.toLowerCase().match(/(podroužek|folpi|folprecht|sodoma|vacek|dvorka|novotný)/);
+                    
+                    div.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:bold; overflow:hidden; color:#fff; flex-shrink:0; ${isCustomAvatar ? 'background: transparent;' : 'background: linear-gradient(135deg, #ff4d29, var(--accent-primary));'}">
+                                ${getAvatarHTML(jmeno)}
+                            </div>
+                            <span><strong>${jmeno}</strong> ${ziskejLogoKlubuHTML(klub)}</span>
+                        </div>
+                    `;
+                    div.onclick = () => { document.getElementById('searchInput').value = ''; resultBox.style.display = 'none'; otevriModal(hrac); };
+                    resultBox.appendChild(div);
+                });
+            } else { 
+                resultBox.style.display = 'block'; resultBox.innerHTML = '<div class="autocomplete-item" style="color:var(--text-muted); cursor:default;">Nikdo nenalezen</div>'; 
+            }
         }
 
-        function otevriModal(dataIndex) {
-            const hrac = vsichniHraci[dataIndex];
+        document.addEventListener('click', function(e) { if (!e.target.closest('.search-container')) document.getElementById('searchResults').style.display = 'none'; });
+
+        function otevriModal(hrac) {
             const jmeno = parseCell(hrac[2]);
-            const fandimText = parseCell(hrac[3]);
+            const klub = parseCell(hrac[3]);
 
             const avatarDiv = document.getElementById('modalMainAvatar');
             const isCustomAvatar = jmeno.toLowerCase().match(/(podroužek|folpi|folprecht|sodoma|vacek|dvorka|novotný)/);
             avatarDiv.style.background = isCustomAvatar ? 'transparent' : 'linear-gradient(135deg, #ff4d29, var(--accent-primary))';
             avatarDiv.innerHTML = getAvatarHTML(jmeno);
             
-            document.getElementById('modalName').innerHTML = `${jmeno} <span style="font-size:1rem; color:var(--text-muted); font-weight:normal; margin-left:8px;">(Fandí: ${fandimText})</span>`;
+            document.getElementById('modalName').innerHTML = `${jmeno} <span style="font-size:1rem; color:var(--text-muted); font-weight:normal; margin-left:8px;">(Fandí: ${klub})</span>`;
             
-            // Umístění týmů (indexy 4 až 19)
+            // Tipy na umístění 1-16
             const usrT = document.getElementById('modalUserTeams');
             usrT.innerHTML = '';
             for (let j = 4; j <= 19; j++) {
                 let cellVal = parseCell(hrac[j]);
                 let src = cellVal.startsWith('http') ? cellVal : (teamLogos[cellVal] || 'https://i.imgur.com/8N4Jp62.png');
                 let nazev = cellVal.startsWith('http') ? 'Tým' : cellVal;
-                // Využíváme třídy z vyhodnocení pro čistý vzhled bez bodů
+                
                 usrT.innerHTML += `
                     <div class="team-col" style="justify-content: flex-start; padding-top: 15px;">
                         <span class="t-pos">${j - 3}.</span>
@@ -324,13 +333,13 @@
                 `;
             }
 
-            // Bonusy (indexy 20 až 47)
+            // Bonusové otázky
             const bon = document.getElementById('modalBonuses');
             bon.innerHTML = '';
             for (let k = 0; k < bonusQuestionsText.length; k++) {
                 const colIndex = 20 + k;
                 const odpoved = parseCell(hrac[colIndex]);
-                if (odpoved && odpoved !== "-") {
+                if (odpoved && odpoved !== "-" && odpoved !== "") {
                     bon.innerHTML += `
                         <div class="bonus-item">
                             <div class="bonus-text">
