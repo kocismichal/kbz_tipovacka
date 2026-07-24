@@ -49,11 +49,6 @@
     color: #000;
 }
 
-/* Zajištění, že se absolutní prvek uvnitř neodtrhne od dlaždice */
-.nav-group-links a.nav-tile {
-    position: relative;
-    padding-bottom: 25px; /* Větší místo dole, aby text nenarazil do čísla */
-}
 
 /* Malé počítadlo v pravém dolním rohu */
 .participant-count {
