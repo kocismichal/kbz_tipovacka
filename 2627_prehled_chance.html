@@ -3,366 +3,719 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Probíhající Tipovačka - Chance Liga 26/27</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <title>KBZ VYHODNOCENÍ - Chance Liga</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0b111e;
+            --bg-card: #161d2b;
+            --accent-primary: #aeff00; /* Zelená pro Chance ligu */
+            --accent-red: #ff4d4d;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-main);
+            background-image: linear-gradient(rgba(11, 17, 30, 0.9), rgba(11, 17, 30, 0.95)), url('pozadi.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+        .wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        .main-logo {
+            width: 180px;
+            height: auto;
+        }
+        .header-titles h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.5rem;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .subtitle {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-family: 'Oswald', sans-serif;
+            margin-top: 5px;
+        }
+        .chance-color {
+            background-color: var(--accent-primary);
+            color: #000;
+        }
+        .main-navbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            background: rgba(22, 29, 43, 0.8);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+        }
+        .nav-btn {
+            background: transparent;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
+        }
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .section-title {
+            border-bottom: 2px solid var(--accent-primary);
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+        }
+        /* Zajíci VIP */
+        .zajici-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .zajic-card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+        }
+        .zajic-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-primary);
+        }
+        .zajic-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            margin: 0 auto 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-primary);
+            border: 2px solid var(--accent-primary);
+            overflow: hidden;
+        }
+        .zajic-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .zajic-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .zajic-points {
+            color: var(--accent-primary);
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.5rem;
+        }
+        /* Vyskytova tabulka */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 30px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .vyskyt-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #fff;
+            min-width: 800px;
+        }
+        .vyskyt-table th, .vyskyt-table td {
+            padding: 8px 5px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            font-size: 13px;
+        }
+        .vyskyt-table th {
+            background: rgba(0,0,0,0.4);
+            font-family: 'Oswald', sans-serif;
+            color: var(--accent-primary);
+        }
+        .vyskyt-table .vyskyt-klub {
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            border: none;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            min-width: 150px;
+        }
+        .vyskyt-logo {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+        /* Seznam uživatelů */
+        .search-container {
+            margin-bottom: 20px;
+        }
+        .search-container input {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: var(--bg-card);
+            color: #fff;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .search-container input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+        .user-list-header {
+            display: grid;
+            grid-template-columns: 80px 1fr 100px;
+            padding: 10px 15px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+            font-family: 'Oswald', sans-serif;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+        }
+        .user-list {
+            background: var(--bg-card);
+            border-radius: 0 0 8px 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-top: none;
+        }
+        /* OPRAVA ČÁREK - použijeme CSS Grid pro dokonalé zarovnání a ohraničení na celý řádek */
+        .user-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 100px;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .user-row:last-child {
+            border-bottom: none;
+        }
+        .user-row:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        .user-row div {
+            margin: 0; /* Zabrání přerušení čárek */
+        }
+        .user-rank {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #888;
+        }
+        .user-row:nth-child(1) .user-rank { color: #ffd700; }
+        .user-row:nth-child(2) .user-rank { color: #c0c0c0; }
+        .user-row:nth-child(3) .user-rank { color: #cd7f32; }
+        .user-name {
+            font-weight: 600;
+        }
+        .user-score {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.2rem;
+            color: var(--accent-primary);
+            text-align: right;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .modal-content {
+            background: var(--bg-main);
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 12px;
+            border: 1px solid var(--accent-primary);
+            padding: 30px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute;
+            top: 20px; right: 20px;
+            font-size: 30px;
+            color: #fff;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .close-btn:hover { color: var(--accent-red); }
+        .modal-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .modal-header h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2rem;
+            color: var(--accent-primary);
+            margin: 0 0 10px 0;
+        }
+        
+        .teams-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        @media(max-width: 768px) {
+            .teams-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        .team-box {
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .team-box img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            margin-bottom: 5px;
+        }
+        .team-pos {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .team-pts {
+            font-weight: bold;
+            color: var(--accent-primary);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        @media(max-width: 600px) {
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+        .stat-item {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            border-left: 3px solid var(--accent-primary);
+        }
+        .stat-label { color: #aaa; }
+        .stat-val { font-weight: bold; }
+        
+        /* Custom Avatars for VIPs */
+        .avatar-podry { background-image: url('podry.png'); }
+        .avatar-sodoma { background-image: url('sodoma.png'); }
+        .avatar-dvorka { background-image: url('dvorka.png'); }
+        .avatar-folpi { background-image: url('folpi.png'); }
+
+    </style>
 </head>
 <body>
-
-    <div class="container">
-        
-        <!-- HLAVIČKA -->
-        <header style="display: flex; align-items: center; justify-content: center; gap: 50px; margin-top: 10px; margin-bottom: 30px;">
-            <img src="KBZ_basic.png" alt="KBZ Logo" style="height: 180px; object-fit: contain;">
-            <div style="text-align: center;">
-                <div class="logo-text" style="margin: 0;">KBZ <span>PROBÍHAJÍCÍ TIPOVAČKA</span></div>
-                <div style="margin-top: 10px;">
-                    <span class="nav-tile chance-color" style="display: inline-block; font-size: 1.2rem; padding: 8px 30px; text-transform: uppercase;">Chance liga 26/27</span>
-                </div>
+    <div class="wrapper">
+        <header>
+            <img src="https://i.imgur.com/8N4Jp62.png" alt="KBZ Logo" class="main-logo" onerror="this.src='kbz_logo.png'">
+            <div class="header-titles">
+                <h1>KBZ VYHODNOCENÍ 2026/2027</h1>
+                <div class="subtitle chance-color">Chance liga</div>
             </div>
         </header>
-
-        <!-- NAVIGAČNÍ LIŠTA -->
+        
         <nav class="main-navbar">
-            <a href="index.html" class="nav-home-btn" title="Domů">
-                <i class="fas fa-home"></i>
-            </a>
-            <div class="nav-center-wrap">
-                <div class="nav-group">
-                    <span class="nav-group-title">Aktivní tipovačky</span>
-                    <div class="nav-group-links">
-                        <a href="2627_formchanceliga.html" class="nav-tile chance-color">Chance liga</a>
-                        <a href="2627_formchancenarodniliga.html" class="nav-tile chnl-color">Chance národní liga</a>
-                    </div>
-                </div>
-                <div class="nav-separator"></div>
-                <div class="nav-group">
-                    <span class="nav-group-title">Vyhodnocené soutěže</span>
-                    <div class="nav-group-links">
-                        <a href="2526_chanceliga.html" class="nav-tile chance-color">Chance liga</a>
-                        <a href="2526_chnl.html" class="nav-tile chnl-color">Chance národní liga</a>
-                    </div>
-                </div>
-            </div>
-            <div class="nav-right-wrap">
-                <a href="https://discord.gg/p8WEPtjahD" target="_blank" class="nav-discord-btn"><i class="fab fa-discord"></i> KBZ DISCORD</a>
-                <a href="https://www.kudybezizajic.com/" target="_blank" class="nav-shop-btn"><i class="fas fa-shopping-cart"></i> KBZ SHOP</a>
-            </div>
+            <a href="index.html" class="nav-btn">🏠 Domů</a>
+            <a href="2627_formchanceliga.html" class="nav-btn">Tipovat Chance ligu</a>
+            <a href="2627_formchnl.html" class="nav-btn">Tipovat Národní ligu</a>
+            <a href="https://www.kudybezizajic.com/" target="_blank" class="nav-btn" style="border-color: var(--accent-primary); color: var(--accent-primary);">🛒 KBZ SHOP</a>
         </nav>
 
-        <!-- POČET TIPUJÍCÍCH -->
-        <div class="stats-header" style="justify-content: center;">
-            <div class="stat-item">
-                <div class="stat-value" id="count-players"><i class="fas fa-spinner fa-spin"></i></div>
-                <div class="stat-label">Počet tipujících pro sezónu 26/27</div>
+        <main>
+            <!-- VIP Zajici -->
+            <div class="section-title"><h2>TIPY ZAJÍCŮ</h2></div>
+            <div id="zajici-container" class="zajici-grid">
+                <!-- Vygenerováno pomocí JS -->
             </div>
-        </div>
 
-        <!-- VYHLEDÁVÁNÍ -->
-        <div class="search-container">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" class="search-input" placeholder="Napiš jméno a hned uvidíš tipy..." oninput="hledejHrace()">
-            <div class="autocomplete-results" id="searchResults"></div>
-        </div>
+            <!-- Vyskytova tabulka -->
+            <div class="section-title"><h2>VÝSKYTOVÁ TABULKA TIPŮ NA UMÍSTĚNÍ</h2></div>
+            <div class="table-responsive">
+                <table id="vyskyt-table" class="vyskyt-table">
+                    <!-- Vygenerováno pomocí JS -->
+                </table>
+            </div>
 
-        <!-- ZAJÍCI -->
-        <h2 class="section-title">🎙️ Tipy Zajíců</h2>
-        <div class="zajici-grid" id="zajici-container">
-            <div class="loader">Načítám Zajíce...</div>
-        </div>
-
-        <!-- TABULKA FANOUŠKŮ -->
-        <h2 class="section-title">👥 Všichni tipující</h2>
-        <div class="table-container">
-            <table>
-                <thead id="tabulka-hlavicka-container">
-                    <tr id="tabulka-hlavicka">
-                        <th style="text-align:center;">#</th>
-                        <th>Jméno tipujícího</th>
-                        <th style="text-align:right;">Oblíbený klub</th>
-                    </tr>
-                </thead>
-                <tbody id="tabulka-telo">
-                    <tr><td colspan="3" class="loader">Načítám data... Může to chvíli trvat.</td></tr>
-                </tbody>
-            </table>
-        </div>
+            <!-- VSICHNI TIPUJICI -->
+            <div class="section-title"><h2>VŠICHNI TIPUJÍCÍ</h2></div>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Hledat tipujícího podle jména...">
+            </div>
+            
+            <div class="user-list-header">
+                <div>Pořadí</div>
+                <div>Jméno</div>
+                <div style="text-align:right;">Celkem bodů</div>
+            </div>
+            <div id="user-list" class="user-list">
+                <!-- Vygenerováno pomocí JS -->
+            </div>
+        </main>
     </div>
 
-    <!-- MODÁLNÍ OKNO PRO DETAIL HRÁČE -->
-    <div class="modal-overlay" id="playerModal" onclick="zavriModal(event)">
-        <div class="modal-card">
-            <i class="fas fa-times close-btn" onclick="document.getElementById('playerModal').style.display='none'"></i>
+    <!-- Modal Profilu -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
             <div class="modal-header">
-                <div class="modal-avatar" id="modalMainAvatar">--</div>
-                <div class="modal-name" id="modalName">Jméno Hráče</div>
+                <h2 id="modal-name">Jméno</h2>
+                <div id="modal-total" style="color:var(--accent-primary); font-size:1.5rem; font-family:'Oswald',sans-serif;">0 bodů</div>
             </div>
-            <div class="modal-content">
-                
-                <div class="modal-subtitle" style="margin-top: 10px;">Tip na konečné umístění týmů</div>
-                <div class="teams-grid-8x2" id="modalUserTeams"></div>
-
-                <div class="modal-subtitle">Bonusové otázky</div>
-                <div class="bonus-list" id="modalBonuses"></div>
-                
-            </div>
+            
+            <h3 style="border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">Tip na pořadí týmů</h3>
+            <div id="modal-teams" class="teams-grid"></div>
+            
+            <h3 style="border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">Statistiky bodů</h3>
+            <div id="modal-stats" class="stats-grid"></div>
         </div>
     </div>
 
     <script>
-        // Odkaz pro Chance ligu
-        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRUxumfQeidDrjcs1T3d2HftSnwGv93G-mMlqw3wpaLe_Kae0XSvSqMRTSRWiNmZIhgboprShotvxI6/pub?gid=0&single=true&output=csv"; 
-
-        // Otázky bez "Vzkaz" na konci (celkem 27 otázek)
-        const bonusQuestionsText = [
-            "Kdo ovládne základní část soutěže?", 
-            "Sestoupí prvoligový tým do druhé ligy po prohře v baráži?",
-            "Kolik bodů získá mistr Chance ligy během celé sezóny?", 
-            "Jaký bude bodový rozdíl mezi 1. a 2. místem?",
-            "Kolik bodů získá poslední tým tabulky během celé sezóny?", 
-            "Nejlepší střelec Chance ligy na konci sezóny:",
-            "Kolik gólů vstřelí nejlepší střelec soutěže?",
-            "Který brankář odchytá nejvíce minut?",
-            "Který brankář vychytá nejvíce nul?",
-            "Který brankář bude mít největší úspěšnost zákroků? (min. 10 zápasů)",
-            "Který brankář obdrží nejvíce gólů?",
-            "Který brankář bude mít největší sérii bez gólu?",
-            "Vstřelí nějaký brankář v sezóně gól?",
-            "Který trenér obdrží nejvíce žlutých karet?",
-            "Který trenér obdrží nejvíce červených karet?",
-            "Trenér jakého týmu bude odvolán jako první?",
-            "Bude mít Baník více než 2 trenéry v sezóně?",
-            "Do jakého týmu Chance ligy bude povolán Radoslav Kováč?",
-            "Který tým obdrží nejvíce žlutých karet?", 
-            "Který tým obdrží nejvíce červených karet?", 
-            "Který tým bude mít největší úspěšnost přihrávek?",
-            "Který tým bude mít na svém kontě nejvíce faulů?", 
-            "Který tým bude v nejvíce ofsajdech?",
-            "Který tým během zápasů získá nejvíce míčů od soupeře?",
-            "V zápase jakého týmu padne nejvíce branek?",
-            "V zápase jakého týmu padne nejvíce žlutých karet?",
-            "Kdo vyhraje celosezónní Zajíc Tipovačku?"
-        ];
+        // ODKAZY NA DATA
+        const CSV_URL_FANS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQV9zgAr6YDisVCJo-k3t9iusjzfA_WBchSObYJ8rAIve99NBzTlr6OD-ahb57CdM08PgmFqwRp02kQ/pub?gid=1446924552&single=true&output=csv";
+        const CSV_URL_VYSKYT = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRUxumfQeidDrjcs1T3d2HftSnwGv93G-mMlqw3wpaLe_Kae0XSvSqMRTSRWiNmZIhgboprShotvxI6/pub?gid=236934267&single=true&output=csv";
 
         const teamLogos = {
-            "Slavia Praha": "https://i.imgur.com/g1Zkhwg.png", "Sparta Praha": "https://i.imgur.com/NlyfFAC.png",
-            "Viktoria Plzeň": "https://i.imgur.com/SPtzSGy.png", "Baník Ostrava": "https://i.imgur.com/fhj9qlu.png",
-            "Mladá Boleslav": "https://i.imgur.com/faCQUVA.png", "Sigma Olomouc": "https://i.imgur.com/EQKL3hu.png",
-            "Jablonec": "https://i.imgur.com/e4ci4Rt.png", "Bohemians Praha": "https://i.imgur.com/sqSgm4a.png",
-            "Slovan Liberec": "https://i.imgur.com/CDcqChc.png", "Teplice": "https://i.imgur.com/t1u7O9z.png",
-            "Slovácko": "https://i.imgur.com/J9s2CwL.png", "Dukla Praha": "https://i.imgur.com/FZ2Lzu2.png",
-            "Pardubice": "https://i.imgur.com/3ZjvyQX.png", "Hradec Králové": "https://i.imgur.com/iyfKeMv.png",
-            "Karviná": "https://i.imgur.com/j7hx1cA.png", "Zlín": "https://i.imgur.com/7EseGiq.png",
-            "Zbrojovka Brno": "https://i.imgur.com/VNzY5Ew.png", "Artis Brno": "https://i.imgur.com/6hcOo7w.png"
+            "Slavia Praha": "https://i.imgur.com/g1Zkhwg.png",
+            "Sparta Praha": "https://i.imgur.com/NlyfFAC.png",
+            "Viktoria Plzeň": "https://i.imgur.com/SPtzSGy.png",
+            "Baník Ostrava": "https://i.imgur.com/fhj9qlu.png",
+            "Mladá Boleslav": "https://i.imgur.com/faCQUVA.png",
+            "Sigma Olomouc": "https://i.imgur.com/EQKL3hu.png",
+            "Jablonec": "https://i.imgur.com/e4ci4Rt.png",
+            "Bohemians Praha": "https://i.imgur.com/sqSgm4a.png",
+            "Slovan Liberec": "https://i.imgur.com/CDcqChc.png",
+            "Teplice": "https://i.imgur.com/t1u7O9z.png",
+            "Slovácko": "https://i.imgur.com/J9s2CwL.png",
+            "Pardubice": "https://i.imgur.com/3ZjvyQX.png",
+            "Hradec Králové": "https://i.imgur.com/iyfKeMv.png",
+            "Karviná": "https://i.imgur.com/j7hx1cA.png",
+            "Dukla Praha": "https://i.imgur.com/FZ2Lzu2.png",
+            "Zlín": "https://i.imgur.com/7EseGiq.png"
         };
 
         let vsichniHraci = [];
 
-        function odstranDiakritiku(text) { return text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : ""; }
-        function getInitials(name) { const parts = name.trim().split(' '); return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase(); }
-        
-        // Pomocná funkce pro bezpečné získání odkazu na logo
-        function getLogoSrc(cellValue) {
-            if (!cellValue || cellValue === "-") return '';
-            if (cellValue.startsWith('http')) return cellValue;
-            if (teamLogos[cellValue]) return teamLogos[cellValue];
-            return '';
-        }
-
-        function ziskejLogoKlubuHTML(clubName) { 
-            let src = getLogoSrc(clubName.trim());
-            return src ? `<img src="${src}" class="fav-club-badge" title="Oblíbený klub: ${clubName}">` : ''; 
-        }
-        
-        function getAvatarHTML(name) {
-            const cleanName = name.toLowerCase();
-            if (cleanName.includes("podry") || cleanName.includes("podroužek")) return '<img src="podry.png" alt="Podry" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            if (cleanName.includes("folpi") || cleanName.includes("folprecht")) return '<img src="folpi.png" alt="Folpi" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            if (cleanName.includes("sodoma") || cleanName.includes("vacek")) return '<img src="sodoma.png" alt="Vacíno" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            if (cleanName.includes("dvorka") || cleanName.includes("novotný")) return '<img src="dvorka.png" alt="Novotňák" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            return getInitials(name);
-        }
-
-        // Opravený parser, který správně louská URL z Google vzorců bez chyb
-        function parseCell(cellValue) {
-            if (!cellValue) return "-";
-            let val = cellValue.toString().trim().replace(/^"|"$/g, '').replace(/""/g, '"');
-            let imgMatch = val.match(/IMAGE\(\s*"([^"]+)"/i);
-            if (imgMatch && imgMatch[1]) return imgMatch[1].trim(); 
-            return val;
-        }
-
+        // Jednoduchý CSV parser (řeší uvozovky a čárky v textu)
         function parseCSVData(text) {
-            const rows = []; let currentRow = []; let currentCell = ''; let insideQuotes = false;
+            const rows = [];
+            let currentRow = [];
+            let currentCell = '';
+            let insideQuotes = false;
             for (let i = 0; i < text.length; i++) {
-                const char = text[i]; const nextChar = text[i + 1];
-                if (char === '"') { if (insideQuotes && nextChar === '"') { currentCell += '"'; i++; } else insideQuotes = !insideQuotes; } 
-                else if (char === ',' && !insideQuotes) { currentRow.push(currentCell.trim()); currentCell = ''; } 
-                else if ((char === '\n' || char === '\r') && !insideQuotes) { if (char === '\r' && nextChar === '\n') i++; currentRow.push(currentCell.trim()); rows.push(currentRow); currentRow = []; currentCell = ''; } 
-                else currentCell += char;
+                const char = text[i];
+                const nextChar = text[i + 1];
+                if (char === '"') {
+                    if (insideQuotes && nextChar === '"') {
+                        currentCell += '"';
+                        i++;
+                    } else {
+                        insideQuotes = !insideQuotes;
+                    }
+                } else if (char === ',' && !insideQuotes) {
+                    currentRow.push(currentCell.trim());
+                    currentCell = '';
+                } else if ((char === '\n' || char === '\r') && !insideQuotes) {
+                    if(char === '\r' && nextChar === '\n') i++;
+                    currentRow.push(currentCell.trim());
+                    rows.push(currentRow);
+                    currentRow = [];
+                    currentCell = '';
+                } else {
+                    currentCell += char;
+                }
             }
-            if (currentCell || currentRow.length > 0) { currentRow.push(currentCell.trim()); rows.push(currentRow); }
+            if (currentCell || currentRow.length > 0) {
+                currentRow.push(currentCell.trim());
+                rows.push(currentRow);
+            }
             return rows;
         }
 
-        function nactiData() {
-            fetch(CSV_URL)
+        // NAČÍTÁNÍ PŘEHLEDU FANS
+        function nactiDataFans() {
+            fetch(CSV_URL_FANS)
                 .then(res => res.text())
                 .then(text => {
                     const parsed = parseCSVData(text);
                     vsichniHraci = [];
-                    let p = 1;
-                    for (let i = 1; i < parsed.length; i++) {
-                        const r = parsed[i];
-                        if(r.length > 10 && parseCell(r[2]) !== "-") {
-                            vsichniHraci.push({ ...r, originalIndex: i, pPoradi: p });
-                            p++;
+                    for(let i = 1; i < parsed.length; i++) {
+                        const row = parsed[i];
+                        if(row.length > 10 && row[2]) {
+                            // originalRowIndex = i + 1 (z hlediska lidského počítání řádků v Google Sheets, řádek 1 je hlavička)
+                            vsichniHraci.push({
+                                data: row,
+                                originalRow: i + 1 
+                            });
                         }
                     }
-                    document.getElementById('count-players').innerText = vsichniHraci.length;
                     vykresliZajice();
-                    vykresliTabulku();
-                })
-                .catch(err => {
-                    console.error(err);
-                    document.getElementById('tabulka-telo').innerHTML = '<tr><td colspan="3" class="loader">Chyba při stahování dat z tabulky.</td></tr>';
+                    vykresliSeznam();
                 });
         }
 
+        function getAvatarStyle(name) {
+            const n = name.toLowerCase();
+            if(n.includes("podroužek")) return "background-image: url('podry.png'); background-size: cover;";
+            if(n.includes("sodoma")) return "background-image: url('sodoma.png'); background-size: cover;";
+            if(n.includes("dvorka")) return "background-image: url('dvorka.png'); background-size: cover;";
+            if(n.includes("folpi") || n.includes("folprecht")) return "background-image: url('folpi.png'); background-size: cover;";
+            return "";
+        }
+
+        function getInitials(name) {
+            return name.substring(0, 2).toUpperCase();
+        }
+
+        // Zobrazí VIP zajíce z řádků 2, 5, 6, 7
         function vykresliZajice() {
-            const container = document.getElementById('zajici-container'); container.innerHTML = '';
-            const zajici = vsichniHraci.filter(h => parseCell(h[2]).toLowerCase().match(/(podroužek|folpi|folprecht|sodoma|vacek|dvorka|novotný)/));
-            if(zajici.length === 0) { container.innerHTML = '<div class="loader">Zajíci ještě netipovali...</div>'; return; }
+            const container = document.getElementById('zajici-container');
+            container.innerHTML = '';
+            // Zadané řádky: 2, 5, 6, 7
+            const zajiciRows = [2, 5, 6, 7];
+            const zajici = vsichniHraci.filter(h => zajiciRows.includes(h.originalRow));
             
-            zajici.forEach(zajic => {
-                const jmeno = parseCell(zajic[2]);
-                const klub = parseCell(zajic[3]);
-                const card = document.createElement('div'); card.className = 'zajic-card'; card.onclick = () => otevriModal(zajic);
+            if(zajici.length === 0) {
+                container.innerHTML = '<p>Zajíci ještě netipovali...</p>';
+                return;
+            }
+
+            zajici.forEach(z => {
+                const row = z.data;
+                const name = row[2];
+                // Předpokládáme body ve sloupci AP (index 41), AQ (pořadí - index 42), AS (celkové - 44) atd.
+                // Upravíme podle klasické struktury, bodový součet bývá kolem indexu 41. Zde jen zkusíme najít body.
+                // Pokud je AP (index 41) součet:
+                let body = row[41] || row[40] || "?"; 
                 
-                card.innerHTML = `
-                    <div class="zajic-avatar-container">
-                        <div class="zajic-avatar" style="background: transparent;">${getAvatarHTML(jmeno)}</div>
-                    </div>
-                    <div class="zajic-name" style="margin-bottom: 5px;">${jmeno}</div>
-                    <div style="font-size:0.9rem; color:var(--text-muted); display:flex; align-items:center; justify-content:center; gap:5px;">
-                        Fandí: ${ziskejLogoKlubuHTML(klub)} 
+                const avatarStyle = getAvatarStyle(name);
+                const initials = avatarStyle ? "" : getInitials(name);
+
+                container.innerHTML += `
+                    <div class="zajic-card" onclick="openModal('${name}')">
+                        <div class="zajic-avatar" style="${avatarStyle}">${initials}</div>
+                        <div class="zajic-name">${name}</div>
+                        <div class="zajic-points">${body} b.</div>
                     </div>
                 `;
-                container.appendChild(card);
             });
         }
 
-        function vykresliTabulku() {
-            const tbody = document.getElementById('tabulka-telo'); tbody.innerHTML = ''; 
-            const fanousci = vsichniHraci.filter(h => !parseCell(h[2]).toLowerCase().match(/(podroužek|folpi|folprecht|sodoma|vacek|dvorka|novotný)/));
+        // Zobrazí seznam všech
+        function vykresliSeznam(filter = "") {
+            const container = document.getElementById('user-list');
+            container.innerHTML = '';
             
-            fanousci.forEach(hrac => {
-                const jmeno = parseCell(hrac[2]);
-                const klub = parseCell(hrac[3]);
-                const tr = document.createElement('tr'); 
-                tr.onclick = () => otevriModal(hrac); 
-                
-                tr.innerHTML = `
-                    <td class="rank-col">${hrac.pPoradi}.</td>
-                    <td style="font-weight: 600;">${jmeno}</td>
-                    <td style="text-align: right; display:flex; align-items:center; justify-content:flex-end; gap:8px;">${klub} ${ziskejLogoKlubuHTML(klub)}</td>
+            // Seřadit podle bodů (předpoklad index 41 je AP - celkem)
+            let zobrazeniHraci = [...vsichniHraci].sort((a,b) => {
+                return (parseFloat(b.data[41] || b.data[40]) || 0) - (parseFloat(a.data[41] || a.data[40]) || 0);
+            });
+
+            if(filter) {
+                zobrazeniHraci = zobrazeniHraci.filter(h => h.data[2].toLowerCase().includes(filter.toLowerCase()));
+            }
+
+            zobrazeniHraci.forEach((h, index) => {
+                const name = h.data[2];
+                let body = h.data[41] || h.data[40] || "0";
+                let rank = index + 1;
+
+                container.innerHTML += `
+                    <div class="user-row" onclick="openModal('${name}')">
+                        <div class="user-rank">${rank}.</div>
+                        <div class="user-name">${name}</div>
+                        <div class="user-score">${body}</div>
+                    </div>
                 `;
-                tbody.appendChild(tr);
             });
         }
 
-        function hledejHrace() {
-            const inputValue = odstranDiakritiku(document.getElementById('searchInput').value.toLowerCase());
-            const resultBox = document.getElementById('searchResults'); resultBox.innerHTML = '';
-            if (inputValue.length < 1) { resultBox.style.display = 'none'; return; }
-            
-            const shody = vsichniHraci.filter(h => odstranDiakritiku(parseCell(h[2]).toLowerCase()).includes(inputValue));
-            
-            if (shody.length > 0) {
-                resultBox.style.display = 'block';
-                shody.forEach(hrac => {
-                    const jmeno = parseCell(hrac[2]);
-                    const klub = parseCell(hrac[3]);
-                    const div = document.createElement('div'); div.className = 'autocomplete-item';
-                    const isCustomAvatar = jmeno.toLowerCase().match(/(podroužek|folpi|folprecht|sodoma|vacek|dvorka|novotný)/);
-                    
-                    div.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <div style="width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:bold; overflow:hidden; color:#fff; flex-shrink:0; ${isCustomAvatar ? 'background: transparent;' : 'background: linear-gradient(135deg, #ff4d29, var(--accent-primary));'}">
-                                ${getAvatarHTML(jmeno)}
-                            </div>
-                            <span><strong>${jmeno}</strong> ${ziskejLogoKlubuHTML(klub)}</span>
-                        </div>
-                    `;
-                    div.onclick = () => { document.getElementById('searchInput').value = ''; resultBox.style.display = 'none'; otevriModal(hrac); };
-                    resultBox.appendChild(div);
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            vykresliSeznam(e.target.value);
+        });
+
+        // NAČÍTÁNÍ VÝSKYTOVÉ TABULKY
+        function nactiVyskytovouTabulku() {
+            fetch(CSV_URL_VYSKYT)
+                .then(res => res.text())
+                .then(text => {
+                    const parsed = parseCSVData(text);
+                    vykresliVyskytovouTabulku(parsed);
                 });
-            } else { 
-                resultBox.style.display = 'block'; resultBox.innerHTML = '<div class="autocomplete-item" style="color:var(--text-muted); cursor:default;">Nikdo nenalezen</div>'; 
-            }
         }
 
-        document.addEventListener('click', function(e) { if (!e.target.closest('.search-container')) document.getElementById('searchResults').style.display = 'none'; });
+        function vykresliVyskytovouTabulku(data) {
+            const table = document.getElementById('vyskyt-table');
+            table.innerHTML = '';
+            if(data.length < 2) return;
 
-        function otevriModal(hrac) {
-            const jmeno = parseCell(hrac[2]);
-            const klub = parseCell(hrac[3]);
-
-            const avatarDiv = document.getElementById('modalMainAvatar');
-            const isCustomAvatar = jmeno.toLowerCase().match(/(podroužek|folpi|folprecht|sodoma|vacek|dvorka|novotný)/);
-            avatarDiv.style.background = isCustomAvatar ? 'transparent' : 'linear-gradient(135deg, #ff4d29, var(--accent-primary))';
-            avatarDiv.innerHTML = getAvatarHTML(jmeno);
-            
-            document.getElementById('modalName').innerHTML = `${jmeno} <span style="font-size:1rem; color:var(--text-muted); font-weight:normal; margin-left:8px;">(Fandí: ${klub})</span>`;
-            
-            // Tipy na umístění 1-16
-            const usrT = document.getElementById('modalUserTeams');
-            usrT.innerHTML = '';
-            for (let j = 4; j <= 19; j++) {
-                let cellVal = parseCell(hrac[j]);
-                let src = getLogoSrc(cellVal) || 'https://i.imgur.com/8N4Jp62.png';
-                let nazev = cellVal.startsWith('http') ? 'Tým' : cellVal;
-                
-                usrT.innerHTML += `
-                    <div class="team-col" style="justify-content: flex-start; padding-top: 15px;">
-                        <span class="t-pos">${j - 3}.</span>
-                        <img src="${src}" class="t-logo" title="${nazev}">
-                    </div>
-                `;
+            let thead = '<thead><tr>';
+            for(let i=0; i<17; i++) {
+                thead += `<th>${data[0][i] || ''}</th>`;
             }
+            thead += '</tr></thead>';
 
-            // Bonusové otázky (zobrazeny bez Vzkazu)
-            const bon = document.getElementById('modalBonuses');
-            bon.innerHTML = '';
-            for (let k = 0; k < bonusQuestionsText.length; k++) {
-                const colIndex = 20 + k;
-                const odpoved = parseCell(hrac[colIndex]);
-                if (odpoved && odpoved !== "-" && odpoved !== "") {
-                    let logoSrc = getLogoSrc(odpoved);
-                    let logoHtml = logoSrc ? `<img src="${logoSrc}" style="width:32px; height:32px; object-fit:contain;">` : '';
-                    
-                    bon.innerHTML += `
-                        <div class="bonus-item">
-                            <div class="bonus-text">
-                                <div class="b-question">${bonusQuestionsText[k]}</div>
-                                <div class="b-answer">${odpoved}</div>
-                            </div>
-                            <div class="b-pts" style="display:flex; align-items:center;">
-                                ${logoHtml}
-                            </div>
-                        </div>
-                    `;
+            let tbody = '<tbody>';
+            let maxVal = 0;
+            
+            // Najdeme max pro heatmapu (A2:Q17)
+            for(let r=1; r<data.length; r++) {
+                if(data[r].length < 17 || !data[r][0]) continue;
+                for(let c=1; c<17; c++) {
+                    let val = parseInt(data[r][c]) || 0;
+                    if(val > maxVal) maxVal = val;
                 }
             }
-            
-            document.getElementById('playerModal').querySelector('.modal-card').scrollTop = 0;
-            document.getElementById('playerModal').style.display = 'flex';
+
+            for(let r=1; r<data.length; r++) {
+                if(data[r].length < 17 || !data[r][0]) continue;
+                
+                let klub = data[r][0].trim();
+                if(klub === "") continue;
+
+                tbody += '<tr>';
+                let logoUrl = teamLogos[klub] || '';
+                let logoHtml = logoUrl ? `<img src="${logoUrl}" alt="${klub}" class="vyskyt-logo">` : '';
+                tbody += `<td class="vyskyt-klub">${logoHtml} <span>${klub}</span></td>`;
+                
+                for(let c=1; c<17; c++) {
+                    let val = parseInt(data[r][c]) || 0;
+                    let alpha = maxVal > 0 ? (val / maxVal) * 0.7 : 0;
+                    let bgColor = val > 0 ? `rgba(1, 254, 1, ${alpha})` : 'transparent';
+                    let text = val > 0 ? val : '';
+                    tbody += `<td style="background-color: ${bgColor}; color: #fff; font-weight: ${val===maxVal?'bold':'normal'};">${text}</td>`;
+                }
+                tbody += '</tr>';
+            }
+            tbody += '</tbody>';
+            table.innerHTML = thead + tbody;
         }
 
-        function zavriModal(event) { if (event.target.id === 'playerModal') document.getElementById('playerModal').style.display = 'none'; }
-        
-        window.addEventListener('DOMContentLoaded', nactiData);
+        // MODAL
+        function openModal(name) {
+            const hraci = vsichniHraci.filter(h => h.data[2] === name);
+            if(hraci.length === 0) return;
+            const h = hraci[0].data;
+
+            document.getElementById('modal-name').innerText = name;
+            document.getElementById('modal-total').innerText = (h[41] || h[40] || "0") + " bodů";
+
+            // Týmy a body - pro Chance ligu jsou tipy ve sloupcích E-T (indexy 4 až 19)
+            // Z listu "Přehled fans" mohou být pozice jinak, ale zhruba takto:
+            let teamsHtml = '';
+            for(let i=0; i<16; i++) {
+                let teamName = h[4 + i] || "";
+                // Odstranění vzorce =IMAGE(...) pokud tam zbylo
+                if(teamName.includes('IMAGE(')) {
+                    let match = teamName.match(/IMAGE\("([^"]+)"/i);
+                    if(match) teamName = "Tým"; // Pokud je to jen obrázek a nemáme jméno
+                }
+                
+                let logo = teamLogos[teamName] || 'https://i.imgur.com/8N4Jp62.png';
+                // Body za tým z "Kontrola výsledků" nemáme přímo tady, takže dáme jen zobrazení tipu
+                teamsHtml += `
+                    <div class="team-box">
+                        <img src="${logo}" alt="${teamName}">
+                        <div class="team-pos">${i+1}. místo</div>
+                        <div class="team-pts" style="color:#aaa;">${teamName}</div>
+                    </div>
+                `;
+            }
+            document.getElementById('modal-teams').innerHTML = teamsHtml;
+
+            // Stats
+            document.getElementById('modal-stats').innerHTML = `
+                <div class="stat-item">
+                    <span class="stat-label">Pořadí celkově</span>
+                    <span class="stat-val">${h[44] || "?"}. místo</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Body za umístění</span>
+                    <span class="stat-val">${h[39] || "?"} b.</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Body za bonusy</span>
+                    <span class="stat-val">${h[40] || "?"} b.</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Správně trefených pozic</span>
+                    <span class="stat-val">?</span>
+                </div>
+            `;
+
+            document.getElementById('userModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('userModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('userModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // INIT
+        window.onload = () => {
+            nactiDataFans();
+            nactiVyskytovouTabulku();
+        };
     </script>
 </body>
 </html>
