@@ -18,18 +18,73 @@
             margin-bottom: 20px;
         }
 
-        /* Nová třída pro zúžení tabulky všech tipujících */
         .table-container-narrow {
             max-width: 600px;
             margin: 0 auto;
         }
 
-        /* Oprava vertikálního natahovaní Flexboxu u tabulek osobností */
         .flex-container-top {
             display: flex; 
             flex-wrap: wrap; 
             gap: 20px; 
-            align-items: flex-start; /* Zabrání roztahování kratších tabulek na úroveň nejdelší */
+            align-items: flex-start;
+        }
+
+        /* OVERLAY STYLY PRO VYHLEDÁVAČE */
+        .search-container-relative {
+            position: relative;
+            z-index: 900;
+        }
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: rgba(22, 29, 43, 0.98);
+            border: 1px solid var(--accent-primary);
+            border-radius: 0 0 8px 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+            display: none;
+        }
+
+        /* OPRAVA STYLŮ PRO VÝSLEDKY VYHLEDÁVÁNÍ */
+        .autocomplete-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .autocomplete-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        /* ROZLOŽENÍ POROVNÁVÁNÍ */
+        .compare-cols {
+            display: flex;
+            gap: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+            margin-top: 15px;
+            padding-right: 5px;
+        }
+        .compare-col {
+            flex: 1;
+        }
+        .compare-col:first-child {
+            border-right: 1px solid rgba(255,255,255,0.1);
+            padding-right: 20px;
+        }
+        .compare-col-header {
+            color: var(--text-muted);
+            text-align: center;
+            font-style: italic;
+            padding: 40px 20px;
         }
     </style>
 </head>
@@ -82,10 +137,16 @@
                 </div>
             </div>
 
-            <div class="search-container" style="margin: 0; width: 100%; max-width: 400px; position: relative;">
-                <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="Napiš jméno a uvidíš tipy..." oninput="hledejHrace()" style="padding-left: 45px;">
-                <div class="autocomplete-results" id="searchResults"></div>
+            <div style="display: flex; gap: 15px; width: 100%; max-width: 550px;">
+                <div class="search-container-relative" style="flex-grow: 1;">
+                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Napiš jméno a uvidíš tipy..." oninput="hledejHrace('searchInput', 'searchResults')" style="padding-left: 45px; width: 100%; box-sizing: border-box; height: 100%;">
+                    <div class="autocomplete-dropdown" id="searchResults"></div>
+                </div>
+                
+                <button class="tab-btn" style="background: var(--accent-primary); color: #000; border-color: var(--accent-primary); font-weight: bold; flex-shrink: 0; height: 100%; display: flex; align-items: center; gap: 8px;" onclick="otevriPorovnani()">
+                    <i class="fas fa-balance-scale"></i> Porovnat
+                </button>
             </div>
         </div>
 
@@ -95,7 +156,6 @@
         </div>
 
         <div id="vyskytove-sekce">
-            
             <h2 class="section-title" style="margin-top: 40px;">JAK VIDÍTE TABULKU VY?</h2>
             <div class="tabs" style="margin-bottom: 20px;">
                 <button class="tab-btn active" style="font-size: 0.85rem; padding: 8px 16px;" id="btn-prehled-cisla" onclick="vykresliPrehledMatrix('cisla')">Absolutní počty</button>
@@ -113,7 +173,6 @@
             <div id="osobnosti-container" class="flex-container-top">
                 <div class="loader">Načítám osobnosti...</div>
             </div>
-
         </div>
 
         <h2 class="section-title" style="margin-top: 40px;">Přehled všech tipujících</h2>
@@ -132,22 +191,41 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="playerModal" onclick="zavriModal(event)">
+    <div class="modal-overlay" id="playerModal">
         <div class="modal-card">
-            <i class="fas fa-times close-btn" onclick="document.getElementById('playerModal').style.display='none'"></i>
-            <div class="modal-header">
-                <div class="modal-avatar" id="modalMainAvatar">--</div>
-                <div class="modal-name" id="modalName">Jméno Hráče</div>
-            </div>
-            <div class="modal-content">
-                
-                <div class="modal-subtitle" style="margin-top: 10px;">Tip na konečné umístění týmů</div>
-                <div class="teams-grid-8x2" id="modalUserTeams"></div>
+            <i class="fas fa-times close-btn" onclick="zavriModal('playerModal')"></i>
+            <div id="playerModalContent"></div>
+        </div>
+    </div>
 
-                <div class="modal-subtitle">Bonusové otázky</div>
-                <div class="bonus-list" id="modalBonuses"></div>
+    <div class="modal-overlay" id="compareModal">
+        <div class="modal-card" style="max-width: 95vw; width: 1200px;">
+            <i class="fas fa-times close-btn" onclick="zavriModal('compareModal')"></i>
+            <h2 style="text-align: center; color: var(--accent-primary); margin-top: 0; font-family: 'Oswald', sans-serif; text-transform: uppercase;">Porovnání tipů</h2>
+            
+            <div style="display: flex; gap: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                <div class="search-container-relative" style="flex: 1;">
+                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    <input type="text" id="searchLeft" class="search-input" placeholder="Vyhledej prvního hráče..." oninput="hledejHrace('searchLeft', 'resultsLeft', 'contentLeft')" style="padding-left: 45px; width: 100%; box-sizing: border-box;">
+                    <div class="autocomplete-dropdown" id="resultsLeft"></div>
+                </div>
                 
+                <div class="search-container-relative" style="flex: 1;">
+                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    <input type="text" id="searchRight" class="search-input" placeholder="Vyhledej druhého hráče..." oninput="hledejHrace('searchRight', 'resultsRight', 'contentRight')" style="padding-left: 45px; width: 100%; box-sizing: border-box;">
+                    <div class="autocomplete-dropdown" id="resultsRight"></div>
+                </div>
             </div>
+
+            <div class="compare-cols">
+                <div class="compare-col" id="contentLeft">
+                    <div class="compare-col-header">Vyhledejte hráče výše pro zobrazení jeho tipů.</div>
+                </div>
+                <div class="compare-col" id="contentRight">
+                    <div class="compare-col-header">Vyhledejte hráče výše pro zobrazení jeho tipů.</div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -262,12 +340,10 @@
                 .then(text => {
                     dataVyskyt = parseCSVData(text);
                     if(dataVyskyt.length < 2) return;
-                    
                     vykresliPrehledMatrix('cisla');
                     vykresliBonusyMatrix();
                     vykresliOsobnosti();
-                })
-                .catch(err => console.error("Chyba načítání výskytové tabulky", err));
+                });
         }
 
         function vykresliPrehledMatrix(mod) {
@@ -309,8 +385,7 @@
             if (!dataVyskyt[headerRowIndex] || !dataVyskyt[headerRowIndex][1]) {
                 for (let i = 16; i < dataVyskyt.length; i++) {
                     if (dataVyskyt[i] && dataVyskyt[i][1] && dataVyskyt[i][1].length > 5 && !dataVyskyt[i][0].includes("?")) {
-                        headerRowIndex = i;
-                        break;
+                        headerRowIndex = i; break;
                     }
                 }
             }
@@ -358,8 +433,7 @@
             if (!dataVyskyt[questionRowIndex] || !dataVyskyt[questionRowIndex][0] || !dataVyskyt[questionRowIndex][0].includes("?")) {
                 for (let i = 35; i < dataVyskyt.length; i++) {
                     if (dataVyskyt[i] && dataVyskyt[i][0] && dataVyskyt[i][0].includes("?")) {
-                        questionRowIndex = i;
-                        break;
+                        questionRowIndex = i; break;
                     }
                 }
             }
@@ -368,7 +442,6 @@
             container.innerHTML = '';
             
             if(!dataVyskyt[questionRowIndex]) return;
-            
             const qRow = dataVyskyt[questionRowIndex];
             let htmlAll = '';
             
@@ -393,7 +466,6 @@
                 htmlTable += `</tbody></table></div>`;
                 htmlAll += htmlTable;
             }
-            
             container.innerHTML = htmlAll || '<div style="color:var(--text-muted); font-style:italic;">Žádná data osobností.</div>';
         }
 
@@ -414,10 +486,6 @@
                     document.getElementById('count-players').innerText = vsichniHraci.length;
                     vykresliZajice();
                     vykresliTabulku();
-                })
-                .catch(err => {
-                    console.error(err);
-                    document.getElementById('tabulka-telo').innerHTML = '<tr><td colspan="2" class="loader">Chyba při stahování dat z tabulky.</td></tr>';
                 });
         }
 
@@ -430,7 +498,7 @@
             zajici.forEach(zajic => {
                 const jmeno = parseCell(zajic[2]);
                 const klub = parseCell(zajic[3]);
-                const card = document.createElement('div'); card.className = 'zajic-card'; card.onclick = () => otevriModal(zajic);
+                const card = document.createElement('div'); card.className = 'zajic-card'; card.onclick = () => otevriModalJeden(zajic);
                 
                 card.innerHTML = `
                     <div class="zajic-avatar-container">
@@ -453,7 +521,7 @@
                 const jmeno = parseCell(hrac[2]);
                 const klub = parseCell(hrac[3]);
                 const tr = document.createElement('tr'); 
-                tr.onclick = () => otevriModal(hrac); 
+                tr.onclick = () => otevriModalJeden(hrac); 
                 
                 tr.innerHTML = `
                     <td style="font-weight: 600; padding-left: 20px;">${jmeno}</td>
@@ -463,59 +531,32 @@
             });
         }
 
-        function hledejHrace() {
-            const inputValue = odstranDiakritiku(document.getElementById('searchInput').value.toLowerCase());
-            const resultBox = document.getElementById('searchResults'); resultBox.innerHTML = '';
-            if (inputValue.length < 1) { resultBox.style.display = 'none'; return; }
-            
-            const shody = vsichniHraci.filter(h => odstranDiakritiku(parseCell(h[2]).toLowerCase()).includes(inputValue));
-            
-            if (shody.length > 0) {
-                resultBox.style.display = 'block';
-                shody.forEach(hrac => {
-                    const jmeno = parseCell(hrac[2]);
-                    const klub = parseCell(hrac[3]);
-                    const div = document.createElement('div'); div.className = 'autocomplete-item';
-                    
-                    const isCustomAvatar = ZAJICI_INDICES.includes(hrac.originalIndex);
-                    
-                    div.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <div style="width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:bold; overflow:hidden; color:#fff; flex-shrink:0; ${isCustomAvatar ? 'background: transparent;' : 'background: linear-gradient(135deg, #ff4d29, var(--accent-primary));'}">
-                                ${getAvatarHTML(jmeno)}
-                            </div>
-                            <span><strong>${jmeno}</strong> ${ziskejLogoKlubuHTML(klub)}</span>
-                        </div>
-                    `;
-                    div.onclick = () => { document.getElementById('searchInput').value = ''; resultBox.style.display = 'none'; otevriModal(hrac); };
-                    resultBox.appendChild(div);
-                });
-            } else { 
-                resultBox.style.display = 'block'; resultBox.innerHTML = '<div class="autocomplete-item" style="color:var(--text-muted); cursor:default;">Nikdo nenalezen</div>'; 
-            }
-        }
-
-        document.addEventListener('click', function(e) { if (!e.target.closest('.search-container')) document.getElementById('searchResults').style.display = 'none'; });
-
-        function otevriModal(hrac) {
+        // ==========================================
+        // SDÍLENÁ FUNKCE PRO VYKRESLENÍ KARTY HRÁČE
+        // ==========================================
+        function generujObsahHrace(hrac) {
             const jmeno = parseCell(hrac[2]);
             const klub = parseCell(hrac[3]);
-
-            const avatarDiv = document.getElementById('modalMainAvatar');
             const isCustomAvatar = ZAJICI_INDICES.includes(hrac.originalIndex);
-            avatarDiv.style.background = isCustomAvatar ? 'transparent' : 'linear-gradient(135deg, #ff4d29, var(--accent-primary))';
-            avatarDiv.innerHTML = getAvatarHTML(jmeno);
+            const avatarBg = isCustomAvatar ? 'transparent' : 'linear-gradient(135deg, #ff4d29, var(--accent-primary))';
+            const avatarHtml = getAvatarHTML(jmeno);
             
-            document.getElementById('modalName').innerHTML = `${jmeno} <span style="font-size:1rem; color:var(--text-muted); font-weight:normal; margin-left:8px;">(Fandí: ${klub})</span>`;
-            
-            const usrT = document.getElementById('modalUserTeams');
-            usrT.innerHTML = '';
+            let html = `
+                <div class="modal-header" style="margin-bottom: 25px;">
+                    <div class="modal-avatar" style="background: ${avatarBg};">${avatarHtml}</div>
+                    <div class="modal-name">${jmeno} <br><span style="font-size:1rem; color:var(--text-muted); font-weight:normal;">(Fandí: ${klub})</span></div>
+                </div>
+                
+                <div class="modal-subtitle" style="margin-top: 10px;">Tip na konečné umístění týmů</div>
+                <div class="teams-grid-8x2">
+            `;
+
             for (let j = 4; j <= 19; j++) {
                 let cellVal = parseCell(hrac[j]);
                 let src = getLogoSrc(cellVal) || 'https://i.imgur.com/8N4Jp62.png';
                 let nazev = cellVal.startsWith('http') ? 'Tým' : cellVal;
                 
-                usrT.innerHTML += `
+                html += `
                     <div class="team-col" style="justify-content: flex-start; padding-top: 15px;">
                         <span class="t-pos">${j - 3}.</span>
                         <img src="${src}" class="t-logo" title="${nazev}">
@@ -523,8 +564,8 @@
                 `;
             }
 
-            const bon = document.getElementById('modalBonuses');
-            bon.innerHTML = '';
+            html += `</div><div class="modal-subtitle" style="margin-top: 30px;">Bonusové otázky</div><div class="bonus-list">`;
+            
             for (let k = 0; k < bonusQuestionsText.length; k++) {
                 const colIndex = 20 + k;
                 const odpoved = parseCell(hrac[colIndex]);
@@ -532,7 +573,7 @@
                     let logoSrc = getLogoSrc(odpoved);
                     let logoHtml = logoSrc ? `<img src="${logoSrc}" style="width:32px; height:32px; object-fit:contain;">` : '';
                     
-                    bon.innerHTML += `
+                    html += `
                         <div class="bonus-item">
                             <div class="bonus-text">
                                 <div class="b-question">${bonusQuestionsText[k]}</div>
@@ -545,12 +586,88 @@
                     `;
                 }
             }
+            html += `</div>`;
+            return html;
+        }
+
+        // ==========================================
+        // OVLÁDÁNÍ MODÁLŮ A VYHLEDÁVÁNÍ
+        // ==========================================
+        function hledejHrace(inputId, resultsId, targetContainer = null) {
+            const inputValue = odstranDiakritiku(document.getElementById(inputId).value.toLowerCase());
+            const resultBox = document.getElementById(resultsId); 
+            resultBox.innerHTML = '';
             
+            if (inputValue.length < 1) { resultBox.style.display = 'none'; return; }
+            
+            const shody = vsichniHraci.filter(h => odstranDiakritiku(parseCell(h[2]).toLowerCase()).includes(inputValue));
+            
+            if (shody.length > 0) {
+                resultBox.style.display = 'block';
+                shody.forEach(hrac => {
+                    const jmeno = parseCell(hrac[2]);
+                    const klub = parseCell(hrac[3]);
+                    const isCustomAvatar = ZAJICI_INDICES.includes(hrac.originalIndex);
+                    
+                    const div = document.createElement('div'); 
+                    div.className = 'autocomplete-item';
+                    div.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:bold; overflow:hidden; color:#fff; flex-shrink:0; ${isCustomAvatar ? 'background: transparent;' : 'background: linear-gradient(135deg, #ff4d29, var(--accent-primary));'}">
+                                ${getAvatarHTML(jmeno)}
+                            </div>
+                            <span><strong>${jmeno}</strong> ${ziskejLogoKlubuHTML(klub)}</span>
+                        </div>
+                    `;
+                    
+                    div.onclick = () => { 
+                        document.getElementById(inputId).value = ''; 
+                        resultBox.style.display = 'none'; 
+                        
+                        if(targetContainer) {
+                            // Jsme v porovnávacím módu, vykreslíme kartu jen do daného sloupce
+                            document.getElementById(targetContainer).innerHTML = generujObsahHrace(hrac);
+                        } else {
+                            // Klasické hledání na hlavní stránce
+                            otevriModalJeden(hrac);
+                        }
+                    };
+                    resultBox.appendChild(div);
+                });
+            } else { 
+                resultBox.style.display = 'block'; 
+                resultBox.innerHTML = '<div class="autocomplete-item" style="color:var(--text-muted); cursor:default;">Nikdo nenalezen</div>'; 
+            }
+        }
+
+        // Kliknutí jinam zavře všechny našeptávače a modály (pokud kliknem mimo content)
+        document.addEventListener('click', function(e) { 
+            const dropdowns = document.querySelectorAll('.autocomplete-dropdown');
+            dropdowns.forEach(d => {
+                if (!e.target.closest('.search-container-relative')) d.style.display = 'none';
+            });
+            
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.style.display = 'none';
+            }
+        });
+
+        function zavriModal(modalId) { 
+            document.getElementById(modalId).style.display = 'none'; 
+        }
+
+        function otevriModalJeden(hrac) {
+            document.getElementById('playerModalContent').innerHTML = generujObsahHrace(hrac);
             document.getElementById('playerModal').querySelector('.modal-card').scrollTop = 0;
             document.getElementById('playerModal').style.display = 'flex';
         }
 
-        function zavriModal(event) { if (event.target.id === 'playerModal') document.getElementById('playerModal').style.display = 'none'; }
+        function otevriPorovnani() {
+            // Obnovíme původní hlášku, pokud to předtím někdo už použil
+            document.getElementById('contentLeft').innerHTML = '<div class="compare-col-header">Vyhledejte hráče výše pro zobrazení jeho tipů.</div>';
+            document.getElementById('contentRight').innerHTML = '<div class="compare-col-header">Vyhledejte hráče výše pro zobrazení jeho tipů.</div>';
+            document.getElementById('compareModal').style.display = 'flex';
+        }
         
         window.addEventListener('DOMContentLoaded', () => {
             nactiData();
