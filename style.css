@@ -427,5 +427,19 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--a
 button[type="submit"] { background-color: var(--bg-main); color: var(--accent-primary); border: 2px solid var(--accent-primary); padding: 12px 35px; font-family: 'Oswald', sans-serif; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; border-radius: 30px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-top: 10px; }
 button[type="submit"]:hover { background-color: var(--accent-primary); color: #000; box-shadow: 0 4px 20px rgba(1, 254, 1, 0.3); transform: translateY(-2px); }
 #souhlas-label { display: inline-block; max-width: 600px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); font-weight: normal; }
+/* Zrušení průhlednosti u rozbalovacího menu (výběr týmu) */
+.custom-select-options {
+    background-color: var(--bg-card) !important; /* Plná tmavá barva místo průhlednosti */
+    backdrop-filter: none !important; /* Vypnutí případného rozmazání pozadí */
+    border: 1px solid var(--border-color); /* Zvýraznění okraje pro lepší čitelnost */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9) !important; /* Silnější stín pro odlišení od pozadí */
+}
+
+/* Zajištění, aby položka při najetí myší nebo pohybu šipkami stále hezky reagovala */
+.custom-option:hover,
+.custom-option.focused {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
 #souhlas-label.green { color: var(--accent-primary); }
 #vysledek { margin-top: 25px; text-align: center; font-family: 'Oswald', sans-serif; font-size: 1.3rem; }
