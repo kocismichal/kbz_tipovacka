@@ -59,10 +59,10 @@
             background: rgba(22, 29, 43, 0.98);
             border: 1px solid var(--accent-primary);
             border-radius: 0 0 8px 8px;
-            max-height: 450px;
+            max-height: 360px; /* Dimenzováno přesně pro cca 7 položek najednou */
             overflow-y: auto;
             z-index: 10000;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
             display: none;
         }
 
@@ -84,11 +84,19 @@
             border-left: 3px solid var(--accent-primary);
         }
 
-        /* ROZLOŽENÍ POROVNÁVÁNÍ */
+        /* ROZLOŽENÍ POROVNÁVÁNÍ UND VYŠŠÍ MODÁLNÍ OKNO */
+        .modal-card-compare {
+            max-width: 95vw;
+            width: 1200px;
+            height: 85vh; /* Vyšší okno pro pohodlnější vyhledávání a rolování */
+            display: flex;
+            flex-direction: column;
+        }
+
         .compare-cols {
             display: flex;
             gap: 20px;
-            max-height: 70vh;
+            flex: 1;
             overflow-y: auto;
             margin-top: 15px;
             padding: 0 10px;
@@ -116,7 +124,7 @@
         <header style="display: flex; align-items: center; justify-content: center; gap: 50px; margin-top: 10px; margin-bottom: 30px;">
             <img src="KBZ_basic.png" alt="KBZ Logo" style="height: 180px; object-fit: contain;">
             <div style="text-align: center;">
-                <div class="logo-text" style="margin: 0;">KBZ <span>PROBÍHAJÍCÍ TIPOVAČKA</span></div>
+                <div class="logo-text" style="margin: 0;">KBZ <span>TIPOVAČKA</span></div>
                 <div style="margin-top: 10px;">
                     <span class="nav-tile chance-color" style="display: inline-block; font-size: 1.2rem; padding: 8px 30px; text-transform: uppercase;">Chance liga 26/27</span>
                 </div>
@@ -151,10 +159,12 @@
         </nav>
 
         <div class="top-tools-container">
-            <div class="stats-header" style="margin: 0; justify-content: flex-start; background: transparent; padding: 0;">
-                <div class="stat-item" style="margin: 0;">
-                    <div class="stat-value" id="count-players"><i class="fas fa-spinner fa-spin"></i></div>
-                    <div class="stat-label">Počet tipujících (Sezóna 26/27)</div>
+            <div style="flex: 1; display: flex; justify-content: center; min-width: 250px;">
+                <div class="stats-header" style="margin: 0; justify-content: center; background: transparent; padding: 0;">
+                    <div class="stat-item" style="margin: 0;">
+                        <div class="stat-value" id="count-players"><i class="fas fa-spinner fa-spin"></i></div>
+                        <div class="stat-label">Počet tipujících (Sezóna 26/27)</div>
+                    </div>
                 </div>
             </div>
 
@@ -223,12 +233,12 @@
     </div>
 
     <div class="modal-overlay" id="compareModal" onclick="zavriModalClick(event, 'compareModal')">
-        <div class="modal-card" style="max-width: 95vw; width: 1200px;">
+        <div class="modal-card modal-card-compare">
             <i class="fas fa-times close-btn" onclick="zavriModal('compareModal')"></i>
             
-            <h2 style="text-align: center; color: var(--accent-primary); margin-top: 25px; margin-bottom: 25px; font-family: 'Oswald', sans-serif; text-transform: uppercase;">Porovnej svůj tip s někým dalším!</h2>
+            <h2 style="text-align: center; color: var(--accent-primary); margin-top: 15px; margin-bottom: 20px; font-family: 'Oswald', sans-serif; text-transform: uppercase;">Porovnej svůj tip s někým dalším!</h2>
             
-            <div style="display: flex; justify-content: center; gap: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; max-width: 800px; margin: 0 auto;">
+            <div style="display: flex; justify-content: center; gap: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; max-width: 800px; margin: 0 auto; width: 100%;">
                 <div class="search-container-relative" style="flex: 1; max-width: 320px; height: 42px;">
                     <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
                     <input type="text" id="searchLeft" class="search-input" placeholder="Vyhledej prvního hráče..." 
@@ -334,7 +344,6 @@
             return src ? `<img src="${src}" class="fav-club-badge" style="width:24px; height:24px; object-fit:contain; vertical-align:middle; margin-left:6px;" title="Oblíbený klub: ${clubName}">` : ''; 
         }
         
-        // Vrací fotku pouze pro Zajíce, pro ostatní vrací prázdný řetězec (žádné zkratky/iniciály)
         function getAvatarHTML(name) {
             const cleanName = name.toLowerCase();
             if (cleanName.includes("podry") || cleanName.includes("podroužek")) return '<img src="podry.png" alt="Podry" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
@@ -565,7 +574,6 @@
             });
         }
 
-        // VYKRESLENÍ OBSAHU KARTY PRO JEDNOTLIVCE I POROVNÁNÍ
         function generujObsahHrace(hrac) {
             const jmeno = parseCell(hrac[2]);
             const klub = parseCell(hrac[3]);
@@ -575,7 +583,6 @@
             const isCustomAvatar = ZAJICI_INDICES.includes(hrac.originalIndex);
             const avatarHtml = getAvatarHTML(jmeno);
             
-            // Zobrazujeme avatar fotku POUZE pokud je to Zajíc a má fotku
             let avatarBlock = '';
             if (isCustomAvatar && avatarHtml) {
                 avatarBlock = `<div class="modal-avatar" style="background: transparent; width: 50px; height: 50px; flex-shrink: 0; margin-right: 12px;">${avatarHtml}</div>`;
@@ -615,7 +622,6 @@
                     let logoSrc = getLogoSrc(odpoved);
                     let logoHtml = logoSrc ? `<img src="${logoSrc}" style="width:28px; height:28px; object-fit:contain;">` : '';
                     
-                    // Výška dlaždic snížena na kompaktní 68px s čistým zarovnáním
                     html += `
                         <div class="bonus-item" style="height: 68px; min-height: 68px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; padding: 6px 12px;">
                             <div class="bonus-text" style="flex: 1; padding-right: 10px;">
