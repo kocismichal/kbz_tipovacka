@@ -18,7 +18,6 @@
             margin-bottom: 20px;
         }
 
-        /* Čistá tabulka pro přehled všech bez skoků v lince */
         .table-container-narrow {
             max-width: 600px;
             margin: 0 auto;
@@ -85,7 +84,7 @@
             border-left: 3px solid var(--accent-primary);
         }
 
-        /* ROZLOŽENÍ POROVNÁVÁNÍ UND ODSADENÍ */
+        /* ROZLOŽENÍ POROVNÁVÁNÍ */
         .compare-cols {
             display: flex;
             gap: 20px;
@@ -96,7 +95,7 @@
         }
         .compare-col {
             flex: 1;
-            padding: 0 20px; /* Dostatečné odsazení zleva i zprava */
+            padding: 0 20px;
             box-sizing: border-box;
         }
         .compare-col:first-child {
@@ -322,7 +321,6 @@
         let dataVyskyt = [];
 
         function odstranDiakritiku(text) { return text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : ""; }
-        function getInitials(name) { const parts = name.trim().split(' '); return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase(); }
         
         function getLogoSrc(cellValue) {
             if (!cellValue || cellValue === "-") return '';
@@ -333,16 +331,17 @@
 
         function ziskejLogoKlubuHTML(clubName) { 
             let src = getLogoSrc(clubName.trim());
-            return src ? `<img src="${src}" class="fav-club-badge" style="width:22px; height:22px; object-fit:contain; vertical-align:middle; margin-left:6px;" title="Oblíbený klub: ${clubName}">` : ''; 
+            return src ? `<img src="${src}" class="fav-club-badge" style="width:24px; height:24px; object-fit:contain; vertical-align:middle; margin-left:6px;" title="Oblíbený klub: ${clubName}">` : ''; 
         }
         
+        // Vrací fotku pouze pro Zajíce, pro ostatní vrací prázdný řetězec (žádné zkratky/iniciály)
         function getAvatarHTML(name) {
             const cleanName = name.toLowerCase();
             if (cleanName.includes("podry") || cleanName.includes("podroužek")) return '<img src="podry.png" alt="Podry" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
             if (cleanName.includes("folpi") || cleanName.includes("folprecht")) return '<img src="folpi.png" alt="Folpi" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
             if (cleanName.includes("sodoma") || cleanName.includes("vacek")) return '<img src="sodoma.png" alt="Vacíno" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
             if (cleanName.includes("dvorka") || cleanName.includes("novotný")) return '<img src="dvorka.png" alt="Novotňák" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            return getInitials(name);
+            return '';
         }
 
         function parseCell(cellValue) {
@@ -545,7 +544,6 @@
             });
         }
 
-        // OPRAVA TABULKY - Zamezení skoku v čáře (zrušen direct flex na <td>)
         function vykresliTabulku() {
             const tbody = document.getElementById('tabulka-telo'); tbody.innerHTML = ''; 
             const fanousci = vsichniHraci.filter(h => !ZAJICI_INDICES.includes(h.originalIndex));
@@ -567,21 +565,26 @@
             });
         }
 
-        // VYKRESLENÍ OBSAHU KARTY (Bez textu "Fandí:", nahrazeno pouze logem, zmenšený font)
+        // VYKRESLENÍ OBSAHU KARTY PRO JEDNOTLIVCE I POROVNÁNÍ
         function generujObsahHrace(hrac) {
             const jmeno = parseCell(hrac[2]);
             const klub = parseCell(hrac[3]);
             const logoSrc = getLogoSrc(klub);
-            const logoHtml = logoSrc ? `<img src="${logoSrc}" style="width:24px; height:24px; object-fit:contain; vertical-align:middle; margin-left:6px;" title="${klub}">` : '';
+            const logoHtml = logoSrc ? `<img src="${logoSrc}" style="width:28px; height:28px; object-fit:contain; vertical-align:middle; margin-left:6px;" title="${klub}">` : '';
             
             const isCustomAvatar = ZAJICI_INDICES.includes(hrac.originalIndex);
-            const avatarBg = isCustomAvatar ? 'transparent' : 'linear-gradient(135deg, #ff4d29, var(--accent-primary))';
             const avatarHtml = getAvatarHTML(jmeno);
             
+            // Zobrazujeme avatar fotku POUZE pokud je to Zajíc a má fotku
+            let avatarBlock = '';
+            if (isCustomAvatar && avatarHtml) {
+                avatarBlock = `<div class="modal-avatar" style="background: transparent; width: 50px; height: 50px; flex-shrink: 0; margin-right: 12px;">${avatarHtml}</div>`;
+            }
+            
             let html = `
-                <div class="modal-header" style="margin-bottom: 20px; display: flex; align-items: center; gap: 15px; min-height: 55px;">
-                    <div class="modal-avatar" style="background: ${avatarBg}; width: 50px; height: 50px; flex-shrink: 0;">${avatarHtml}</div>
-                    <div class="modal-name" style="font-size: 1.15rem; font-weight: bold; margin: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+                <div class="modal-header" style="margin-bottom: 20px; display: flex; align-items: center; min-height: 55px;">
+                    ${avatarBlock}
+                    <div class="modal-name" style="font-size: 1.35rem; font-weight: bold; margin: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
                         <span>${jmeno}</span> ${logoHtml}
                     </div>
                 </div>
@@ -603,20 +606,21 @@
                 `;
             }
 
-            html += `</div><div class="modal-subtitle" style="margin-top: 30px;">Bonusové otázky</div><div class="bonus-list">`;
+            html += `</div><div class="modal-subtitle" style="margin-top: 25px;">Bonusové otázky</div><div class="bonus-list">`;
             
             for (let k = 0; k < bonusQuestionsText.length; k++) {
                 const colIndex = 20 + k;
                 const odpoved = parseCell(hrac[colIndex]);
                 if (odpoved && odpoved !== "-" && odpoved !== "") {
                     let logoSrc = getLogoSrc(odpoved);
-                    let logoHtml = logoSrc ? `<img src="${logoSrc}" style="width:32px; height:32px; object-fit:contain;">` : '';
+                    let logoHtml = logoSrc ? `<img src="${logoSrc}" style="width:28px; height:28px; object-fit:contain;">` : '';
                     
+                    // Výška dlaždic snížena na kompaktní 68px s čistým zarovnáním
                     html += `
-                        <div class="bonus-item" style="height: 90px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box;">
-                            <div class="bonus-text" style="flex: 1;">
-                                <div class="b-question">${bonusQuestionsText[k]}</div>
-                                <div class="b-answer">${odpoved}</div>
+                        <div class="bonus-item" style="height: 68px; min-height: 68px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; padding: 6px 12px;">
+                            <div class="bonus-text" style="flex: 1; padding-right: 10px;">
+                                <div class="b-question" style="font-size: 0.85rem; line-height: 1.2; margin-bottom: 2px;">${bonusQuestionsText[k]}</div>
+                                <div class="b-answer" style="font-size: 0.95rem; font-weight: bold;">${odpoved}</div>
                             </div>
                             <div class="b-pts" style="display:flex; align-items:center; flex-shrink: 0;">
                                 ${logoHtml}
@@ -644,14 +648,18 @@
                     const jmeno = parseCell(hrac[2]);
                     const klub = parseCell(hrac[3]);
                     const isCustomAvatar = ZAJICI_INDICES.includes(hrac.originalIndex);
+                    const avatarHtml = getAvatarHTML(jmeno);
+                    
+                    let avatarSearchHtml = '';
+                    if (isCustomAvatar && avatarHtml) {
+                        avatarSearchHtml = `<div style="width:28px; height:28px; border-radius:50%; overflow:hidden; flex-shrink:0;">${avatarHtml}</div>`;
+                    }
                     
                     const div = document.createElement('div'); 
                     div.className = 'autocomplete-item';
                     div.innerHTML = `
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <div style="width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:bold; overflow:hidden; color:#fff; flex-shrink:0; ${isCustomAvatar ? 'background: transparent;' : 'background: linear-gradient(135deg, #ff4d29, var(--accent-primary));'}">
-                                ${getAvatarHTML(jmeno)}
-                            </div>
+                            ${avatarSearchHtml}
                             <span><strong>${jmeno}</strong> ${ziskejLogoKlubuHTML(klub)}</span>
                         </div>
                     `;
