@@ -440,6 +440,23 @@ button[type="submit"]:hover { background-color: var(--accent-primary); color: #0
 .custom-option.focused {
     background-color: #0d1117 !important;
 }
+/* Úplné zrušení průhlednosti a oprava překrývání vrstev (z-index) */
+.custom-select-wrapper.open {
+    z-index: 9999 !important; /* Zaručí, že rozbalená roletka bude nad všemi ostatními políčky */
+}
+
+.custom-select-options {
+    background-color: #0b0f19 !important; /* Extrémně tmavá, 100% neprůhledná barva (žádné rgba) */
+    z-index: 9999 !important; 
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.95) !important; /* Masivní černý stín pro hloubku */
+    border: 1px solid var(--accent-primary) !important; /* Zelený rámeček, ať je jasně vidět okraj */
+}
+
+/* Zvýraznění položky při najetí */
+.custom-option:hover,
+.custom-option.focused {
+    background-color: #1a2333 !important; /* Světlejší neprůhledná barva pro lepší kontrast */
+}
 
 #souhlas-label.green { color: var(--accent-primary); }
 #vysledek { margin-top: 25px; text-align: center; font-family: 'Oswald', sans-serif; font-size: 1.3rem; }
