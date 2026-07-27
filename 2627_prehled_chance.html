@@ -118,17 +118,18 @@
         /* --- STYLY PRO DISCORD MEMBERS --- */
         .discord-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(8, 1fr); /* 8 dlaždic na jeden řádek */
+            gap: 10px; /* Menší mezery mezi dlaždicemi */
             margin-bottom: 40px;
         }
-        @media(max-width: 900px) { .discord-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media(max-width: 500px) { .discord-grid { grid-template-columns: 1fr; } }
+        /* Na menších monitorech se to zalomí na 4 a na mobilech na 2 */
+        @media(max-width: 1100px) { .discord-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media(max-width: 600px) { .discord-grid { grid-template-columns: repeat(2, 1fr); } }
         
         .discord-card {
             background-color: #5865F2; /* Typická Discord barva */
-            border-radius: 8px;
-            padding: 15px;
+            border-radius: 6px;
+            padding: 8px 5px; /* Výrazně zmenšený padding */
             text-align: center;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
@@ -139,18 +140,27 @@
             box-shadow: 0 5px 15px rgba(88, 101, 242, 0.4);
         }
         .discord-name {
-            font-size: 1.1rem;
+            font-size: 0.85rem; /* Zmenšené jméno */
             font-weight: bold;
             color: #fff;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
+            white-space: nowrap; /* Zabrání zalomení dlouhého jména na dva řádky */
+            overflow: hidden;
+            text-overflow: ellipsis; /* Přidá tečky, pokud je jméno moc dlouhé */
         }
         .discord-club {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            font-size: 0.85rem;
+            gap: 5px;
+            font-size: 0.75rem; /* Zmenšený text klubu */
             color: rgba(255,255,255,0.9);
+        }
+        /* Zmenšení vnitřního loga u Discord dlaždic */
+        .discord-club img.fav-club-badge {
+            width: 16px !important;
+            height: 16px !important;
+            margin-left: 2px !important;
         }
     </style>
 </head>
