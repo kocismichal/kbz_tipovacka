@@ -59,7 +59,7 @@
             background: rgba(22, 29, 43, 0.98);
             border: 1px solid var(--accent-primary);
             border-radius: 0 0 8px 8px;
-            max-height: 360px; /* Dimenzováno přesně pro cca 7 položek najednou */
+            max-height: 360px;
             overflow-y: auto;
             z-index: 10000;
             box-shadow: 0 10px 25px rgba(0,0,0,0.8);
@@ -84,11 +84,10 @@
             border-left: 3px solid var(--accent-primary);
         }
 
-        /* ROZLOŽENÍ POROVNÁVÁNÍ UND VYŠŠÍ MODÁLNÍ OKNO */
         .modal-card-compare {
             max-width: 95vw;
             width: 1200px;
-            height: 85vh; /* Vyšší okno pro pohodlnější vyhledávání a rolování */
+            height: 85vh; 
             display: flex;
             flex-direction: column;
         }
@@ -114,6 +113,44 @@
             text-align: center;
             font-style: italic;
             padding: 40px 20px;
+        }
+
+        /* --- STYLY PRO DISCORD MEMBERS --- */
+        .discord-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        @media(max-width: 900px) { .discord-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media(max-width: 500px) { .discord-grid { grid-template-columns: 1fr; } }
+        
+        .discord-card {
+            background-color: #5865F2; /* Typická Discord barva */
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .discord-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.4);
+        }
+        .discord-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        .discord-club {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.9);
         }
     </style>
 </head>
@@ -162,6 +199,13 @@
         <h2 class="section-title">Tipy Zajíců</h2>
         <div class="zajici-grid" id="zajici-container">
             <div class="loader">Načítám Zajíce...</div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 40px 0;">
+        
+        <h2 class="section-title" style="margin-top: 0;">DISCORD MEMBERS</h2>
+        <div class="discord-grid" id="discord-container">
+            <div class="loader" style="grid-column: 1/-1;">Načítám členy...</div>
         </div>
 
         <div id="vyskytove-sekce">
@@ -249,7 +293,9 @@
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRUxumfQeidDrjcs1T3d2HftSnwGv93G-mMlqw3wpaLe_Kae0XSvSqMRTSRWiNmZIhgboprShotvxI6/pub?gid=0&single=true&output=csv"; 
         const CSV_URL_VYSKYT = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRUxumfQeidDrjcs1T3d2HftSnwGv93G-mMlqw3wpaLe_Kae0XSvSqMRTSRWiNmZIhgboprShotvxI6/pub?gid=236934267&single=true&output=csv";
 
-        const ZAJICI_INDICES = [1, 4, 5, 6]; 
+        // Řádky v G-Sheets odpovídají těmto indexům (Řádek 2 = index 1 atd.)
+        const ZAJICI_INDICES = [1, 2, 3, 4]; // Řádky 2, 3, 4, 5
+        const DISCORD_INDICES = [5, 6, 7, 8, 9, 10, 11, 12]; // Řádky 6 až 13
 
         const bonusQuestionsText = [
             "Kdo ovládne základní část soutěže?", 
@@ -306,6 +352,7 @@
         let dataVyskyt = [];
 
         function odstranDiakritiku(text) { return text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : ""; }
+        function getInitials(name) { const parts = name.trim().split(' '); return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase(); }
         
         function getLogoSrc(cellValue) {
             if (!cellValue || cellValue === "-") return '';
@@ -319,13 +366,13 @@
             return src ? `<img src="${src}" class="fav-club-badge" style="width:24px; height:24px; object-fit:contain; vertical-align:middle; margin-left:6px;" title="Oblíbený klub: ${clubName}">` : ''; 
         }
         
-        function getAvatarHTML(name) {
-            const cleanName = name.toLowerCase();
-            if (cleanName.includes("podry") || cleanName.includes("podroužek")) return '<img src="podry.png" alt="Podry" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            if (cleanName.includes("folpi") || cleanName.includes("folprecht")) return '<img src="folpi.png" alt="Folpi" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            if (cleanName.includes("sodoma") || cleanName.includes("vacek")) return '<img src="sodoma.png" alt="Vacíno" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            if (cleanName.includes("ondra") || cleanName.includes("novotný")) return '<img src="dvorka.png" alt="Novotňák" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            return '';
+        // FOTKY ZAJÍCŮ PŘIŘAZENY STRIKTNĚ PODLE INDEXU ŘÁDKU
+        function getAvatarHTML(hrac) {
+            const idx = hrac.originalIndex;
+            if (idx === 1) return '<img src="ondra.png" alt="Ondra" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            if (idx === 2) return '<img src="dvorka.png" alt="Dvorka" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            if (idx === 4) return '<img src="lars.png" alt="Lars" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            return ''; // Řádek 4 (index 3) bude zatím prázdný
         }
 
         function parseCell(cellValue) {
@@ -500,6 +547,7 @@
                     }
                     document.getElementById('count-players').innerText = vsichniHraci.length;
                     vykresliZajice();
+                    vykresliDiscord();
                     vykresliTabulku();
                 });
         }
@@ -515,9 +563,14 @@
                 const klub = parseCell(zajic[3]);
                 const card = document.createElement('div'); card.className = 'zajic-card'; card.onclick = () => otevriModalJeden(zajic);
                 
+                let avatarHtml = getAvatarHTML(zajic);
+                if (!avatarHtml) {
+                    avatarHtml = `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg, #ff4d29, var(--accent-primary));border-radius:50%;color:#fff;font-weight:bold;font-size:1.5rem;">${getInitials(jmeno)}</div>`;
+                }
+                
                 card.innerHTML = `
                     <div class="zajic-avatar-container">
-                        <div class="zajic-avatar" style="background: transparent;">${getAvatarHTML(jmeno)}</div>
+                        <div class="zajic-avatar" style="background: transparent;">${avatarHtml}</div>
                     </div>
                     <div class="zajic-name" style="margin-bottom: 5px;">${jmeno}</div>
                     <div style="font-size:0.9rem; color:var(--text-muted); display:flex; align-items:center; justify-content:center; gap:5px;">
@@ -528,9 +581,30 @@
             });
         }
 
+        function vykresliDiscord() {
+            const container = document.getElementById('discord-container'); container.innerHTML = '';
+            const discordMembers = vsichniHraci.filter(h => DISCORD_INDICES.includes(h.originalIndex));
+            
+            if(discordMembers.length === 0) { container.innerHTML = '<div class="loader" style="grid-column: 1/-1;">Discord členové ještě netipovali...</div>'; return; }
+            
+            discordMembers.forEach(clen => {
+                const jmeno = parseCell(clen[2]);
+                const klub = parseCell(clen[3]);
+                const card = document.createElement('div'); card.className = 'discord-card'; card.onclick = () => otevriModalJeden(clen);
+                
+                card.innerHTML = `
+                    <div class="discord-name">${jmeno}</div>
+                    <div class="discord-club">
+                        ${ziskejLogoKlubuHTML(klub)}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
         function vykresliTabulku() {
             const tbody = document.getElementById('tabulka-telo'); tbody.innerHTML = ''; 
-            const fanousci = vsichniHraci.filter(h => !ZAJICI_INDICES.includes(h.originalIndex));
+            const fanousci = vsichniHraci.filter(h => !ZAJICI_INDICES.includes(h.originalIndex) && !DISCORD_INDICES.includes(h.originalIndex));
             
             fanousci.forEach(hrac => {
                 const jmeno = parseCell(hrac[2]);
@@ -539,7 +613,7 @@
                 tr.onclick = () => otevriModalJeden(hrac); 
                 
                 tr.innerHTML = `
-                    <td style="font-weight: 600;">${jmeno}</td>
+                    <td style="font-weight: 600; padding-left: 20px;">${jmeno}</td>
                     <td style="text-align: right; white-space: nowrap;">
                         <span style="vertical-align: middle;">${klub}</span> 
                         ${ziskejLogoKlubuHTML(klub)}
@@ -556,11 +630,12 @@
             const logoHtml = logoSrc ? `<img src="${logoSrc}" style="width:28px; height:28px; object-fit:contain; vertical-align:middle; margin-left:6px;" title="${klub}">` : '';
             
             const isCustomAvatar = ZAJICI_INDICES.includes(hrac.originalIndex);
-            const avatarHtml = getAvatarHTML(jmeno);
             
             let avatarBlock = '';
-            if (isCustomAvatar && avatarHtml) {
-                avatarBlock = `<div class="modal-avatar" style="background: transparent; width: 50px; height: 50px; flex-shrink: 0; margin-right: 12px;">${avatarHtml}</div>`;
+            if (isCustomAvatar) {
+                let av = getAvatarHTML(hrac);
+                if (!av) av = `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg, #ff4d29, var(--accent-primary));border-radius:50%;color:#fff;font-weight:bold;font-size:1.2rem;">${getInitials(jmeno)}</div>`;
+                avatarBlock = `<div class="modal-avatar" style="background: transparent; width: 50px; height: 50px; flex-shrink: 0; margin-right: 12px;">${av}</div>`;
             }
             
             let html = `
@@ -628,19 +703,23 @@
                 shody.forEach(hrac => {
                     const jmeno = parseCell(hrac[2]);
                     const klub = parseCell(hrac[3]);
-                    const isCustomAvatar = ZAJICI_INDICES.includes(hrac.originalIndex);
-                    const avatarHtml = getAvatarHTML(jmeno);
                     
-                    let avatarSearchHtml = '';
-                    if (isCustomAvatar && avatarHtml) {
-                        avatarSearchHtml = `<div style="width:28px; height:28px; border-radius:50%; overflow:hidden; flex-shrink:0;">${avatarHtml}</div>`;
+                    const isCustomAvatar = ZAJICI_INDICES.includes(hrac.originalIndex);
+                    const isDiscord = DISCORD_INDICES.includes(hrac.originalIndex);
+                    
+                    let searchIconHtml = '';
+                    if (isCustomAvatar) {
+                        let av = getAvatarHTML(hrac) || `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg, #ff4d29, var(--accent-primary));border-radius:50%;color:#fff;font-weight:bold;font-size:0.8rem;">${getInitials(jmeno)}</div>`;
+                        searchIconHtml = `<div style="width:28px; height:28px; border-radius:50%; overflow:hidden; flex-shrink:0;">${av}</div>`;
+                    } else if (isDiscord) {
+                        searchIconHtml = `<div style="width:28px; height:28px; border-radius:50%; background:#5865F2; display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.8rem; font-weight:bold; flex-shrink:0;"><i class="fab fa-discord"></i></div>`;
                     }
                     
                     const div = document.createElement('div'); 
                     div.className = 'autocomplete-item';
                     div.innerHTML = `
                         <div style="display:flex; align-items:center; gap:10px;">
-                            ${avatarSearchHtml}
+                            ${searchIconHtml}
                             <span><strong>${jmeno}</strong> ${ziskejLogoKlubuHTML(klub)}</span>
                         </div>
                     `;
@@ -740,6 +819,7 @@
             nactiVyskytovouTabulku();
         });
     </script>
+    
     <script src="navbar.js"></script>
 </body>
 </html>
