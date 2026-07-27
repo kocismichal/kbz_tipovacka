@@ -84,7 +84,7 @@
             border-left: 3px solid var(--accent-primary);
         }
 
-        /* ROZLOŽENÍ POROVNÁVÁNÍ UND VYŠŠÍ MODÁLNÍ OKNO */
+        /* ROZLOŽENÍ POROVNÁVÁNÍ A VYŠŠÍ MODÁLNÍ OKNO */
         .modal-card-compare {
             max-width: 95vw;
             width: 1200px;
@@ -131,6 +131,7 @@
             </div>
         </header>
 
+        <!-- Dynamická hlavička -->
         <div id="navbar-placeholder"></div>
 
         <div class="top-tools-container">
@@ -146,9 +147,10 @@
             <div style="display: flex; align-items: center; gap: 15px; width: 100%; max-width: 550px;">
                 <div class="search-container-relative" style="flex-grow: 1; height: 42px;">
                     <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                    <input type="text" id="searchInput" class="search-input" placeholder="Napiš jméno a uvidíš tipy..." 
+                    <!-- Oprava šotka: přidáno autocomplete="off" -->
+                    <input type="text" id="searchInput" class="search-input" autocomplete="off" spellcheck="false" placeholder="Napiš jméno a uvidíš tipy..." 
                            oninput="hledejHrace('searchInput', 'searchResults')" 
-                           onkeydown="klavesovaNavigace(event, 'searchResults')" 
+                           onkeydown="klavesovaNavigace(event, 'searchResults', 'searchInput')" 
                            style="padding-left: 45px; width: 100%; box-sizing: border-box; height: 42px; margin: 0; font-size: 0.95rem;">
                     <div class="autocomplete-dropdown" id="searchResults"></div>
                 </div>
@@ -212,7 +214,8 @@
             <div style="display: flex; justify-content: center; gap: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; max-width: 800px; margin: 0 auto; width: 100%;">
                 <div class="search-container-relative" style="flex: 1; max-width: 320px; height: 42px;">
                     <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                    <input type="text" id="searchLeft" class="search-input" placeholder="Vyhledej prvního hráče..." 
+                    <!-- Oprava šotka: přidáno autocomplete="off" -->
+                    <input type="text" id="searchLeft" class="search-input" autocomplete="off" spellcheck="false" placeholder="Vyhledej prvního hráče..." 
                            oninput="hledejHrace('searchLeft', 'resultsLeft', 'contentLeft')" 
                            onkeydown="klavesovaNavigace(event, 'resultsLeft', 'searchLeft')"
                            style="padding-left: 45px; width: 100%; box-sizing: border-box; height: 42px; margin: 0; font-size: 0.9rem;">
@@ -221,7 +224,8 @@
                 
                 <div class="search-container-relative" style="flex: 1; max-width: 320px; height: 42px;">
                     <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                    <input type="text" id="searchRight" class="search-input" placeholder="Vyhledej druhého hráče..." 
+                    <!-- Oprava šotka: přidáno autocomplete="off" -->
+                    <input type="text" id="searchRight" class="search-input" autocomplete="off" spellcheck="false" placeholder="Vyhledej druhého hráče..." 
                            oninput="hledejHrace('searchRight', 'resultsRight', 'contentRight')" 
                            onkeydown="klavesovaNavigace(event, 'resultsRight', 'searchRight')"
                            style="padding-left: 45px; width: 100%; box-sizing: border-box; height: 42px; margin: 0; font-size: 0.9rem;">
@@ -241,13 +245,11 @@
     </div>
 
     <script>
-        // Odkazy na nová data ChNL
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnRxscJELWVHJAtMOcNmMCAYwJvj3j-NWiJtW8y-ErGIj6oEdASB_KdLA84kmBgNibLXmA1K5R_x5P/pub?gid=0&single=true&output=csv"; 
         const CSV_URL_VYSKYT = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnRxscJELWVHJAtMOcNmMCAYwJvj3j-NWiJtW8y-ErGIj6oEdASB_KdLA84kmBgNibLXmA1K5R_x5P/pub?gid=236934267&single=true&output=csv";
 
         const ZAJICI_INDICES = [1, 2, 3, 4]; 
 
-        // PŘESNÉ ZNĚNÍ OTÁZEK Z FORMULÁŘE
         const bonusQuestionsText = [
             "Postoupí druholigový tým přes baráž do první ligy?",
             "Kolik bodů získá mistr Chance národní ligy během celé sezóny?",
@@ -257,7 +259,6 @@
             "Kolik gólů vstřelí nejlepší střelec soutěže?"
         ];
 
-        // Seznam log týmů z 2. ligy (ChNL)
         const teamLogos = {
             "Dukla Praha": "https://i.imgur.com/FZ2Lzu2.png",
             "Karviná": "https://i.imgur.com/j7hx1cA.png",
@@ -281,6 +282,7 @@
         let dataVyskyt = [];
 
         function odstranDiakritiku(text) { return text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : ""; }
+        function getInitials(name) { const parts = name.trim().split(' '); return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase(); }
         
         function getLogoSrc(cellValue) {
             if (!cellValue || cellValue === "-") return '';
@@ -294,13 +296,13 @@
             return src ? `<img src="${src}" class="fav-club-badge" style="width:24px; height:24px; object-fit:contain; vertical-align:middle; margin-left:6px;" title="Oblíbený klub: ${clubName}">` : ''; 
         }
         
-        // FOTKY ZAJÍCŮ PŘIŘAZENY STRIKTNĚ PODLE INDEXU ŘÁDKU
+        // OPRAVA FOTEK: Rozlišuje přesně podle řádku (indexu)
         function getAvatarHTML(hrac) {
             const idx = hrac.originalIndex;
             if (idx === 1) return '<img src="dvorka.png" alt="Dvorka" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
             if (idx === 3) return '<img src="lars.png" alt="Lars" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
             if (idx === 4) return '<img src="mk.png" alt="MK" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            return ''; // Řádek 3 (index 2) bude bez obrázku
+            return ''; // Řádek 3 (index 2) zůstane bez fota
         }
 
         function parseCell(cellValue) {
@@ -395,7 +397,6 @@
                 let htmlTable = `<div class="matrix-container" style="flex: 1 1 300px; margin-bottom: 0;"><table>`;
                 htmlTable += `<thead><tr><th colspan="2" style="white-space: normal; line-height: 1.4; padding: 12px; font-size: 0.9rem; text-align:center; vertical-align: middle;">${otazka}</th></tr></thead><tbody>`;
                 
-                // Výpis pouze TOP 5 v HTML tabulkách 
                 for(let r = questionRowIndex + 1; r <= questionRowIndex + 5; r++) { 
                     if(!dataVyskyt[r]) break;
                     let pozice = dataVyskyt[r][c];
@@ -446,7 +447,6 @@
                 
                 let avatarHtml = getAvatarHTML(zajic);
                 if (!avatarHtml) {
-                    // Fallback na iniciály, pokud Zajíc nemá fotku
                     const inits = getInitials(jmeno);
                     avatarHtml = `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg, #ff4d29, var(--accent-primary));border-radius:50%;color:#fff;font-weight:bold;font-size:1.5rem;">${inits}</div>`;
                 }
@@ -677,6 +677,7 @@
             nactiVyskytovouTabulku();
         });
     </script>
+
     <script src="navbar.js"></script>
 </body>
 </html>
