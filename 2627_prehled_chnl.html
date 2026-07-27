@@ -199,7 +199,7 @@
                 <div class="loader">Načítám data umístění...</div>
             </div>
 
-            <h2 class="section-title" style="margin-top: 40px;">TOP odpovědi na bonusové otázky a střelce</h2>
+            <h2 class="section-title" style="margin-top: 40px;">BONUSOVÉ OTÁZKY</h2>
             <div id="osobnosti-container" class="flex-container-top" style="margin-bottom: 40px;">
                 <div class="loader">Načítám statistiky...</div>
             </div>
@@ -272,15 +272,14 @@
 
         const ZAJICI_INDICES = [1, 4, 5, 6]; 
 
-        // ⚠️ ZDE SI UPRAV TEXTY BONUSOVÝCH OTÁZEK PŘESNĚ DLE TVÉHO FORMULÁŘE ⚠️
-        // Pole pokrývá sloupce U, V, W, X, Y, Z.
+        // PŘESNÉ ZNĚNÍ OTÁZEK Z FORMULÁŘE
         const bonusQuestionsText = [
-            "Bonusová otázka 1", 
-            "Bonusová otázka 2",
-            "Bonusová otázka 3", 
-            "Bonusová otázka 4",
-            "Nejlepší střelec ChNL",
-            "Počet gólů nejlepšího střelce"
+            "Postoupí druholigový tým přes baráž do první ligy?",
+            "Kolik bodů získá mistr Chance národní ligy během celé sezóny?",
+            "Jaký bude bodový rozdíl mezi 1. a 2. místem?",
+            "Kolik bodů získá poslední tým tabulky během celé sezóny?",
+            "Nejlepší střelec Chance národní ligy na konci sezóny:",
+            "Kolik gólů vstřelí nejlepší střelec soutěže?"
         ];
 
         // Seznam log týmů z 2. ligy (ChNL)
@@ -396,7 +395,6 @@
         }
 
         function vykresliOsobnosti() {
-            // Hledáme řádek hlaviček (v novém skriptu je na řádku 20, což je index 19)
             let questionRowIndex = -1;
             for (let i = 15; i < dataVyskyt.length; i++) {
                 if (dataVyskyt[i] && dataVyskyt[i][0] && dataVyskyt[i][0].includes("?")) {
@@ -422,8 +420,8 @@
                 let htmlTable = `<div class="matrix-container" style="flex: 1 1 300px; margin-bottom: 0;"><table>`;
                 htmlTable += `<thead><tr><th colspan="2" style="white-space: normal; line-height: 1.4; padding: 12px; font-size: 0.9rem; text-align:center; vertical-align: middle;">${otazka}</th></tr></thead><tbody>`;
                 
-                // Vypisujeme TOP výsledky
-                for(let r = questionRowIndex + 1; r <= questionRowIndex + 15; r++) { 
+                // ZMĚNA: Výpis pouze TOP 5 v HTML tabulkách 
+                for(let r = questionRowIndex + 1; r <= questionRowIndex + 5; r++) { 
                     if(!dataVyskyt[r]) break;
                     let pozice = dataVyskyt[r][c];
                     let odpoved = dataVyskyt[r][c+1];
