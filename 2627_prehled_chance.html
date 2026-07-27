@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Probíhající Tipovačka - Chance Národní Liga 26/27</title>
+    <title>Probíhající Tipovačka - Chance Liga 26/27</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -84,11 +84,10 @@
             border-left: 3px solid var(--accent-primary);
         }
 
-        /* ROZLOŽENÍ POROVNÁVÁNÍ A VYŠŠÍ MODÁLNÍ OKNO */
         .modal-card-compare {
             max-width: 95vw;
             width: 1200px;
-            height: 85vh;
+            height: 85vh; 
             display: flex;
             flex-direction: column;
         }
@@ -115,6 +114,54 @@
             font-style: italic;
             padding: 40px 20px;
         }
+
+        /* --- STYLY PRO DISCORD MEMBERS --- */
+        .discord-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr); /* 8 dlaždic na jeden řádek */
+            gap: 10px; /* Menší mezery mezi dlaždicemi */
+            margin-bottom: 40px;
+        }
+        /* Na menších monitorech se to zalomí na 4 a na mobilech na 2 */
+        @media(max-width: 1100px) { .discord-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media(max-width: 600px) { .discord-grid { grid-template-columns: repeat(2, 1fr); } }
+        
+        .discord-card {
+            background-color: #5865F2; /* Typická Discord barva */
+            border-radius: 6px;
+            padding: 8px 5px; /* Výrazně zmenšený padding */
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .discord-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.4);
+        }
+        .discord-name {
+            font-size: 0.85rem; /* Zmenšené jméno */
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 3px;
+            white-space: nowrap; /* Zabrání zalomení dlouhého jména na dva řádky */
+            overflow: hidden;
+            text-overflow: ellipsis; /* Přidá tečky, pokud je jméno moc dlouhé */
+        }
+        .discord-club {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-size: 0.75rem; /* Zmenšený text klubu */
+            color: rgba(255,255,255,0.9);
+        }
+        /* Zmenšení vnitřního loga u Discord dlaždic */
+        .discord-club img.fav-club-badge {
+            width: 16px !important;
+            height: 16px !important;
+            margin-left: 2px !important;
+        }
     </style>
 </head>
 <body>
@@ -126,12 +173,11 @@
             <div style="text-align: center;">
                 <div class="logo-text" style="margin: 0;">KBZ <span>TIPOVAČKA</span></div>
                 <div style="margin-top: 10px;">
-                    <span class="nav-tile chnl-color" style="display: inline-block; font-size: 1.2rem; padding: 8px 30px; text-transform: uppercase;">Chance národní liga 26/27</span>
+                    <span class="nav-tile chance-color" style="display: inline-block; font-size: 1.2rem; padding: 8px 30px; text-transform: uppercase;">Chance liga 26/27</span>
                 </div>
             </div>
         </header>
 
-        <!-- Dynamická hlavička -->
         <div id="navbar-placeholder"></div>
 
         <div class="top-tools-container">
@@ -139,7 +185,7 @@
                 <div class="stats-header" style="margin: 0; justify-content: center; background: transparent; padding: 0;">
                     <div class="stat-item" style="margin: 0;">
                         <div class="stat-value" id="count-players"><i class="fas fa-spinner fa-spin"></i></div>
-                        <div class="stat-label">Počet tipujících (ChNL 26/27)</div>
+                        <div class="stat-label">Počet tipujících (Sezóna 26/27)</div>
                     </div>
                 </div>
             </div>
@@ -147,10 +193,9 @@
             <div style="display: flex; align-items: center; gap: 15px; width: 100%; max-width: 550px;">
                 <div class="search-container-relative" style="flex-grow: 1; height: 42px;">
                     <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                    <!-- Oprava šotka: přidáno autocomplete="off" -->
-                    <input type="text" id="searchInput" class="search-input" autocomplete="off" spellcheck="false" placeholder="Napiš jméno a uvidíš tipy..." 
+                    <input type="text" id="searchInput" class="search-input" placeholder="Napiš jméno a uvidíš tipy..." 
                            oninput="hledejHrace('searchInput', 'searchResults')" 
-                           onkeydown="klavesovaNavigace(event, 'searchResults', 'searchInput')" 
+                           onkeydown="klavesovaNavigace(event, 'searchResults')" 
                            style="padding-left: 45px; width: 100%; box-sizing: border-box; height: 42px; margin: 0; font-size: 0.95rem;">
                     <div class="autocomplete-dropdown" id="searchResults"></div>
                 </div>
@@ -166,6 +211,11 @@
             <div class="loader">Načítám Zajíce...</div>
         </div>
 
+        <h2 class="section-title" style="margin-top: 40px;">DISCORD MEMBERS</h2>
+        <div class="discord-grid" id="discord-container">
+            <div class="loader" style="grid-column: 1/-1;">Načítám členy...</div>
+        </div>
+
         <div id="vyskytove-sekce">
             <h2 class="section-title" style="margin-top: 40px;">JAK VIDÍTE TABULKU VY?</h2>
             <div class="tabs" style="margin-bottom: 20px;">
@@ -176,9 +226,13 @@
                 <div class="loader">Načítám data umístění...</div>
             </div>
 
-            <h2 class="section-title" style="margin-top: 40px;">BONUSOVÉ OTÁZKY</h2>
-            <div id="osobnosti-container" class="flex-container-top" style="margin-bottom: 40px;">
-                <div class="loader">Načítám statistiky...</div>
+            <h2 class="section-title" style="margin-top: 40px;">Bonusové otázky</h2>
+            <div class="matrix-container" id="table-bonusy-container" style="margin-bottom: 40px; display: inline-block;">
+                <div class="loader">Načítám bonusy...</div>
+            </div>
+
+            <div id="osobnosti-container" class="flex-container-top">
+                <div class="loader">Načítám osobnosti...</div>
             </div>
         </div>
 
@@ -214,8 +268,7 @@
             <div style="display: flex; justify-content: center; gap: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; max-width: 800px; margin: 0 auto; width: 100%;">
                 <div class="search-container-relative" style="flex: 1; max-width: 320px; height: 42px;">
                     <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                    <!-- Oprava šotka: přidáno autocomplete="off" -->
-                    <input type="text" id="searchLeft" class="search-input" autocomplete="off" spellcheck="false" placeholder="Vyhledej prvního hráče..." 
+                    <input type="text" id="searchLeft" class="search-input" placeholder="Vyhledej prvního hráče..." 
                            oninput="hledejHrace('searchLeft', 'resultsLeft', 'contentLeft')" 
                            onkeydown="klavesovaNavigace(event, 'resultsLeft', 'searchLeft')"
                            style="padding-left: 45px; width: 100%; box-sizing: border-box; height: 42px; margin: 0; font-size: 0.9rem;">
@@ -224,8 +277,7 @@
                 
                 <div class="search-container-relative" style="flex: 1; max-width: 320px; height: 42px;">
                     <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                    <!-- Oprava šotka: přidáno autocomplete="off" -->
-                    <input type="text" id="searchRight" class="search-input" autocomplete="off" spellcheck="false" placeholder="Vyhledej druhého hráče..." 
+                    <input type="text" id="searchRight" class="search-input" placeholder="Vyhledej druhého hráče..." 
                            oninput="hledejHrace('searchRight', 'resultsRight', 'contentRight')" 
                            onkeydown="klavesovaNavigace(event, 'resultsRight', 'searchRight')"
                            style="padding-left: 45px; width: 100%; box-sizing: border-box; height: 42px; margin: 0; font-size: 0.9rem;">
@@ -241,41 +293,67 @@
                     <div class="compare-col-header">Zadej jméno pro zobrazení jeho tipů.</div>
                 </div>
             </div>
+
         </div>
     </div>
 
     <script>
-        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnRxscJELWVHJAtMOcNmMCAYwJvj3j-NWiJtW8y-ErGIj6oEdASB_KdLA84kmBgNibLXmA1K5R_x5P/pub?gid=0&single=true&output=csv"; 
-        const CSV_URL_VYSKYT = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRnRxscJELWVHJAtMOcNmMCAYwJvj3j-NWiJtW8y-ErGIj6oEdASB_KdLA84kmBgNibLXmA1K5R_x5P/pub?gid=236934267&single=true&output=csv";
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRUxumfQeidDrjcs1T3d2HftSnwGv93G-mMlqw3wpaLe_Kae0XSvSqMRTSRWiNmZIhgboprShotvxI6/pub?gid=0&single=true&output=csv"; 
+        const CSV_URL_VYSKYT = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRUxumfQeidDrjcs1T3d2HftSnwGv93G-mMlqw3wpaLe_Kae0XSvSqMRTSRWiNmZIhgboprShotvxI6/pub?gid=236934267&single=true&output=csv";
 
-        const ZAJICI_INDICES = [1, 2, 3, 4]; 
+        // Řádky v G-Sheets odpovídají těmto indexům (Řádek 2 = index 1 atd.)
+        const ZAJICI_INDICES = [1, 2, 3, 4]; // Řádky 2, 3, 4, 5
+        const DISCORD_INDICES = [5, 6, 7, 8, 9, 10, 11, 12]; // Řádky 6 až 13
 
         const bonusQuestionsText = [
-            "Postoupí druholigový tým přes baráž do první ligy?",
-            "Kolik bodů získá mistr Chance národní ligy během celé sezóny?",
+            "Kdo ovládne základní část soutěže?", 
+            "Sestoupí prvoligový tým do druhé ligy po prohře v baráži?",
+            "Kolik bodů získá mistr Chance ligy během celé sezóny?", 
             "Jaký bude bodový rozdíl mezi 1. a 2. místem?",
-            "Kolik bodů získá poslední tým tabulky během celé sezóny?",
-            "Nejlepší střelec Chance národní ligy na konci sezóny:",
-            "Kolik gólů vstřelí nejlepší střelec soutěže?"
+            "Kolik bodů získá poslední tým tabulky během celé sezóny?", 
+            "Nejlepší střelec Chance ligy na konci sezóny:",
+            "Kolik gólů vstřelí nejlepší střelec soutěže?",
+            "Který brankář odchytá nejvíce minut?",
+            "Který brankář vychytá nejvíce nul?",
+            "Který brankář bude mít největší úspěšnost zákroků? (min. 10 zápasů)",
+            "Který brankář obdrží nejvíce gólů?",
+            "Který brankář bude mít největší sérii bez gólu?",
+            "Vstřelí nějaký brankář v sezóně gól?",
+            "Který trenér obdrží nejvíce žlutých karet?",
+            "Který trenér obdrží nejvíce červených karet?",
+            "Trenér jakého týmu bude odvolán jako první?",
+            "Bude mít Baník více než 2 trenéry v sezóně?",
+            "Do jakého týmu Chance ligy bude povolán Radoslav Kováč?",
+            "Který tým obdrží nejvíce žlutých karet?", 
+            "Který tým obdrží nejvíce červených karet?", 
+            "Který tým bude mít největší úspěšnost přihrávek?",
+            "Který tým bude mít na svém kontě nejvíce faulů?", 
+            "Který tým bude v nejvíce ofsajdech?",
+            "Který tým během zápasů získá nejvíce míčů od soupeře?",
+            "V zápase jakého týmu padne nejvíce branek?",
+            "V zápase jakého týmu padne nejvíce žlutých karet?",
+            "Kdo vyhraje celosezónní Zajíc Tipovačku?"
         ];
 
         const teamLogos = {
+            "Slavia Praha": "https://i.imgur.com/g1Zkhwg.png", 
+            "Sparta Praha": "https://i.imgur.com/NlyfFAC.png",
+            "Viktoria Plzeň": "https://i.imgur.com/SPtzSGy.png", 
+            "Baník Ostrava": "https://i.imgur.com/fhj9qlu.png",
+            "Mladá Boleslav": "https://i.imgur.com/faCQUVA.png", 
+            "Sigma Olomouc": "https://i.imgur.com/EQKL3hu.png",
+            "Jablonec": "https://i.imgur.com/e4ci4Rt.png", 
+            "Bohemians Praha": "https://i.imgur.com/sqSgm4a.png",
+            "Slovan Liberec": "https://i.imgur.com/CDcqChc.png", 
+            "Teplice": "https://i.imgur.com/t1u7O9z.png",
+            "Slovácko": "https://i.imgur.com/J9s2CwL.png", 
             "Dukla Praha": "https://i.imgur.com/FZ2Lzu2.png",
-            "Karviná": "https://i.imgur.com/j7hx1cA.png",
-            "Slavia Praha B": "https://i.imgur.com/g1Zkhwg.png",
-            "Baník Ostrava B": "https://i.imgur.com/fhj9qlu.png",
-            "Příbram": "https://i.imgur.com/W5HbNQn.png",
-            "Táborsko": "https://i.imgur.com/R3QUiqz.png",
-            "Vlašim": "https://i.imgur.com/RCmUHo8.png",
-            "Viktoria Žižkov": "https://i.imgur.com/iIke5cO.png",
-            "Jihlava": "https://i.imgur.com/39RJLEC.png",
-            "Prostějov": "https://i.imgur.com/9AvvE6n.png",
-            "Opava": "https://i.imgur.com/Jn95z2w.png",
-            "Kroměříž": "https://i.imgur.com/s637GEc.png",
-            "Ústí nad Labem": "https://i.imgur.com/Ep5p3Xb.png",
-            "Třinec": "https://i.imgur.com/rxmY9If.png",
-            "Kladno": "https://i.imgur.com/fuoQwTS.png",
-            "Česká Lípa": "https://i.imgur.com/ccLgaLt.png"
+            "Pardubice": "https://i.imgur.com/3ZjvyQX.png", 
+            "Hradec Králové": "https://i.imgur.com/iyfKeMv.png",
+            "Karviná": "https://i.imgur.com/j7hx1cA.png", 
+            "Zlín": "https://i.imgur.com/7EseGiq.png",
+            "Zbrojovka Brno": "https://i.imgur.com/VNzY5Ew.png",
+            "Artis Brno": "https://i.imgur.com/6hcOo7w.png"
         };
 
         let vsichniHraci = [];
@@ -296,13 +374,13 @@
             return src ? `<img src="${src}" class="fav-club-badge" style="width:24px; height:24px; object-fit:contain; vertical-align:middle; margin-left:6px;" title="Oblíbený klub: ${clubName}">` : ''; 
         }
         
-        // OPRAVA FOTEK: Rozlišuje přesně podle řádku (indexu)
+        // FOTKY ZAJÍCŮ PŘIŘAZENY STRIKTNĚ PODLE INDEXU ŘÁDKU
         function getAvatarHTML(hrac) {
             const idx = hrac.originalIndex;
-            if (idx === 1) return '<img src="dvorka.png" alt="Dvorka" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            if (idx === 3) return '<img src="lars.png" alt="Lars" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            if (idx === 4) return '<img src="mk.png" alt="MK" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            return ''; // Řádek 3 (index 2) zůstane bez fota
+            if (idx === 1) return '<img src="ondra.png" alt="Ondra" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            if (idx === 2) return '<img src="dvorka.png" alt="Dvorka" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            if (idx === 4) return '<img src="lars.png" alt="Lars" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            return ''; // Řádek 4 (index 3) bude zatím prázdný
         }
 
         function parseCell(cellValue) {
@@ -333,6 +411,7 @@
                     dataVyskyt = parseCSVData(text);
                     if(dataVyskyt.length < 2) return;
                     vykresliPrehledMatrix('cisla');
+                    vykresliBonusyMatrix();
                     vykresliOsobnosti();
                 });
         }
@@ -371,22 +450,68 @@
             document.getElementById('table-umisteni-container').innerHTML = html + `</tbody></table>`;
         }
 
+        function vykresliBonusyMatrix() {
+            let headerRowIndex = 18; 
+            if (!dataVyskyt[headerRowIndex] || !dataVyskyt[headerRowIndex][1]) {
+                for (let i = 16; i < dataVyskyt.length; i++) {
+                    if (dataVyskyt[i] && dataVyskyt[i][1] && dataVyskyt[i][1].length > 5 && !dataVyskyt[i][0].includes("?")) {
+                        headerRowIndex = i; break;
+                    }
+                }
+            }
+            if(!dataVyskyt[headerRowIndex]) return;
+            
+            const headerRow = dataVyskyt[headerRowIndex];
+            let colCount = 0;
+            for(let i=0; i<headerRow.length; i++) {
+                if(headerRow[i] !== "" && headerRow[i] !== undefined) colCount = i + 1;
+            }
+            
+            let html = `<table><thead><tr><th style="vertical-align: middle; text-align: center; text-transform: uppercase;">TÝM / OTÁZKY</th>`;
+            for(let i=1; i<colCount; i++) {
+                html += `<th style="max-width:150px; white-space:normal; line-height:1.3; font-size: 0.8rem; text-align:center; vertical-align: middle;">${headerRow[i] || ''}</th>`;
+            }
+            html += `</tr></thead><tbody>`;
+            
+            for(let r = headerRowIndex + 1; r < dataVyskyt.length && r <= headerRowIndex + 20; r++) {
+                if(!dataVyskyt[r] || !dataVyskyt[r][0] || dataVyskyt[r][0].trim() === "") continue;
+                
+                let odpovedText = dataVyskyt[r][0].trim();
+                let logo = getLogoSrc(odpovedText);
+                let logoHtml = logo ? `<img src="${logo}" style="width:28px;height:28px;object-fit:contain;">` : '';
+                
+                html += `<tr>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px; text-align:left; min-width: 140px; font-weight: bold; color: #fff;">
+                            ${logoHtml} 
+                            <span>${odpovedText}</span>
+                        </div>
+                    </td>`;
+                
+                for(let c=1; c<colCount; c++) {
+                    let val = parseInt(dataVyskyt[r][c]) || 0;
+                    let textColor = (!val || val === 0) ? 'var(--text-muted)' : 'var(--accent-primary)';
+                    html += `<td style="color:${textColor}; font-weight:${val > 0 ? 'bold' : 'normal'}; text-align: center;">${val > 0 ? val : '-'}</td>`;
+                }
+                html += `</tr>`;
+            }
+            document.getElementById('table-bonusy-container').innerHTML = html + `</tbody></table>`;
+        }
+
         function vykresliOsobnosti() {
-            let questionRowIndex = -1;
-            for (let i = 15; i < dataVyskyt.length; i++) {
-                if (dataVyskyt[i] && dataVyskyt[i][0] && dataVyskyt[i][0].includes("?")) {
-                    questionRowIndex = i; break;
+            let questionRowIndex = 44; 
+            if (!dataVyskyt[questionRowIndex] || !dataVyskyt[questionRowIndex][0] || !dataVyskyt[questionRowIndex][0].includes("?")) {
+                for (let i = 35; i < dataVyskyt.length; i++) {
+                    if (dataVyskyt[i] && dataVyskyt[i][0] && dataVyskyt[i][0].includes("?")) {
+                        questionRowIndex = i; break;
+                    }
                 }
             }
             
             const container = document.getElementById('osobnosti-container');
             container.innerHTML = '';
             
-            if(questionRowIndex === -1) {
-                container.innerHTML = '<div style="color:var(--text-muted); font-style:italic;">Zatím nejsou k dispozici žádná data k bonusovým otázkám.</div>';
-                return;
-            }
-            
+            if(!dataVyskyt[questionRowIndex]) return;
             const qRow = dataVyskyt[questionRowIndex];
             let htmlAll = '';
             
@@ -399,19 +524,19 @@
                 
                 for(let r = questionRowIndex + 1; r <= questionRowIndex + 5; r++) { 
                     if(!dataVyskyt[r]) break;
-                    let pozice = dataVyskyt[r][c];
-                    let odpoved = dataVyskyt[r][c+1];
-                    if(!odpoved || odpoved.trim() === "") break;
+                    let pozice = dataVyskyt[r][c] || `${r - questionRowIndex}.`;
+                    let jmeno = dataVyskyt[r][c+1];
+                    if(!jmeno || jmeno.trim() === "") break;
                     
                     htmlTable += `<tr>
                         <td style="width:40px; text-align:center; color:var(--text-muted); font-weight:bold;">${pozice}</td>
-                        <td style="font-weight:600; color:var(--accent-primary); text-align:left; padding-left: 10px;">${odpoved}</td>
+                        <td style="font-weight:600; color:var(--accent-primary); text-align:center;">${jmeno}</td>
                     </tr>`;
                 }
                 htmlTable += `</tbody></table></div>`;
                 htmlAll += htmlTable;
             }
-            container.innerHTML = htmlAll || '<div style="color:var(--text-muted); font-style:italic;">Žádná data.</div>';
+            container.innerHTML = htmlAll || '<div style="color:var(--text-muted); font-style:italic;">Žádná data osobností.</div>';
         }
 
         function nactiData() {
@@ -430,6 +555,7 @@
                     }
                     document.getElementById('count-players').innerText = vsichniHraci.length;
                     vykresliZajice();
+                    vykresliDiscord();
                     vykresliTabulku();
                 });
         }
@@ -447,8 +573,7 @@
                 
                 let avatarHtml = getAvatarHTML(zajic);
                 if (!avatarHtml) {
-                    const inits = getInitials(jmeno);
-                    avatarHtml = `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg, #ff4d29, var(--accent-primary));border-radius:50%;color:#fff;font-weight:bold;font-size:1.5rem;">${inits}</div>`;
+                    avatarHtml = `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg, #ff4d29, var(--accent-primary));border-radius:50%;color:#fff;font-weight:bold;font-size:1.5rem;">${getInitials(jmeno)}</div>`;
                 }
                 
                 card.innerHTML = `
@@ -464,9 +589,30 @@
             });
         }
 
+        function vykresliDiscord() {
+            const container = document.getElementById('discord-container'); container.innerHTML = '';
+            const discordMembers = vsichniHraci.filter(h => DISCORD_INDICES.includes(h.originalIndex));
+            
+            if(discordMembers.length === 0) { container.innerHTML = '<div class="loader" style="grid-column: 1/-1;">Discord členové ještě netipovali...</div>'; return; }
+            
+            discordMembers.forEach(clen => {
+                const jmeno = parseCell(clen[2]);
+                const klub = parseCell(clen[3]);
+                const card = document.createElement('div'); card.className = 'discord-card'; card.onclick = () => otevriModalJeden(clen);
+                
+                card.innerHTML = `
+                    <div class="discord-name">${jmeno}</div>
+                    <div class="discord-club">
+                        ${ziskejLogoKlubuHTML(klub)}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
         function vykresliTabulku() {
             const tbody = document.getElementById('tabulka-telo'); tbody.innerHTML = ''; 
-            const fanousci = vsichniHraci.filter(h => !ZAJICI_INDICES.includes(h.originalIndex));
+            const fanousci = vsichniHraci.filter(h => !ZAJICI_INDICES.includes(h.originalIndex) && !DISCORD_INDICES.includes(h.originalIndex));
             
             fanousci.forEach(hrac => {
                 const jmeno = parseCell(hrac[2]);
@@ -508,7 +654,7 @@
                     </div>
                 </div>
                 
-                <div class="modal-subtitle" style="margin-top: 10px;">Tip na konečné umístění (1. - 16.)</div>
+                <div class="modal-subtitle" style="margin-top: 10px;">Tip na konečné umístění týmů</div>
                 <div class="teams-grid-8x2">
             `;
 
@@ -525,14 +671,14 @@
                 `;
             }
 
-            html += `</div><div class="modal-subtitle" style="margin-top: 25px;">Bonusové otázky a Střelci</div><div class="bonus-list">`;
+            html += `</div><div class="modal-subtitle" style="margin-top: 25px;">Bonusové otázky</div><div class="bonus-list">`;
             
             for (let k = 0; k < bonusQuestionsText.length; k++) {
                 const colIndex = 20 + k;
                 const odpoved = parseCell(hrac[colIndex]);
                 if (odpoved && odpoved !== "-" && odpoved !== "") {
-                    let logSrc = getLogoSrc(odpoved);
-                    let logHtml = logSrc ? `<img src="${logSrc}" style="width:28px; height:28px; object-fit:contain;">` : '';
+                    let logoSrc = getLogoSrc(odpoved);
+                    let logoHtml = logoSrc ? `<img src="${logoSrc}" style="width:28px; height:28px; object-fit:contain;">` : '';
                     
                     html += `
                         <div class="bonus-item" style="height: 68px; min-height: 68px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; padding: 6px 12px;">
@@ -541,7 +687,7 @@
                                 <div class="b-answer" style="font-size: 0.95rem; font-weight: bold;">${odpoved}</div>
                             </div>
                             <div class="b-pts" style="display:flex; align-items:center; flex-shrink: 0;">
-                                ${logHtml}
+                                ${logoHtml}
                             </div>
                         </div>
                     `;
@@ -565,12 +711,16 @@
                 shody.forEach(hrac => {
                     const jmeno = parseCell(hrac[2]);
                     const klub = parseCell(hrac[3]);
+                    
                     const isCustomAvatar = ZAJICI_INDICES.includes(hrac.originalIndex);
+                    const isDiscord = DISCORD_INDICES.includes(hrac.originalIndex);
                     
                     let searchIconHtml = '';
                     if (isCustomAvatar) {
                         let av = getAvatarHTML(hrac) || `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg, #ff4d29, var(--accent-primary));border-radius:50%;color:#fff;font-weight:bold;font-size:0.8rem;">${getInitials(jmeno)}</div>`;
                         searchIconHtml = `<div style="width:28px; height:28px; border-radius:50%; overflow:hidden; flex-shrink:0;">${av}</div>`;
+                    } else if (isDiscord) {
+                        searchIconHtml = `<div style="width:28px; height:28px; border-radius:50%; background:#5865F2; display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.8rem; font-weight:bold; flex-shrink:0;"><i class="fab fa-discord"></i></div>`;
                     }
                     
                     const div = document.createElement('div'); 
@@ -677,7 +827,7 @@
             nactiVyskytovouTabulku();
         });
     </script>
-
+    
     <script src="navbar.js"></script>
 </body>
 </html>
