@@ -342,8 +342,28 @@ tr:hover { background-color: rgba(255,255,255,0.05); }
 .modal-card.modal-wide { max-width: 900px; }
 .modal-card::-webkit-scrollbar { width: 6px; }
 .modal-card::-webkit-scrollbar-thumb { background: var(--accent-primary); border-radius: 3px; }
-.close-btn { position: sticky; top: 15px; float: right; margin-right: 20px; z-index: 20; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s; background: rgba(0,0,0,0.5); padding: 5px 12px; border-radius: 50%; }
-.close-btn:hover { color: #fff; background: var(--accent-red); }
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transition: background 0.2s, transform 0.2s;
+    z-index: 10;
+}
+
+.close-btn:hover {
+    background: #e74c3c;
+    color: #fff;
+    transform: scale(1.05);
+}
 .modal-header { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px; padding: 30px 30px 20px 30px; border-bottom: 1px solid var(--border-color); }
 .modal-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #ff4d29, var(--accent-primary)); display: flex; align-items: center; justify-content: center; font-family: 'Oswald'; font-size: 2rem; color: #000; overflow: hidden; margin: 0; flex-shrink: 0; }
 .modal-name { font-family: 'Oswald', sans-serif; font-size: 1.8rem; margin: 0; display: flex; align-items: center; gap: 10px; text-align: center;}
