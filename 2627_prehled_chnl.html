@@ -299,10 +299,10 @@
         // OPRAVA FOTEK: Rozlišuje přesně podle řádku (indexu)
         function getAvatarHTML(hrac) {
             const idx = hrac.originalIndex;
-            if (idx === 1) return '<img src="dvorka.png" alt="Dvorka" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            if (idx === 3) return '<img src="lars.png" alt="Lars" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            if (idx === 4) return '<img src="mk.png" alt="MK" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            return ''; // Řádek 3 (index 2) zůstane bez fota
+            if (idx === 1) return '<img src="podry.png" alt="Podry" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            if (idx === 2) return '<img src="dvorka.png" alt="Dvorka" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            if (idx === 4) return '<img src="lars.png" alt="Lars" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            return ''; // Řádek 4 (index 3) zůstane bez fota
         }
 
         function parseCell(cellValue) {
