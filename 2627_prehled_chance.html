@@ -562,33 +562,36 @@
         }
 
         function vykresliZajice() {
-            const container = document.getElementById('zajici-container'); container.innerHTML = '';
-            const zajici = vsichniHraci.filter(h => ZAJICI_INDICES.includes(h.originalIndex));
-            
-            if(zajici.length === 0) { container.innerHTML = '<div class="loader">Zajíci ještě netipovali...</div>'; return; }
-            
-            zajici.forEach(zajic => {
-                const jmeno = parseCell(zajic[2]);
-                const klub = parseCell(zajic[3]);
-                const card = document.createElement('div'); card.className = 'zajic-card'; card.onclick = () => otevriModalJeden(zajic);
-                
-                let avatarHtml = getAvatarHTML(zajic);
-                if (!avatarHtml) {
-                    avatarHtml = `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg, #ff4d29, var(--accent-primary));border-radius:50%;color:#fff;font-weight:bold;font-size:1.5rem;">${getInitials(jmeno)}</div>`;
-                }
-                
-                card.innerHTML = `
-                    <div class="zajic-avatar-container">
-                        <div class="zajic-avatar" style="background: transparent;">${avatarHtml}</div>
-                    </div>
-                    <div class="zajic-name" style="margin-bottom: 5px;">${jmeno}</div>
-                    <div style="font-size:0.9rem; color:var(--text-muted); display:flex; align-items:center; justify-content:center; gap:5px;">
-                        ${ziskejLogoKlubuHTML(klub)} 
-                    </div>
-                `;
-                container.appendChild(card);
-            });
+    const container = document.getElementById('zajici-container'); container.innerHTML = '';
+    const zajici = vsichniHraci.filter(h => ZAJICI_INDICES.includes(h.originalIndex));
+    
+    if(zajici.length === 0) { container.innerHTML = '<div class="loader">Zajíci ještě netipovali...</div>'; return; }
+    
+    // ZDE JE TA ZMĚNA: Skript pozná počet lidí a přidá třídu (např. "count-5")
+    container.className = 'zajici-grid count-' + zajici.length;
+    
+    zajici.forEach(zajic => {
+        const jmeno = parseCell(zajic[2]);
+        const klub = parseCell(zajic[3]);
+        const card = document.createElement('div'); card.className = 'zajic-card'; card.onclick = () => otevriModalJeden(zajic);
+        
+        let avatarHtml = getAvatarHTML(zajic);
+        if (!avatarHtml) {
+            avatarHtml = `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg, #ff4d29, var(--accent-primary));border-radius:50%;color:#fff;font-weight:bold;font-size:1.5rem;">${getInitials(jmeno)}</div>`;
         }
+        
+        card.innerHTML = `
+            <div class="zajic-avatar-container">
+                <div class="zajic-avatar" style="background: transparent;">${avatarHtml}</div>
+            </div>
+            <div class="zajic-name" style="margin-bottom: 5px;">${jmeno}</div>
+            <div style="font-size:0.9rem; color:var(--text-muted); display:flex; align-items:center; justify-content:center; gap:5px;">
+                ${ziskejLogoKlubuHTML(klub)} 
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
 
         function vykresliDiscord() {
             const container = document.getElementById('discord-container'); container.innerHTML = '';
