@@ -328,19 +328,28 @@ tr:hover { background-color: rgba(255,255,255,0.05); }
 .fav-club-badge { width: 22px; height: 22px; object-fit: contain; vertical-align: middle; margin-left: 6px; }
 
 /* KARTY ZAJÍCŮ */
+/* --- CHYTRÉ ZALAMOVÁNÍ ZAJÍCŮ (FLEXBOX) --- */
 .zajici-grid {
-    display: flex;
+    display: flex !important; /* Přepíše starý CSS Grid, který to řadil vlevo */
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: center;  /* Bezpečně vystředí každou řadu */
     gap: 20px;
-    margin-bottom: 40px;
+    margin: 0 auto 40px auto;
 }
+
 .zajici-card {
-    /* Nastav pevnou minimální/maximální šířku dlaždice podle tvých preferencí */
-    flex: 0 1 calc(25% - 20px); 
-    min-width: 180px; 
-    max-width: 250px;
-    /* Doplň zbytek svých stylů pro zajici-card z původního CSS */
+    width: 220px; /* Udržuje fixní velikost stejnou jako jsi měl u 4 lidí */
+    flex: 0 0 auto; 
+}
+
+/* Magie: když je zajíců 5 nebo 6, omezíme šířku tak, aby se vešli jen 3 na řádek */
+.zajici-grid.count-5, .zajici-grid.count-6 {
+    max-width: 760px; /* 3x220px dlaždice + 2x20px mezera = cca 700px (zbytek se zlomí a vystředí dole) */
+}
+
+/* Když jich bude 7 nebo 8, kontejner se rozšíří a propustí vedle sebe 4 na řádek */
+.zajici-grid.count-7, .zajici-grid.count-8 {
+    max-width: 1000px;
 }
 .zajic-card { background: linear-gradient(145deg, var(--bg-card), #101520); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: transform 0.2s; position: relative; }
 .zajic-card:hover { transform: translateY(-5px); border-color: var(--accent-primary); }
