@@ -49,6 +49,20 @@
     color: #000;
 }
 
+.zajici-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+.zajici-card {
+    /* Nastav pevnou minimální/maximální šířku dlaždice podle tvých preferencí */
+    flex: 0 1 calc(25% - 20px); 
+    min-width: 180px; 
+    max-width: 250px;
+    /* Doplň zbytek svých stylů pro zajici-card z původního CSS */
+}
 
 /* Malé počítadlo v pravém dolním rohu */
 .participant-count {
