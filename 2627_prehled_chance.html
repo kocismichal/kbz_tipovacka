@@ -302,7 +302,7 @@
         const CSV_URL_VYSKYT = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRUxumfQeidDrjcs1T3d2HftSnwGv93G-mMlqw3wpaLe_Kae0XSvSqMRTSRWiNmZIhgboprShotvxI6/pub?gid=236934267&single=true&output=csv";
 
         // Řádky v G-Sheets odpovídají těmto indexům (Řádek 2 = index 1 atd.)
-        const ZAJICI_INDICES = [1, 2, 3, 4]; // Řádky 2, 3, 4, 5
+        const ZAJICI_INDICES = [1, 2, 3, 4, 5]; // Řádky 2, 3, 4, 5, 6
         const DISCORD_INDICES = [5, 6, 7, 8, 9, 10, 11, 12]; // Řádky 6 až 13
 
         const bonusQuestionsText = [
@@ -378,9 +378,10 @@
         function getAvatarHTML(hrac) {
             const idx = hrac.originalIndex;
             if (idx === 1) return '<img src="ondra.png" alt="Ondra" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            if (idx === 2) return '<img src="dvorka.png" alt="Dvorka" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            if (idx === 4) return '<img src="lars.png" alt="Lars" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            return ''; // Řádek 4 (index 3) bude zatím prázdný
+            if (idx === 2) return '<img src="podry.png" alt="Podry" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            if (idx === 3) return '<img src="dvorka.png" alt="Dvorka" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            if (idx === 5) return '<img src="lars.png" alt="Lars" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
+            return ''; // Řádek 5 (index 4) bude zatím prázdný (vygenerují se iniciály)
         }
 
         function parseCell(cellValue) {
