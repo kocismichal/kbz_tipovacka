@@ -5,6 +5,14 @@ const navbarHTML = `
     </a>
     <div class="nav-center-wrap">
         <div class="nav-group">
+            <span class="nav-group-title">Extraliga Mistrů světa</span>
+            <div class="nav-group-links">
+                <a href="2627_form_extraliga.html" class="nav-tile extraliga-color">TIP EXTRALIGA</a>
+                <a href="2627_prehled_extraliga.html" class="nav-tile extraliga-color">PŘEHLED EXTRALIGA</a>
+            </div>
+        </div>
+        <div class="nav-separator"></div>
+        <div class="nav-group">
             <span class="nav-group-title">Probíhající tipovačky</span>
             <div class="nav-group-links">
                 <a href="2627_prehled_chance.html" class="nav-tile chance-color">PŘEHLED CHL</a>
