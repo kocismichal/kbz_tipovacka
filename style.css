@@ -159,7 +159,7 @@ body {
     font-family: 'Inter', sans-serif;
     color: var(--text-main);
     /* Gradient přecházející z lesní zelené do téměř černé, prolnutý přes tvůj obrázek */
-    background: linear-gradient(135deg, rgba(3, 35, 12, 0.88) 0%, rgba(1, 10, 3, 0.96) 100%), url('pozadi.jpeg') no-repeat center center fixed;
+    background: linear-gradient(135deg, rgba(3, 35, 12, 0.88) 0%, rgba(1, 10, 3, 0.96) 100%), url('pozadi.jpg') no-repeat center center fixed;
     background-size: cover;
     margin: 0;
     padding: 20px;

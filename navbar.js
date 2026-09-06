@@ -5,10 +5,8 @@ const navbarHTML = `
     </a>
     <div class="nav-center-wrap">
         <div class="nav-group">
-            <span class="nav-group-title">Aktivní tipovačky</span>
+            <span class="nav-group-title">Probíhající tipovačky</span>
             <div class="nav-group-links">
-                <a href="2627_formchanceliga.html" class="nav-tile chance-color">TIP CHL</a>
-                <a href="2627_formchancenarodniliga.html" class="nav-tile chnl-color">TIP CHNL</a>
                 <a href="2627_prehled_chance.html" class="nav-tile chance-color">PŘEHLED CHL</a>
                 <a href="2627_prehled_chnl.html" class="nav-tile chnl-color">PŘEHLED CHNL</a>
             </div>

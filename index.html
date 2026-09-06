@@ -10,7 +10,7 @@
     <style>
         .intro-logo { max-width: 300px; margin: 40px auto; display: block; filter: drop-shadow(0 0 20px rgba(1, 254, 1, 0.3)); }
         
-        /* UPRAVENO: Natvrdo 2 sloupce pro zobrazení 2x2 */
+        /* Natvrdo 2 sloupce - v každé sekci jsou dvě dlaždice vedle sebe */
         .tiles-container { 
             display: grid; 
             grid-template-columns: repeat(2, 1fr); 
@@ -56,35 +56,21 @@
             <img src="KBZ_basic.png" alt="KBZ Logo" style="max-width: 400px; width: 100%; height: auto;">
         </header>
 
-        <div class="section-title" style="border: none;">Aktivní tipovačky</div>
-        <div class="section-subtitle">Chceš se zapojit do tipovačky před začátkem sezóny? Neváhej a zkus své štěstí!!</div>
+        <div class="section-title" style="border: none;">Probíhající tipovačky</div>
+        <div class="section-subtitle">Tipování pro ročník 2026/2027 je uzavřeno a sezóna běží. Podívej se, jak tipovali ostatní, a porovnej svůj tip s kamarády.</div>
         <div class="tiles-container">
             
-            <!-- ŘÁDEK 1 VLEVO: TIP CHANCE LIGA -->
-            <a href="2627_formchanceliga.html" class="tile tile-chance">
-                <span class="participant-count" id="count-chance"><i class="fas fa-spinner fa-spin"></i></span>
-                <img src="Chance_Liga.png" alt="Chance liga" style="height: 80px; width: 100%; object-fit: contain; margin-bottom: 15px;">
-                <div class="tile-title" style="color: #000;">Tip Chance ligy</div>
-                <div class="tile-desc" style="color: #333; font-weight: 600;">Ročník 2026/2027</div>
-            </a>
-
-            <!-- ŘÁDEK 1 VPRAVO: TIP CHNL -->
-            <a href="2627_formchancenarodniliga.html" class="tile tile-chnl">
-                <span class="participant-count" id="count-chnl"><i class="fas fa-spinner fa-spin"></i></span>
-                <img src="chance-narodni-liga.png" alt="Chance národní liga" style="height: 80px; width: 100%; object-fit: contain; margin-bottom: 15px;">
-                <div class="tile-title" style="color: #000;">Tip Chance Národní ligy</div>
-                <div class="tile-desc" style="color: #333; font-weight: 600;">Ročník 2026/2027</div>
-            </a>
-
-            <!-- ŘÁDEK 2 VLEVO: PŘEHLED CHANCE LIGA -->
+            <!-- PŘEHLED CHANCE LIGA -->
             <a href="2627_prehled_chance.html" class="tile tile-chance">
+                <span class="participant-count" id="count-chance" title="Počet tipujících"><i class="fas fa-spinner fa-spin"></i></span>
                 <img src="Chance_Liga.png" alt="Chance liga" style="height: 80px; width: 100%; object-fit: contain; margin-bottom: 15px;">
                 <div class="tile-title" style="color: #000;">Přehled tipů Chance liga</div>
                 <div class="tile-desc" style="color: #333; font-weight: 600;">Ročník 2026/2027</div>
             </a>
 
-            <!-- ŘÁDEK 2 VPRAVO: PŘEHLED CHNL -->
+            <!-- PŘEHLED CHNL -->
             <a href="2627_prehled_chnl.html" class="tile tile-chnl">
+                <span class="participant-count" id="count-chnl" title="Počet tipujících"><i class="fas fa-spinner fa-spin"></i></span>
                 <img src="chance-narodni-liga.png" alt="Chance národní liga" style="height: 80px; width: 100%; object-fit: contain; margin-bottom: 15px;">
                 <div class="tile-title" style="color: #000;">Přehled tipů ChNL</div>
                 <div class="tile-desc" style="color: #333; font-weight: 600;">Ročník 2026/2027</div>
