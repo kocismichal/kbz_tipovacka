@@ -114,6 +114,13 @@ var EXTRALIGA = (function () {
     return Math.round(x * 10) / 10;
   }
 
+  // Název týmu z buňky s pořadím. Prázdná buňka nebo pouhé číslo (např. 0, které vrátí vzorec =F11
+  // odkazující na prázdnou buňku) znamená "zatím neznámé".
+  function normTym(v) {
+    var s = norm(v);
+    return (s === "" || cislo(s) !== null) ? "" : s;
+  }
+
   function nasobitel(presne) {
     if (presne >= 13) return 1.4;
     if (presne >= 11) return 1.3;
@@ -148,7 +155,7 @@ var EXTRALIGA = (function () {
   function jsouVysledky(vysledkyRow) {
     if (!vysledkyRow) return false;
     for (var j = SLOUPCE.MISTO_OD; j <= SLOUPCE.MISTO_DO; j++) {
-      if (norm(vysledkyRow[j]) !== "") return true;
+      if (normTym(vysledkyRow[j]) !== "") return true;
     }
     return false;
   }
@@ -159,7 +166,7 @@ var EXTRALIGA = (function () {
     var j, soucet = 0, presne = 0;
     for (j = 0; j < KONFIG.POCET_MIST; j++) {
       tipy.push(norm(tipRow ? tipRow[SLOUPCE.MISTO_OD + j] : ""));
-      oficialni.push(norm(vysledkyRow ? vysledkyRow[SLOUPCE.MISTO_OD + j] : ""));
+      oficialni.push(normTym(vysledkyRow ? vysledkyRow[SLOUPCE.MISTO_OD + j] : ""));
     }
     for (j = 0; j < KONFIG.POCET_MIST; j++) {
       var tym = oficialni[j];
@@ -237,6 +244,7 @@ var EXTRALIGA = (function () {
     SLOUPCE: SLOUPCE,
     BONUSY: BONUSY,
     norm: norm,
+    normTym: normTym,
     cislo: cislo,
     zaokrouhli: zaokrouhli,
     nasobitel: nasobitel,

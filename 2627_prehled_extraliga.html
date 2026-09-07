@@ -344,7 +344,7 @@
         function getLogoSrc(nazev) { const n = norm(nazev); return n && KONFIG.LOGA[n] ? KONFIG.LOGA[n] : ''; }
         function logoNeboFallback(nazev) { return getLogoSrc(nazev) || FALLBACK_LOGO; }
         function najdiBonus(klic) { return EXTRALIGA.BONUSY.find(q => q.klic === klic); }
-        function seznamOficialni() { const o = []; for (let j = 0; j < KONFIG.POCET_MIST; j++) o.push(norm(vysledky[SL.MISTO_OD + j])); return o; }
+        function seznamOficialni() { const o = []; for (let j = 0; j < KONFIG.POCET_MIST; j++) o.push(EXTRALIGA.normTym(vysledky[SL.MISTO_OD + j])); return o; }
 
         function ziskejLogoKlubuHTML(klub) {
             const src = getLogoSrc(klub);
