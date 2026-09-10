@@ -4,6 +4,21 @@ Web (formulář, přehled i bodování) je hotový. Aby se nové tipy ukládaly 
 **doplnit sloupce v tabulce a nasadit novou verzi Apps Scriptu**. Původní sloupce A–AJ zůstávají
 beze změny, všechno nové je přidané **na konec**, takže se nic neposouvá a staré tipy zůstávají platné.
 
+## 0. Nejjednodušší cesta: jeden soubor, jedno vložení
+
+Soubor **`extraliga_apps_script_komplet.gs`** má v sobě obojí (společnou konfiguraci i kód skriptu).
+Otevři ho jako čistý text tady:
+
+https://raw.githubusercontent.com/kocismichal/kbz_tipovacka/claude/extraliga-tips-upgrade-aazaxb/extraliga_apps_script_komplet.gs
+
+(po sloučení větve do `main` funguje i `.../kbz_tipovacka/main/extraliga_apps_script_komplet.gs`).
+Na stránce dej Ctrl+A, Ctrl+C, v Apps Scriptu smaž celý obsah souboru `Kód.gs` a vlož. Pokud máš
+v projektu ještě další soubor se starým kódem, smaž ho. Pak Nasadit → Spravovat nasazení → tužka →
+Nová verze → Nasadit a spusť `doplnHlavicky` (bod 2 níže, kroky 4–7).
+
+Soubor je slepenec `extraliga_spolecne.js` + `extraliga_apps_script.gs`. Když se některý z nich změní,
+je potřeba slepenec vytvořit znovu (obsah prvního, pod něj obsah druhého).
+
 ## 1. Nové sloupce
 
 ### List `Tipy` (zapisuje formulář, A–AX)
