@@ -118,7 +118,14 @@ generují samy, takže další otázka = jeden řádek v `BONUSY` (+ sloupec v t
 (např. `"1 234 gólů, sezóna 2024/25"`) – doplní se automaticky do textu otázky. Zatím je prázdné,
 otázka je bez čísla.
 
-## 5. Na co myslet
+## 5. Vyhodnocení 2025/26
+
+Stránka `2526_extraliga.html` bere data ze snímku `2526_extraliga_data.json` (vytvořený z Excelu
+„Extraliga tipy Mistři světa (originál)“ – listy Tipy, Přehled fans, Body a Přehled HOTOVO, bez e-mailů a vzkazů).
+Google tabulka minulého ročníku už kvůli webu nemusí být sdílená. Kdyby se v ní něco opravilo, stačí poslat
+nový export a snímek přegenerovat.
+
+## 6. Na co myslet
 
 - Web ukazuje body až od `KONFIG.BODOVANI_OD` v `extraliga_spolecne.js` (výchozí = uzávěrka tipování
   30. 9. 2026) a jen když jsou v řádku 2 listu Přehled HOTOVO názvy týmů. Do té doby jsou vidět jen tipy.

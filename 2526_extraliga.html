@@ -164,21 +164,24 @@
     <script src="extraliga_spolecne.js?v=2627b"></script>
     <script>
         // ---------- ZDROJ DAT ----------
-        // Data ročníku 2025/26 jsou v Google tabulce starého webu Mistrů světa. Stránka je čte stejně jako starý web
-        // (veřejný export gviz), nejdřív ale zkusí snímek dat uložený v repu (2526_extraliga_data.json), když existuje.
-        const SHEET_ID = '1ERE7N3K7M-PeILf22GiD44qHAdDtgm-d9TQqPnpEXvk';
-        const LIST_TIPY = 'Přehled fans';
-        const LIST_HOTOVO = 'Přehled HOTOVO';
+        // Data ročníku 2025/26 jsou uložená přímo v repu jako snímek z tabulky Mistrů světa (2526_extraliga_data.json:
+        // listy Tipy, Přehled fans, Body a Přehled HOTOVO, bez e-mailů). Když snímek chybí, stránka zkusí tabulku živě
+        // (veřejný export gviz) stejně jako starý web.
         const SNAPSHOT_URL = '2526_extraliga_data.json';
+        const SHEET_ID = '1ERE7N3K7M-PeILf22GiD44qHAdDtgm-d9TQqPnpEXvk';
+        const LIST_TIPY = 'Tipy';               // tipy (pořadí, odpovědi, oblíbený tým)
+        const LIST_FANS = 'Přehled fans';       // body za umístění, bonusy, celkem, umístění
+        const LIST_BODY = 'Body';               // body za každé místo a otázku
+        const LIST_HOTOVO = 'Přehled HOTOVO';   // řádek 2 = konečné pořadí a správné odpovědi
 
-        // Názvy sloupců v hlavičce listu Přehled fans (stejné, s jakými pracoval starý web)
+        // Názvy sloupců v hlavičkách listů (stejné ve všech listech tabulky)
         const SL = {
             JMENO: 'Jméno a příjmení', KLUB: 'Oblíbený tým',
             MISTO: i => `${i}. místo`,
             BODY_UMISTENI: 'Počet bodů za umístění', BODY_BONUSY: 'Počet bodů za bonusové otázky', BODY_CELKEM: 'Počet bodů celkem', UMISTENI: 'Umístění',
             MISTR_VITEZ: 'Tipovačka - MISTŘI', MISTR: i => `Oblíbený MISTR ${i}`
         };
-        // Bonusové otázky: klíč z EXTRALIGA.BONUSY → sloupec staré tabulky
+        // Bonusové otázky: klíč z EXTRALIGA.BONUSY → sloupec tabulky
         const BONUS_SLOUPCE = {
             finalevyhra: 'Výhra finále', finaleprohra: 'Prohra finále', baraz: 'Baráž',
             strelec: 'Nejlepší střelec', gol_strelec: 'Počet gólů střelce', trestyhrac: 'Nejtrestanější hráč',
@@ -189,14 +192,14 @@
 
         const KONFIG = EXTRALIGA.KONFIG;
         const SLE = EXTRALIGA.SLOUPCE;
-        const FALLBACK_LOGO = 'https://i.imgur.com/8N4Jp62.png';
+        const FALLBACK_LOGO = 'logo_neznamy.svg';
+        const ONERR = ` onerror="this.onerror=null;this.src='logo_neznamy.svg'"`;   // mrtvý odkaz na logo → náhradní štít
         const TEXT_NEDOSTUPNE = 'Data se nepodařilo načíst. Tabulka musí být sdílená pro čtení (Kdokoli s odkazem).';
         const TEXT_PRAZDNE = 'V tabulce nejsou žádné tipy.';
 
         let vsichniHraci = [];      // { originalIndex, jmeno, klub, poradi[14], bonus{klic}, mistrVitez, mistrPoradi[4], body{umisteni,bonusy,celkem}, umisteni{body[],presne,nasobitel,celkem}, poradi{...} }
         let oficialni = [];         // konečné pořadí základní části
         let spravne = {};           // klic otázky → správná odpověď (text)
-        let pravidlaSedi = false;   // body za jednotlivé týmy jde dopočítat stejně, jako je má tabulka
         let aktivniZalozka = 'celkem';
         let matrixRezim = 'cisla';
 
@@ -210,8 +213,8 @@
         function formatProcenta(pocet) { if (!vsichniHraci.length) return '0,0 %'; return (pocet / vsichniHraci.length * 100).toFixed(1).replace('.', ',') + ' %'; }
         function getLogoSrc(nazev) { const n = EXTRALIGA.normTym(nazev); return n && KONFIG.LOGA[n] ? KONFIG.LOGA[n] : ''; }
         function logoNeboFallback(nazev) { return getLogoSrc(nazev) || FALLBACK_LOGO; }
-        function ziskejLogoKlubuHTML(klub) { const src = getLogoSrc(klub); return src ? `<img src="${src}" class="fav-club-badge" style="width:24px; height:24px; object-fit:contain; vertical-align:middle; margin-left:6px;" title="Oblíbený klub: ${esc(klub)}">` : ''; }
-        function logoTymuHTML(nazev, velikost) { const src = getLogoSrc(nazev); return src ? `<img src="${src}" style="width:${velikost}px;height:${velikost}px;object-fit:contain;" title="${esc(nazev)}">` : ''; }
+        function ziskejLogoKlubuHTML(klub) { const src = getLogoSrc(klub); return src ? `<img src="${src}"${ONERR} class="fav-club-badge" style="width:24px; height:24px; object-fit:contain; vertical-align:middle; margin-left:6px;" title="Oblíbený klub: ${esc(klub)}">` : ''; }
+        function logoTymuHTML(nazev, velikost) { const src = getLogoSrc(nazev); return src ? `<img src="${src}"${ONERR} style="width:${velikost}px;height:${velikost}px;object-fit:contain;" title="${esc(nazev)}">` : ''; }
         function getAvatarHTML(hrac, fontSize) {
             const foto = EXTRALIGA.fotoMistra(hrac.jmeno);
             if (foto) return `<img src="${foto}" alt="${esc(hrac.jmeno)}" style="width:100%; height:100%; border-radius:50%; object-fit:cover; display:block;">`;
@@ -263,79 +266,93 @@
             const hlavicka = rows[0].map(norm);
             return rows.slice(1).map(r => { const o = {}; hlavicka.forEach((h, i) => { if (h) o[h] = r[i] === undefined ? '' : r[i]; }); return o; });
         }
-        // JSON a CSV export se doplňují (starý web měl v CSV prázdná pořadí, v JSON zase chyběly některé texty)
-        function sluc(json, csv) {
-            const podleJmena = new Map();
-            csv.forEach(r => { const j = norm(r[SL.JMENO]); if (j) podleJmena.set(j, r); });
-            return json.map(r => {
-                const c = podleJmena.get(norm(r[SL.JMENO]));
-                if (c) Object.keys(c).forEach(k => { if (norm(r[k]) === '' && norm(c[k]) !== '') r[k] = c[k]; });
-                return r;
-            });
-        }
-
         async function nactiData() {
             try {
-                let tipy = null, hotovo = null;
+                let data = null;
                 try {
                     const res = await fetch(SNAPSHOT_URL, { cache: 'no-store' });
-                    if (res.ok) { const snap = await res.json(); tipy = snap.tipy || null; hotovo = snap.hotovo || null; }
+                    if (res.ok) { const snap = await res.json(); if (snap && Array.isArray(snap.tipy)) data = snap; }
                 } catch (e) { /* snímek není, jde se na tabulku */ }
-                if (!tipy) {
-                    const [json, csv] = await Promise.all([nactiListJson(LIST_TIPY), nactiListCsv(LIST_TIPY).catch(() => [])]);
-                    tipy = sluc(json, csv);
-                    hotovo = await nactiListJson(LIST_HOTOVO).then(r => r[0] || null).catch(() => null);
-                }
-                zpracujData(tipy, hotovo);
+                if (!data) data = await nactiZTabulky();
+                zpracujData(data);
             } catch (e) {
                 console.warn('Data vyhodnocení se nepodařilo načíst:', e);
                 zobrazNedostupne();
             }
         }
 
-        function zpracujData(tipy, hotovo) {
-            // Konečné pořadí: z listu Přehled HOTOVO, jinak ze společné konfigurace (PORADI_2526)
-            oficialni = [];
-            for (let i = 1; i <= KONFIG.POCET_MIST; i++) oficialni.push(hotovo ? EXTRALIGA.normTym(hotovo[SL.MISTO(i)]) : '');
-            if (oficialni.every(t => t === '')) oficialni = KONFIG.PORADI_2526.slice();
-            // Správné odpovědi: z HOTOVO, jinak nápovědy 25/26 z konfigurace
-            spravne = {};
-            OTAZKY.forEach(q => {
-                const zHotovo = hotovo ? norm(hotovo[BONUS_SLOUPCE[q.klic]]) : '';
-                spravne[q.klic] = zHotovo !== '' ? zHotovo : norm(KONFIG.ODPOVEDI_2526[q.klic]);
+        // Živé načtení z Google tabulky do stejné podoby, jakou má snímek
+        async function nactiZTabulky() {
+            const [tipy, fans, body, hotovo] = await Promise.all([
+                nactiListJson(LIST_TIPY),
+                nactiListJson(LIST_FANS).catch(() => []),
+                nactiListJson(LIST_BODY).catch(() => []),
+                nactiListJson(LIST_HOTOVO).then(r => r[0] || null).catch(() => null)
+            ]);
+            const fansPodle = new Map(fans.map(r => [norm(r[SL.JMENO]), r]));
+            const bodyPodle = new Map(body.map(r => [norm(r[SL.JMENO]), r]));
+            const hraci = tipy.filter(r => norm(r[SL.JMENO]) !== '').map(r => {
+                const j = norm(r[SL.JMENO]), f = fansPodle.get(j) || r, b = bodyPodle.get(j);
+                const poradi = []; for (let k = 1; k <= KONFIG.POCET_MIST; k++) poradi.push(norm(r[SL.MISTO(k)]));
+                const bonus = {}; OTAZKY.forEach(q => { bonus[q.klic] = norm(r[BONUS_SLOUPCE[q.klic]]); });
+                const mistrPoradi = []; for (let k = 1; k <= 4; k++) mistrPoradi.push(norm(r[SL.MISTR(k)]));
+                const h = { jmeno: j, klub: norm(r[SL.KLUB]), poradi, bonus, mistrVitez: norm(r[SL.MISTR_VITEZ]), mistrPoradi,
+                    body: { umisteni: EXTRALIGA.cislo(f[SL.BODY_UMISTENI]) || 0, bonusy: EXTRALIGA.cislo(f[SL.BODY_BONUSY]) || 0, celkem: EXTRALIGA.cislo(f[SL.BODY_CELKEM]) || 0 },
+                    umisteniSheet: EXTRALIGA.cislo(f[SL.UMISTENI]) };
+                if (b) {
+                    h.bodyMista = []; for (let k = 1; k <= KONFIG.POCET_MIST; k++) h.bodyMista.push(EXTRALIGA.cislo(b[SL.MISTO(k)]) || 0);
+                    h.bodyOtazky = {}; OTAZKY.forEach(q => { h.bodyOtazky[q.klic] = EXTRALIGA.cislo(b[BONUS_SLOUPCE[q.klic]]) || 0; });
+                }
+                return h;
             });
+            const hot = { poradi: [], spravne: {} };
+            if (hotovo) {
+                for (let k = 1; k <= KONFIG.POCET_MIST; k++) hot.poradi.push(norm(hotovo[SL.MISTO(k)]));
+                OTAZKY.forEach(q => { hot.spravne[q.klic] = norm(hotovo[BONUS_SLOUPCE[q.klic]]); });
+            }
+            return { tipy: hraci, hotovo: hot };
+        }
+
+        function zpracujData(data) {
+            const hot = data.hotovo || {};
+            // Konečné pořadí: z tabulky, jinak ze společné konfigurace (PORADI_2526)
+            oficialni = (hot.poradi || []).map(t => EXTRALIGA.normTym(t));
+            if (oficialni.length !== KONFIG.POCET_MIST || oficialni.every(t => t === '')) oficialni = KONFIG.PORADI_2526.slice();
+            // Správné odpovědi: z tabulky, jinak nápovědy 25/26 z konfigurace
+            spravne = {};
+            OTAZKY.forEach(q => { const v = hot.spravne ? norm(hot.spravne[q.klic]) : ''; spravne[q.klic] = v !== '' ? v : norm(KONFIG.ODPOVEDI_2526[q.klic]); });
 
             const vysledkyRow = new Array(SLE.POCET).fill('');
             oficialni.forEach((t, j) => { vysledkyRow[SLE.MISTO_OD + j] = t; });
 
             vsichniHraci = [];
-            tipy.forEach((r, i) => {
-                const jmeno = norm(r[SL.JMENO]);
+            (data.tipy || []).forEach((h, i) => {
+                const jmeno = norm(h.jmeno);
                 if (jmeno === '') return;
-                const poradi = []; for (let k = 1; k <= KONFIG.POCET_MIST; k++) poradi.push(EXTRALIGA.normTym(r[SL.MISTO(k)]) || norm(r[SL.MISTO(k)]));
-                const bonus = {}; OTAZKY.forEach(q => { bonus[q.klic] = norm(r[BONUS_SLOUPCE[q.klic]]); });
-                const mistrPoradi = []; for (let k = 1; k <= 4; k++) mistrPoradi.push(norm(r[SL.MISTR(k)]));
+                const poradi = (h.poradi || []).map(t => EXTRALIGA.normTym(t) || norm(t));
+                while (poradi.length < KONFIG.POCET_MIST) poradi.push('');
+                const bonus = {}; OTAZKY.forEach(q => { bonus[q.klic] = norm(h.bonus ? h.bonus[q.klic] : ''); });
                 const tipRow = new Array(SLE.POCET).fill('');
                 poradi.forEach((t, j) => { tipRow[SLE.MISTO_OD + j] = t; });
+                const dopocet = EXTRALIGA.bodyUmisteni(tipRow, vysledkyRow);   // dnešní pravidla, jen záloha
+                const maBodyMist = Array.isArray(h.bodyMista) && h.bodyMista.length === KONFIG.POCET_MIST;
                 vsichniHraci.push({
-                    originalIndex: i, jmeno, klub: norm(r[SL.KLUB]), poradi, bonus,
-                    mistrVitez: norm(r[SL.MISTR_VITEZ]), mistrPoradi,
+                    originalIndex: i, jmeno, klub: norm(h.klub), poradi, bonus,
+                    mistrVitez: norm(h.mistrVitez), mistrPoradi: (h.mistrPoradi || []).map(norm),
                     jeMistr: EXTRALIGA.jeMistr(jmeno),
-                    body: {
-                        umisteni: EXTRALIGA.cislo(r[SL.BODY_UMISTENI]) || 0,
-                        bonusy: EXTRALIGA.cislo(r[SL.BODY_BONUSY]) || 0,
-                        celkem: EXTRALIGA.cislo(r[SL.BODY_CELKEM]) || 0
-                    },
-                    umisteniSheet: EXTRALIGA.cislo(r[SL.UMISTENI]),
-                    umisteni: EXTRALIGA.bodyUmisteni(tipRow, vysledkyRow),   // dopočet bodů za jednotlivé týmy dnešními pravidly
+                    body: { umisteni: Number(h.body && h.body.umisteni) || 0, bonusy: Number(h.body && h.body.bonusy) || 0, celkem: Number(h.body && h.body.celkem) || 0 },
+                    umisteniSheet: (h.umisteniSheet === undefined || h.umisteniSheet === null) ? null : Number(h.umisteniSheet),
+                    bodyMista: maBodyMist ? h.bodyMista.map(x => Number(x) || 0) : null,   // body za tým na 1.–14. místě konečného pořadí
+                    bodyOtazky: h.bodyOtazky || null,                                       // body za každou bonusovou otázku
+                    presne: dopocet.presne, dopocet,
                     poradiKat: { celkem: 0, umisteni: 0, bonusy: 0 }
                 });
             });
 
-            // Sedí dopočet s body v tabulce? Když ano, ukážeme body u každého týmu, jinak jen rozdíl míst.
-            const sTipem = vsichniHraci.filter(h => h.poradi.some(t => t !== ''));
-            const sedi = sTipem.filter(h => Math.abs(h.umisteni.celkem - h.body.umisteni) < 0.11).length;
-            pravidlaSedi = sTipem.length > 0 && sedi >= sTipem.length * 0.9;
+            // Kdo nemá body za jednotlivé týmy z tabulky, dostane dopočet – ale jen když dopočet sedí s body v tabulce (aspoň u 90 % takových hráčů)
+            const bezTabulky = vsichniHraci.filter(h => !h.bodyMista && h.poradi.some(t => t !== ''));
+            const sedi = bezTabulky.filter(h => Math.abs(h.dopocet.celkem - h.body.umisteni) < 0.11).length;
+            if (bezTabulky.length > 0 && sedi >= bezTabulky.length * 0.9) bezTabulky.forEach(h => { h.bodyMista = h.dopocet.body; });
 
             const pCelkem = pridelPoradi(vsichniHraci.map(h => h.body.celkem));
             const pUmisteni = pridelPoradi(vsichniHraci.map(h => h.body.umisteni));
@@ -371,7 +388,7 @@
             let html = `<div class="stav-box"><div class="modal-subtitle" style="margin-top: 0;">Konečné pořadí základní části</div><div class="teams-grid-8x2 grid-14">`;
             oficialni.forEach((tym, j) => {
                 const nazev = tym || 'Neznámé';
-                html += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j + 1}.</span><img src="${logoNeboFallback(tym)}" class="t-logo" title="${esc(nazev)}" alt="${esc(nazev)}"></div>`;
+                html += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j + 1}.</span><img src="${logoNeboFallback(tym)}" ${ONERR} class="t-logo" title="${esc(nazev)}" alt="${esc(nazev)}"></div>`;
             });
             html += `</div><div class="modal-subtitle">Správné odpovědi na bonusové otázky</div>`;
             const vyplnene = OTAZKY.filter(q => spravne[q.klic] !== '');
@@ -546,7 +563,8 @@
             vsichniHraci.forEach(h => { const m = h.mistrVitez; if (m) vitezPocty.set(m, (vitezPocty.get(m) || 0) + 1); });
             const vitezRadky = Array.from(vitezPocty, ([text, pocet]) => ({ text, pocet })).sort((a, b) => b.pocet - a.pocet);
             const mistriTop = vsichniHraci.filter(h => h.jeMistr).sort((a, b) => b.body.celkem - a.body.celkem)[0];
-            let html = tabulkaPoctu('Kdo podle fanoušků vyhraje tipovačku Mistrů?', vitezRadky, false, mistriTop ? mistriTop.jmeno : '');
+            const mistrTopDetail = mistriTop ? EXTRALIGA.najdiMistra(mistriTop.jmeno) : null;
+            let html = tabulkaPoctu('Kdo podle fanoušků vyhraje tipovačku Mistrů?', vitezRadky, false, mistrTopDetail ? mistrTopDetail.prezdivka : (mistriTop ? mistriTop.jmeno : ''));
 
             const jmena = new Map();
             vsichniHraci.forEach(h => h.mistrPoradi.forEach((m, j) => { if (!m) return; if (!jmena.has(m)) jmena.set(m, new Array(4).fill(0)); jmena.get(m)[j]++; }));
@@ -565,7 +583,7 @@
 
         // ---------- KARTA HRÁČE ----------
         function generujObsahHrace(hrac) {
-            const b = hrac.body, u = hrac.umisteni;
+            const b = hrac.body;
             const logoSrc = getLogoSrc(hrac.klub);
             const logoHtml = logoSrc ? `<img src="${logoSrc}" style="width:28px; height:28px; object-fit:contain; vertical-align:middle; margin-left:6px;" title="Oblíbený klub: ${esc(hrac.klub)}">` : '';
             const avatarBlock = hrac.jeMistr ? `<div class="modal-avatar" style="background: transparent; width: 50px; height: 50px; flex-shrink: 0; margin-right: 12px;">${getAvatarHTML(hrac, '1.2rem')}</div>` : '';
@@ -584,41 +602,43 @@
                 </div>`;
 
             html += `<div class="modal-subtitle" style="margin-top: 10px;">Konečné pořadí základní části</div><div class="teams-grid-8x2 grid-14">`;
-            oficialni.forEach((tym, j) => { html += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j + 1}.</span><img src="${logoNeboFallback(tym)}" class="t-logo" title="${esc(tym || 'Neznámé')}" alt="${esc(tym || 'Neznámé')}"></div>`; });
+            oficialni.forEach((tym, j) => { html += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j + 1}.</span><img src="${logoNeboFallback(tym)}" ${ONERR} class="t-logo" title="${esc(tym || 'Neznámé')}" alt="${esc(tym || 'Neznámé')}"></div>`; });
             html += `</div>`;
 
-            const n = u.nasobitel;
-            const nasobekHtml = pravidlaSedi
-                ? `<span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal; margin-left: 5px;">(vč. získaných bodů)</span><span class="nasobek-badge ${n > 1 ? 'aktivni' : ''}">${n.toFixed(1).replace('.', ',')}x násobek bodů</span><span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal; margin-left: 6px;">(${u.presne} přesně)</span>`
-                : `<span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal; margin-left: 5px;">(o kolik míst vedle, ${u.presne} přesně)</span>`;
-            html += `<div class="modal-subtitle" style="margin-top: 25px;">Tip hráče ${nasobekHtml}</div><div class="teams-grid-8x2 grid-14">`;
+            const maBodyMist = Array.isArray(hrac.bodyMista);
+            const popisTipu = maBodyMist
+                ? `<span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal; margin-left: 5px;">(body za každý tým, ${hrac.presne} přesně)</span>`
+                : `<span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal; margin-left: 5px;">(o kolik míst vedle, ${hrac.presne} přesně)</span>`;
+            html += `<div class="modal-subtitle" style="margin-top: 25px;">Tip hráče ${popisTipu}</div><div class="teams-grid-8x2 grid-14">`;
             hrac.poradi.forEach((tipTym, j) => {
                 const nazev = tipTym || 'Nevyplněno';
                 const k = tipTym !== '' ? oficialni.indexOf(tipTym) : -1;
                 let ptsHtml = '';
                 if (tipTym !== '') {
-                    if (pravidlaSedi) { const bb = k !== -1 ? u.body[k] : 0; ptsHtml = `<span class="t-pts ${bb > 0 ? 'pts-high' : 'pts-zero'}">${bb} b.</span>`; }
+                    if (maBodyMist) { const bb = k !== -1 ? hrac.bodyMista[k] : 0; ptsHtml = `<span class="t-pts ${bb > 0 ? 'pts-high' : 'pts-zero'}">${formatBody(bb)} b.</span>`; }
                     else if (k !== -1) { const d = k - j; ptsHtml = `<span class="t-rozdil ${d === 0 ? 'presne' : ''}">${d === 0 ? '✓ přesně' : (d > 0 ? '+' : '') + d}</span>`; }
                     else ptsHtml = `<span class="t-rozdil">?</span>`;
                 }
-                html += `<div class="team-col"><span class="t-pos">${j + 1}.</span><img src="${logoNeboFallback(tipTym)}" class="t-logo" title="${esc(nazev)}" alt="${esc(nazev)}">${ptsHtml}</div>`;
+                html += `<div class="team-col"><span class="t-pos">${j + 1}.</span><img src="${logoNeboFallback(tipTym)}"${ONERR} class="t-logo" title="${esc(nazev)}" alt="${esc(nazev)}">${ptsHtml}</div>`;
             });
             html += `</div>`;
-            if (!pravidlaSedi) html += `<div style="font-size: 0.8rem; color: var(--text-muted); margin-top: -2px;">Body za jednotlivé týmy tabulka ročníku 2025/26 neobsahuje, u týmů je rozdíl oproti skutečnému místu.</div>`;
+            if (!maBodyMist) html += `<div style="font-size: 0.8rem; color: var(--text-muted); margin-top: -2px;">Body za jednotlivé týmy nejsou k dispozici, u týmů je rozdíl oproti skutečnému místu.</div>`;
 
-            html += `<div class="modal-subtitle" style="margin-top: 25px;">Bonusové otázky</div><div class="bonus-list">`;
+            html += `<div class="modal-subtitle" style="margin-top: 25px;">Bonusové otázky${hrac.bodyOtazky ? ' <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal; margin-left: 5px;">(body podle tabulky)</span>' : ''}</div><div class="bonus-list">`;
             OTAZKY.forEach(q => {
                 const tip = hrac.bonus[q.klic], spr = spravne[q.klic];
-                const s = shoda(tip, spr);
+                const bodyQ = hrac.bodyOtazky && hrac.bodyOtazky[q.klic] !== undefined ? Number(hrac.bodyOtazky[q.klic]) || 0 : null;
+                const s = bodyQ !== null ? (tip === '' ? null : bodyQ > 0) : shoda(tip, spr);
                 const spravneHtml = spr !== '' ? ` <span style="color: var(--accent-primary); font-style: italic; font-weight: 600; margin-left: 3px;">(${esc(spr)})</span>` : '';
                 const tipHtml = tip !== '' ? esc(tip) : '<span style="color: var(--text-muted); font-weight: normal;">Nevyplněno</span>';
                 const znackaHtml = s === true ? '<i class="fas fa-check shoda-ano" title="Trefa"></i>' : (s === false ? '<i class="fas fa-times shoda-ne" title="Vedle"></i>' : '');
+                const bodyHtml = bodyQ !== null ? `<span style="font-family: 'Oswald', sans-serif; font-size: 1.1rem; color: ${bodyQ > 0 ? 'var(--accent-primary)' : 'var(--text-muted)'};">${formatBody(bodyQ)}</span>` : '';
                 html += `<div class="bonus-item" style="min-height: 68px; box-sizing: border-box; padding: 6px 12px;">
                         <div class="bonus-text" style="flex: 1; padding-right: 10px;">
                             <div class="b-question" style="font-size: 0.85rem; line-height: 1.2; margin-bottom: 2px;">${esc(q.otazka)}${spravneHtml}</div>
                             <div class="b-answer" style="font-size: 0.95rem; font-weight: bold;">${tipHtml}</div>
                         </div>
-                        <div class="b-pts" style="display:flex; align-items:center; justify-content:flex-end; gap: 8px; flex-shrink: 0;">${logoTymuHTML(tip, 28)}${znackaHtml}</div>
+                        <div class="b-pts" style="display:flex; align-items:center; justify-content:flex-end; gap: 8px; flex-shrink: 0;">${logoTymuHTML(tip, 28)}${znackaHtml}${bodyHtml}</div>
                     </div>`;
             });
             html += `</div>`;
