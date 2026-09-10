@@ -5,7 +5,7 @@ const navbarHTML = `
     </a>
     <div class="nav-center-wrap">
         <div class="nav-group">
-            <span class="nav-group-title">Extraliga Mistrů světa</span>
+            <span class="nav-group-title">Tipovačka Mistrů světa</span>
             <div class="nav-group-links">
                 <a href="2627_form_extraliga.html" class="nav-tile extraliga-color">TIP EXTRALIGA</a>
                 <a href="2627_prehled_extraliga.html" class="nav-tile extraliga-color">PŘEHLED EXTRALIGA</a>
