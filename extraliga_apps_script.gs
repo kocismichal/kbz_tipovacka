@@ -1,12 +1,12 @@
 /**
- * extraliga_apps_script.gs
+ * extraliga_apps_script.gs  →  obsah souboru web.gs v projektu Apps Script
  * Google Apps Script tipovačky "Extraliga Mistrů světa" 2026/27 (tabulka s listy "Tipy" a "Přehled HOTOVO").
  *
- * V projektu Apps Script musí být VEDLE tohoto souboru i soubor extraliga_spolecne.js z webu (zkopírovaný 1:1,
- * v editoru Apps Scriptu pojmenovaný třeba "extraliga_spolecne.gs"). Odtud se bere rozložení sloupců
- * (EXTRALIGA.SLOUPCE), názvy sloupců (EXTRALIGA.HLAVICKA) i mapování polí formuláře na sloupce
- * (EXTRALIGA.radekZFormulare). Po každé změně extraliga_spolecne.js na webu ho v Apps Scriptu přepiš
- * a nasaď novou verzi (Nasadit → Spravovat nasazení → tužka → Verze: Nová verze → Nasadit; URL zůstane stejná).
+ * Projekt Apps Script má víc souborů: spolecne.gs (= extraliga_spolecne.js z webu, zkopírovaný 1:1),
+ * web.gs (= tento soubor) a případně další (Bodování.gs, statistiky.gs, Menu-SKRIPTY.gs), které se nemění.
+ * Rozložení sloupců (EXTRALIGA.SLOUPCE), názvy sloupců (EXTRALIGA.HLAVICKA) i mapování polí formuláře
+ * na sloupce (EXTRALIGA.radekZFormulare) se berou ze spolecne.gs. Všechny pomocné funkce tady mají
+ * předponu "web", aby nekolidovaly s funkcemi v ostatních souborech.
  *
  * Web volá:
  *   POST <URL>                               uložení tipu z formuláře (stejný e-mail = přepsání tipu)
@@ -15,33 +15,34 @@
  *   GET  <URL>?action=data&sheet=Přehled HOTOVO
  *
  * Postup po přidání žolíků a nových otázek (podrobně v extraliga_navod.md):
- *   1. spusť z editoru funkci doplnHlavicky() – doplní názvy nových sloupců AK–AX (Tipy) a AK–BL (Přehled HOTOVO)
- *   2. nasaď novou verzi
- *   3. pošli z webu zkušební tip a zkontroluj, že se vyplnily i sloupce AK–AX
+ *   1. spolecne.gs nahradit novým extraliga_spolecne.js, web.gs nahradit tímto souborem
+ *   2. spustit z editoru funkci doplnHlavicky() – přidá sloupce a jejich názvy (Tipy A–AX, Přehled HOTOVO A–BL)
+ *   3. Nasadit → Spravovat nasazení → tužka → Verze: Nová verze → Nasadit (URL zůstane stejná)
+ *   4. poslat z webu zkušební tip a zkontrolovat, že se vyplnily i sloupce AK–AX
  */
 
-var LIST_TIPY = "Tipy";
-var LIST_HOTOVO = "Přehled HOTOVO";
+var WEB_LIST_TIPY = "Tipy";
+var WEB_LIST_HOTOVO = "Přehled HOTOVO";
 
 // ---------- POST: uložení tipu ----------
 function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(LIST_TIPY);
-    if (!sheet) return json({ ok: false, error: "List nenalezen: " + LIST_TIPY });
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(WEB_LIST_TIPY);
+    if (!sheet) return webJson({ ok: false, error: "List nenalezen: " + WEB_LIST_TIPY });
 
     var param = (e && e.parameter) || {};
     var row = EXTRALIGA.radekZFormulare(param, new Date());
-    zajistiSloupce(sheet, row.length);
+    webZajistiSloupce(sheet, row.length);
 
     var email = EXTRALIGA.normKlic(param.email);
-    var radek = email ? najdiRadekPodleEmailu(sheet, email) : 0;
+    var radek = email ? webNajdiRadekPodleEmailu(sheet, email) : 0;
     var prepsano = radek > 0;
     if (!prepsano) radek = sheet.getLastRow() + 1;
     sheet.getRange(radek, 1, 1, row.length).setValues([row]);
 
-    return json({ ok: true, radek: radek, prepsano: prepsano });
+    return webJson({ ok: true, radek: radek, prepsano: prepsano });
   } finally {
     lock.releaseLock();
   }
@@ -53,19 +54,19 @@ function doGet(e) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
 
   if (param.action === "getCount") {
-    return json({ pocet: pocetTipu(ss.getSheetByName(LIST_TIPY)) });
+    return webJson({ pocet: webPocetTipu(ss.getSheetByName(WEB_LIST_TIPY)) });
   }
   if (param.action === "data") {
-    var nazev = param.sheet || LIST_TIPY;
+    var nazev = param.sheet || WEB_LIST_TIPY;
     var sheet = ss.getSheetByName(nazev);
-    if (!sheet) return json({ error: "List nenalezen: " + nazev });
-    return json(dataListu(sheet, nazev === LIST_TIPY));
+    if (!sheet) return webJson({ error: "List nenalezen: " + nazev });
+    return webJson(webDataListu(sheet, nazev === WEB_LIST_TIPY));
   }
-  return json({ error: "Neznámá akce. Použij ?action=getCount nebo ?action=data&sheet=Tipy" });
+  return webJson({ error: "Neznámá akce. Použij ?action=getCount nebo ?action=data&sheet=Tipy" });
 }
 
 // Celý list jako pole řádků. U listu Tipy se e-maily (osobní údaj) nahradí prázdným textem, datum se převede na text.
-function dataListu(sheet, skryjEmail) {
+function webDataListu(sheet, skryjEmail) {
   var data = sheet.getDataRange().getValues();
   var tz = Session.getScriptTimeZone();
   return data.map(function (r, i) {
@@ -78,7 +79,7 @@ function dataListu(sheet, skryjEmail) {
 }
 
 // Počet řádků s vyplněným jménem (bez hlavičky).
-function pocetTipu(sheet) {
+function webPocetTipu(sheet) {
   if (!sheet || sheet.getLastRow() < 2) return 0;
   var jmena = sheet.getRange(2, EXTRALIGA.SLOUPCE.JMENO + 1, sheet.getLastRow() - 1, 1).getValues();
   var n = 0;
@@ -87,7 +88,7 @@ function pocetTipu(sheet) {
 }
 
 // Číslo řádku (1 = hlavička) s daným e-mailem (porovnává se bez mezer a velikosti písmen), jinak 0.
-function najdiRadekPodleEmailu(sheet, email) {
+function webNajdiRadekPodleEmailu(sheet, email) {
   if (sheet.getLastRow() < 2) return 0;
   var emaily = sheet.getRange(2, EXTRALIGA.SLOUPCE.EMAIL + 1, sheet.getLastRow() - 1, 1).getValues();
   for (var i = 0; i < emaily.length; i++) {
@@ -97,12 +98,12 @@ function najdiRadekPodleEmailu(sheet, email) {
 }
 
 // List musí mít aspoň tolik sloupců, kolik zapisujeme (jinak getRange spadne).
-function zajistiSloupce(sheet, pocet) {
+function webZajistiSloupce(sheet, pocet) {
   var max = sheet.getMaxColumns();
   if (max < pocet) sheet.insertColumnsAfter(max, pocet - max);
 }
 
-function json(obj) {
+function webJson(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -114,13 +115,13 @@ function json(obj) {
  */
 function doplnHlavicky() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  doplnHlavicku(ss.getSheetByName(LIST_TIPY), EXTRALIGA.SLOUPCE.POCET_TIPU);
-  doplnHlavicku(ss.getSheetByName(LIST_HOTOVO), EXTRALIGA.SLOUPCE.POCET);
+  webDoplnHlavickuListu(ss.getSheetByName(WEB_LIST_TIPY), EXTRALIGA.SLOUPCE.POCET_TIPU);
+  webDoplnHlavickuListu(ss.getSheetByName(WEB_LIST_HOTOVO), EXTRALIGA.SLOUPCE.POCET);
 }
 
-function doplnHlavicku(sheet, pocet) {
+function webDoplnHlavickuListu(sheet, pocet) {
   if (!sheet) return;
-  zajistiSloupce(sheet, pocet);
+  webZajistiSloupce(sheet, pocet);
   var range = sheet.getRange(1, 1, 1, pocet);
   var hodnoty = range.getValues()[0];
   for (var i = 0; i < pocet; i++) {
@@ -133,10 +134,10 @@ function doplnHlavicku(sheet, pocet) {
  * Kontrola bodování přímo v tabulce: do protokolu (Zobrazit → Protokoly) vypíše body všech tipujících
  * podle řádku 2 listu Přehled HOTOVO – stejný výpočet, jaký dělá web.
  */
-function vypisBodovani() {
+function vypisBodovaniDoProtokolu() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var tipy = ss.getSheetByName(LIST_TIPY).getDataRange().getValues();
-  var hotovo = ss.getSheetByName(LIST_HOTOVO).getDataRange().getValues();
+  var tipy = ss.getSheetByName(WEB_LIST_TIPY).getDataRange().getValues();
+  var hotovo = ss.getSheetByName(WEB_LIST_HOTOVO).getDataRange().getValues();
   var vysledky = hotovo.length > 1 ? hotovo[1] : [];
   Logger.log("Výsledky k dispozici: " + EXTRALIGA.jsouVysledky(vysledky));
   for (var i = 1; i < tipy.length; i++) {
