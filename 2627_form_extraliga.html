@@ -125,8 +125,56 @@
             font-weight: 600;
         }
 
+        /* Žolíci – tři karty vedle sebe, na mobilu pod sebou */
+        .zolik-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .zolik-card {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 5px 15px 12px 15px;
+        }
+        .zolik-card .zolik-nadpis {
+            font-family: 'Oswald', sans-serif;
+            color: var(--accent-primary);
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+        .zolik-card label { margin-top: 10px; }
+        .zolici-info {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-bottom: 5px;
+        }
+
+        /* Žolíkový tým v živém náhledu pořadí */
+        .history-team { position: relative; }
+        .history-team.zolik { border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.25); }
+        .history-team .zolik-badge {
+            display: none;
+            position: absolute;
+            top: -8px;
+            right: -6px;
+            background: #ffd700;
+            color: #000;
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+        .history-team.zolik .zolik-badge { display: block; }
+
         @media (max-width: 768px) {
             .history-grid { grid-template-columns: repeat(4, 1fr); }
+            .zolik-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -164,10 +212,13 @@
             <div class="note"><strong>📊 TIPY NA POŘADÍ TÝMŮ:</strong><br> Přesně = <strong>10 b.</strong> // každé místo vedle = <strong>o 1 bod méně</strong> (o 1 místo = <strong>9 b.</strong>, o 2 místa = <strong>8 b.</strong> ... o 9 míst = <strong>1 b.</strong>) // o 10 a víc = <strong>0 b.</strong></div>
             <div class="note" style="margin-top: 5px;"><strong>Bonusové násobky:</strong><br> 13 až 14 přesně = <strong style="color:var(--accent-primary);">1,4x</strong> // 11 až 12 přesně = <strong style="color:var(--accent-primary);">1,3x</strong> // 9 až 10 přesně = <strong style="color:var(--accent-primary);">1,2x</strong> // 7 až 8 přesně = <strong style="color:var(--accent-primary);">1,1x</strong></div>
 
+            <!-- Čísla v pravidlech žolíků (data-zolik) se plní ze skriptu z EXTRALIGA.KONFIG -->
+            <div class="note" style="margin-top: 10px;"><strong>🃏 ŽOLÍCI:</strong><br> Ze svého pořadí vybereš <strong><span data-zolik="pocet"></span></strong>. Body za umístění žolíka se počítají <strong style="color:var(--accent-primary);"><span data-zolik="nasobek_umisteni"></span>x</strong> (přesně = <strong><span data-zolik="presne"></span> b.</strong>, o 1 místo vedle = <strong><span data-zolik="o1"></span> b.</strong> ...) a bonusové násobky za přesné trefy platí i pro ně.<br> U každého žolíka navíc tipuješ, <strong>kolik bodů získá v základní části</strong>: přesně = <strong><span data-zolik="b0"></span> b.</strong> // o 1 vedle = <strong><span data-zolik="b1"></span> b.</strong> // o 2 vedle = <strong><span data-zolik="b2"></span> b.</strong> // o 3 vedle = <strong><span data-zolik="b3"></span> b.</strong> // o 4 vedle = <strong><span data-zolik="b4"></span> b.</strong></div>
+
             <div class="note" style="margin: 15px 0;">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</div>
 
             <div class="note"><strong>🎯 BONUSOVÉ OTÁZKY:</strong></div>
-            <div class="note"><strong>Textové:</strong> týmové otázky, nejlepší střelec a nejtrestanější hráč = <strong>20 b.</strong> // baráž = <strong>10 b.</strong></div>
+            <div class="note"><strong>Textové:</strong> týmové otázky a otázky na hráče = <strong>20 b.</strong> // otázky ANO / NE (baráž, rekordy, Duda, Galvas) = <strong>10 b.</strong></div>
             <div class="note"><strong>Číselné:</strong> Přesně = <strong>10 b.</strong> // o 1 vedle = <strong>8 b.</strong> // o 2 vedle = <strong>6 b.</strong> // o 3 vedle = <strong>4 b.</strong> // o 4 vedle = <strong>2 b.</strong></div>
         </div>
 
@@ -204,6 +255,11 @@
 
                     <div class="section-title" style="margin-top: 30px; border-top: 1px dashed var(--border-color); padding-top: 15px;">Tvůj aktuální tip pořadí</div>
                     <div id="live-grid" class="history-grid"></div>
+
+                    <!-- Žolíci: počet, násobky a limity bere skript z EXTRALIGA.KONFIG -->
+                    <div class="section-title" style="margin-top: 30px; border-top: 1px dashed var(--border-color); padding-top: 15px;"><i class="fas fa-star" style="color:#ffd700;"></i> Žolíci</div>
+                    <div class="zolici-info" id="zolici-info"></div>
+                    <div id="zolici" class="zolik-grid"></div>
                 </fieldset>
 
                 <fieldset>
@@ -214,48 +270,9 @@
                         Statistické údaje budou čerpány po konci základní části z <a href="https://www.hokej.cz/tipsport-extraliga" target="_blank" style="color: var(--accent-primary); font-weight: 600; text-decoration: none;">oficiálních statistik Tipsport extraligy na hokej.cz</a>.
                     </div>
 
-                    <!-- Texty otázek (data-otazka) se plní z EXTRALIGA.BONUSY, nápovědy (data-odpoved) z EXTRALIGA.KONFIG.ODPOVEDI_2526,
-                         horní hranice bodů (data-max-body-tymu) z EXTRALIGA.KONFIG.MAX_BODU_TYMU -->
-                    <label><span data-otazka="body_mistr"></span> <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);" data-odpoved="body_mistr"></strong></span></span></label>
-                    <input type="number" name="body_mistr" min="0" step="1" required data-max-body-tymu>
-
-                    <label><span data-otazka="rozdil_1_2"></span> <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);" data-odpoved="rozdil_1_2"></strong></span></span></label>
-                    <input type="number" name="rozdil_1_2" min="0" step="1" required data-max-body-tymu>
-
-                    <label><span data-otazka="body_posledni"></span> <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);" data-odpoved="body_posledni"></strong></span></span></label>
-                    <input type="number" name="body_posledni" min="0" step="1" required data-max-body-tymu>
-
-                    <label><span data-otazka="tymgoly"></span> <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);" data-odpoved="tymgoly"></strong></span></span></label>
-                    <select name="tymgoly" class="icon-select" required>
-                        <option value="">-- Vyber tým --</option>
-                    </select>
-
-                    <label><span data-otazka="tympresilovky"></span> <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);" data-odpoved="tympresilovky"></strong></span></span></label>
-                    <select name="tympresilovky" class="icon-select" required>
-                        <option value="">-- Vyber tým --</option>
-                    </select>
-
-                    <label><span data-otazka="tymfauly"></span> <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);" data-odpoved="tymfauly"></strong></span></span></label>
-                    <select name="tymfauly" class="icon-select" required>
-                        <option value="">-- Vyber tým --</option>
-                    </select>
-
-                    <label><span data-otazka="baraz"></span> <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);" data-odpoved="baraz"></strong></span></span></label>
-                    <select name="baraz" required>
-                        <option value="">-- Vyber odpověď ANO/NE --</option>
-                        <option value="Ano">Ano</option>
-                        <option value="Ne">Ne</option>
-                    </select>
-
-                    <div class="section-title">Nejlepší střelec a tresty</div>
-                    <label><span data-otazka="strelec"></span> <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);" data-odpoved="strelec"></strong></span></span></label>
-                    <input type="text" name="strelec" placeholder="např. Anthony Nellis (snaž se napsat celé jméno správně)" required>
-
-                    <label><span data-otazka="gol_strelec"></span> <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);" data-odpoved="gol_strelec"></strong></span></span></label>
-                    <input type="number" name="gol_strelec" min="0" max="100" step="1" required placeholder="0 - 100">
-
-                    <label><span data-otazka="trestyhrac"></span> <span class="info-icon"><i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);" data-odpoved="trestyhrac"></strong></span></span></label>
-                    <input type="text" name="trestyhrac" placeholder="např. John Ludvig (snaž se napsat celé jméno správně)" required>
+                    <!-- Otázky se generují ze skriptu z EXTRALIGA.BONUSY (sekce, text, typ pole), nápovědy "Odpověď 25/26"
+                         z EXTRALIGA.KONFIG.ODPOVEDI_2526 a horní hranice bodů týmů z EXTRALIGA.KONFIG.MAX_BODU_TYMU -->
+                    <div id="bonusove-otazky"></div>
                 </fieldset>
 
                 <fieldset>
@@ -319,6 +336,25 @@
         const POCET_MIST = EXTRALIGA.KONFIG.POCET_MIST;
 
         document.getElementById("deadline-text").textContent = EXTRALIGA.KONFIG.DEADLINE_TEXT;
+
+        function sklonujZoliky(n) { return n === 1 ? "žolíka" : (n >= 2 && n <= 4 ? "žolíky" : "žolíků"); }
+
+        // Čísla v pravidlech žolíků (počet, násobky, bodová škála) ze společné konfigurace
+        (function naplnitPravidlaZoliku() {
+            const K = EXTRALIGA.KONFIG;
+            const hodnoty = {
+                pocet: `${K.POCET_ZOLIKU} ${sklonujZoliky(K.POCET_ZOLIKU)}`,
+                nasobek_umisteni: K.ZOLIK_NASOBEK_UMISTENI,
+                presne: 10 * K.ZOLIK_NASOBEK_UMISTENI,
+                o1: 9 * K.ZOLIK_NASOBEK_UMISTENI,
+                b0: 10 * K.ZOLIK_NASOBEK_BODU,
+                b1: 8 * K.ZOLIK_NASOBEK_BODU,
+                b2: 6 * K.ZOLIK_NASOBEK_BODU,
+                b3: 4 * K.ZOLIK_NASOBEK_BODU,
+                b4: 2 * K.ZOLIK_NASOBEK_BODU
+            };
+            document.querySelectorAll("[data-zolik]").forEach(el => { el.textContent = hodnoty[el.dataset.zolik]; });
+        })();
 
         const deadline = new Date(EXTRALIGA.KONFIG.DEADLINE);
         const now = new Date();
@@ -386,14 +422,20 @@
                     const teamDiv = document.createElement("div");
                     teamDiv.className = "history-team";
                     teamDiv.id = `live-pos-${i}`;
-                    // Zástupný obrázek, dokud není nic vybráno
-                    teamDiv.innerHTML = `<span class="pos">${i}.</span><img src="https://i.imgur.com/1fk6XQE.png" alt="Zatím nevybráno" style="opacity: 0.2; transition: opacity 0.3s;">`;
+                    // Zástupný obrázek, dokud není nic vybráno; štítek ŽOLÍK se ukáže jen u žolíkových týmů
+                    teamDiv.innerHTML = `<span class="pos">${i}.</span><img src="https://i.imgur.com/1fk6XQE.png" alt="Zatím nevybráno" style="opacity: 0.2; transition: opacity 0.3s;"><span class="zolik-badge">ŽOLÍK</span>`;
                     liveGridDiv.appendChild(teamDiv);
                 }
             }
 
-            // Aktualizuje živý náhled na základě vybraných hodnot
+            // Vybrané žolíkové týmy (bez prázdných)
+            function vybraniZolici() {
+                return Array.from(document.querySelectorAll("select.zolik-select")).map(s => s.value).filter(v => v);
+            }
+
+            // Aktualizuje živý náhled na základě vybraných hodnot (logo týmu + štítek u žolíků)
             function aktualizujLiveGrid() {
+                const zolici = vybraniZolici();
                 for (let i = 1; i <= POCET_MIST; i++) {
                     const select = document.querySelector(`select[name='misto${i}']`);
                     const liveSlot = document.getElementById(`live-pos-${i}`);
@@ -412,6 +454,7 @@
                         img.title = '';
                         img.style.opacity = '0.2';
                     }
+                    liveSlot.classList.toggle('zolik', !!(select && select.value && zolici.includes(select.value)));
                 }
             }
 
@@ -439,11 +482,110 @@
 
                     select.dispatchEvent(new Event('custom-update'));
                 });
+                aktualizujZoliky();   // u žolíků se ukazuje, na které místo tým tipuješ; překreslí i živý náhled
+            }
+
+            // Karty žolíků: výběr týmu + tip na jeho body v základní části
+            function vytvorZoliky() {
+                const K = EXTRALIGA.KONFIG;
+                document.getElementById("zolici-info").textContent =
+                    `Vyber ${K.POCET_ZOLIKU} ${sklonujZoliky(K.POCET_ZOLIKU)} – týmy, kterým věříš nejvíc. Body za jejich umístění se počítají ${K.ZOLIK_NASOBEK_UMISTENI}x a navíc tipuješ, kolik bodů v základní části získají.`;
+                const container = document.getElementById("zolici");
+                for (let k = 1; k <= K.POCET_ZOLIKU; k++) {
+                    const card = document.createElement("div");
+                    card.className = "zolik-card";
+                    card.innerHTML = `
+                        <div class="zolik-nadpis"><i class="fas fa-star" style="color:#ffd700;"></i> ${k}. žolík</div>
+                        <label for="zolik${k}">Tým:</label>
+                        <select name="zolik${k}" id="zolik${k}" class="icon-select zolik-select" required data-popis="${k}. žolík">
+                            <option value="">-- Vyber tým --</option>
+                        </select>
+                        <label for="zolik${k}_body">Kolik bodů získá v základní části?</label>
+                        <input type="number" name="zolik${k}_body" id="zolik${k}_body" min="0" max="${K.MAX_BODU_TYMU}" step="1" required placeholder="0 - ${K.MAX_BODU_TYMU}">`;
+                    container.appendChild(card);
+                }
+                document.querySelectorAll("select.zolik-select").forEach(select => select.addEventListener("change", aktualizujZoliky));
+            }
+
+            // Žolíci: stejný tým nejde vybrat dvakrát a u každého týmu je vidět, na které místo ho tipuješ
+            function aktualizujZoliky() {
+                const poradi = {};
+                document.querySelectorAll("select[name^='misto']").forEach((s, idx) => { if (s.value) poradi[s.value] = idx + 1; });
+                const selecty = Array.from(document.querySelectorAll("select.zolik-select"));
+                const vybrane = selecty.map(s => s.value).filter(v => v);
+
+                selecty.forEach(select => {
+                    Array.from(select.options).forEach(option => {
+                        if (option.value === "") return;
+                        const jinde = vybrane.includes(option.value) && option.value !== select.value;
+                        option.disabled = jinde;
+                        if (jinde) option.textContent = `${option.value} (už je žolík)`;
+                        else if (poradi[option.value]) option.textContent = `${option.value} (tipuješ ${poradi[option.value]}. místo)`;
+                        else option.textContent = option.value;
+                    });
+                    select.dispatchEvent(new Event('custom-update'));
+                });
                 aktualizujLiveGrid();
             }
 
+            // Bonusové otázky ze společné konfigurace: sekce, text otázky, typ pole, nápověda "Odpověď 25/26" a limity
+            function vytvorBonusoveOtazky() {
+                const container = document.getElementById("bonusove-otazky");
+                const odpovedi = EXTRALIGA.KONFIG.ODPOVEDI_2526;
+                let skupina = null;
+
+                EXTRALIGA.BONUSY.filter(q => q.aktivni).forEach(q => {
+                    if (q.skupina !== skupina) {
+                        skupina = q.skupina;
+                        const nadpis = document.createElement("div");
+                        nadpis.className = "section-title";
+                        nadpis.textContent = skupina;
+                        container.appendChild(nadpis);
+                    }
+
+                    const label = document.createElement("label");
+                    label.htmlFor = "otazka-" + q.klic;
+                    label.appendChild(document.createTextNode(q.otazka + " "));
+                    if (odpovedi[q.klic]) {
+                        const info = document.createElement("span");
+                        info.className = "info-icon";
+                        info.innerHTML = `<i class="fas fa-info-circle"></i><span class="tooltip-text">Odpověď 25/26:<br><strong style="color:var(--accent-primary);"></strong></span>`;
+                        info.querySelector("strong").textContent = odpovedi[q.klic];
+                        label.appendChild(info);
+                    }
+                    container.appendChild(label);
+
+                    let pole;
+                    if (q.vstup === "tym") {
+                        pole = document.createElement("select");
+                        pole.className = "icon-select tym-select";
+                        pole.dataset.popis = q.popis || q.nadpis;
+                        pole.innerHTML = '<option value="">-- Vyber tým --</option>';
+                    } else if (q.vstup === "anone") {
+                        pole = document.createElement("select");
+                        pole.innerHTML = '<option value="">-- Vyber odpověď ANO/NE --</option><option value="Ano">Ano</option><option value="Ne">Ne</option>';
+                    } else if (q.vstup === "cislo") {
+                        pole = document.createElement("input");
+                        pole.type = "number";
+                        pole.min = 0;
+                        pole.step = 1;
+                        const max = q.max === "tymy" ? EXTRALIGA.KONFIG.MAX_BODU_TYMU : q.max;
+                        if (max) { pole.max = max; pole.placeholder = `0 - ${max}`; }
+                    } else {
+                        pole = document.createElement("input");
+                        pole.type = "text";
+                        if (q.placeholder) pole.placeholder = q.placeholder;
+                    }
+                    pole.name = q.klic;
+                    pole.id = "otazka-" + q.klic;
+                    pole.required = true;
+                    container.appendChild(pole);
+                });
+            }
+
+            // Týmy do oblíbeného klubu, týmových bonusových otázek a žolíků (volá se až po vygenerování polí)
             function naplnitTymoveDropdowny() {
-                const vsechny = document.querySelectorAll("select[name='fandim'], select[name='tymgoly'], select[name='tympresilovky'], select[name='tymfauly']");
+                const vsechny = document.querySelectorAll("select[name='fandim'], select.tym-select, select.zolik-select");
                 vsechny.forEach(select => {
                     tymy.forEach(tym => {
                         const option = document.createElement("option");
@@ -467,26 +609,6 @@
                 });
             }
 
-            // Texty bonusových otázek a nápovědy "Odpověď 25/26" ze společného souboru
-            function naplnitOtazkyANapovedy() {
-                EXTRALIGA.BONUSY.forEach(q => {
-                    document.querySelectorAll(`[data-otazka='${q.klic}']`).forEach(el => { el.textContent = q.otazka; });
-                });
-                const odpovedi = EXTRALIGA.KONFIG.ODPOVEDI_2526;
-                Object.keys(odpovedi).forEach(klic => {
-                    document.querySelectorAll(`[data-odpoved='${klic}']`).forEach(el => { el.textContent = odpovedi[klic]; });
-                });
-            }
-
-            // Horní hranice a placeholder číselných otázek na body týmů z KONFIG.MAX_BODU_TYMU
-            function nastavLimityBodu() {
-                const max = EXTRALIGA.KONFIG.MAX_BODU_TYMU;
-                document.querySelectorAll("input[data-max-body-tymu]").forEach(input => {
-                    input.max = max;
-                    input.placeholder = `0 - ${max}`;
-                });
-            }
-
             // Už vybraný Mistr se v ostatních polích pořadí oblíbenosti zakáže
             function aktualizujZajice() {
                 const selecty = Array.from(document.querySelectorAll(".zajic-select"));
@@ -503,14 +625,10 @@
 
             // Lidský popis týmového selectu pro hlášku o chybějícím výběru
             function popisTymovehoPole(select) {
+                if (select.dataset.popis) return select.dataset.popis;
                 if (select.name.indexOf("misto") === 0) return select.name.replace("misto", "") + ". místo";
-                const popisy = {
-                    fandim: "oblíbený tým",
-                    tymgoly: "tým s nejvíce góly",
-                    tympresilovky: "tým s nejvíce přesilovkami",
-                    tymfauly: "nejtrestanější tým"
-                };
-                return popisy[select.name] || select.name;
+                if (select.name === "fandim") return "oblíbený tým";
+                return select.name;
             }
 
             // Týmové selecty jsou kvůli vlastním roletkám skryté, takže prohlížeč u nich neumí ukázat bublinu
@@ -702,6 +820,13 @@
                     return;
                 }
 
+                // Každý žolík musí být jiný tým (roletky to hlídají, tohle je pojistka)
+                const zolici = vybraniZolici();
+                if (new Set(zolici).size !== zolici.length) {
+                    document.getElementById("vysledek").innerHTML = "<h3 style='color: var(--accent-red);'>Každý žolík musí být jiný tým.</h3>";
+                    return;
+                }
+
                 const formData = new FormData(this);
 
                 fetch(SCRIPT_URL, {
@@ -723,10 +848,10 @@
             vytvorDropdowny();
             vytvorHistorii();
             vytvorLiveGrid(); // Vytvoření prázdných oken živého náhledu
+            vytvorZoliky();
+            vytvorBonusoveOtazky();
             naplnitTymoveDropdowny();
             naplnitMistry();
-            naplnitOtazkyANapovedy();
-            nastavLimityBodu();
             hlidatNevyplneneTymy();
             initCustomSelects();
         }
