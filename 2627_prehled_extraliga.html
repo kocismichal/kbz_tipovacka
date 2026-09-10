@@ -351,7 +351,8 @@
 
         const KONFIG = EXTRALIGA.KONFIG;
         const SL = EXTRALIGA.SLOUPCE;
-        const FALLBACK_LOGO = "https://i.imgur.com/8N4Jp62.png";
+        const FALLBACK_LOGO = "logo_neznamy.svg";
+        const ONERR = ` onerror="this.onerror=null;this.src='logo_neznamy.svg'"`;   // mrtvý odkaz na logo → náhradní štít
         const TEXT_NEDOSTUPNE = "Data zatím nejsou k dispozici.";
         const TEXT_PRAZDNE = "Zatím nikdo netipoval.";
         const TEXT_MISTRI_PRAZDNE = "Mistři ještě netipovali.";
@@ -384,11 +385,11 @@
 
         function ziskejLogoKlubuHTML(klub) {
             const src = getLogoSrc(klub);
-            return src ? `<img src="${src}" class="fav-club-badge" style="width:24px; height:24px; object-fit:contain; vertical-align:middle; margin-left:6px;" title="Oblíbený klub: ${esc(klub)}">` : '';
+            return src ? `<img src="${src}"${ONERR} class="fav-club-badge" style="width:24px; height:24px; object-fit:contain; vertical-align:middle; margin-left:6px;" title="Oblíbený klub: ${esc(klub)}">` : '';
         }
         function logoTymuHTML(nazev, velikost) {
             const src = getLogoSrc(nazev);
-            return src ? `<img src="${src}" style="width:${velikost}px;height:${velikost}px;object-fit:contain;" title="${esc(nazev)}">` : '';
+            return src ? `<img src="${src}"${ONERR} style="width:${velikost}px;height:${velikost}px;object-fit:contain;" title="${esc(nazev)}">` : '';
         }
         // Fotka Mistra podle jména (EXTRALIGA.KONFIG.MISTRI_DETAIL), jinak iniciály v gradientu (jako u Zajíců bez fotky).
         function getAvatarHTML(hrac, fontSize) {
@@ -493,7 +494,7 @@
             let html = `<div class="stav-box"><div class="modal-subtitle" style="margin-top: 0;">Aktuální pořadí základní části</div><div class="teams-grid-8x2 grid-14">`;
             oficialni.forEach((tym, j) => {
                 const nazev = tym || 'Zatím neznámé';
-                html += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j + 1}.</span><img src="${logoNeboFallback(tym)}" class="t-logo" title="${esc(nazev)}" alt="${esc(nazev)}"></div>`;
+                html += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j + 1}.</span><img src="${logoNeboFallback(tym)}" ${ONERR} class="t-logo" title="${esc(nazev)}" alt="${esc(nazev)}"></div>`;
             });
             html += `</div>`;
 
@@ -977,7 +978,7 @@
                 html += `<div class="modal-subtitle" style="margin-top: 10px;">Aktuální pořadí</div><div class="teams-grid-8x2 grid-14">`;
                 oficialni.forEach((tym, j) => {
                     const nazev = tym || 'Zatím neznámé';
-                    html += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j + 1}.</span><img src="${logoNeboFallback(tym)}" class="t-logo" title="${esc(nazev)}" alt="${esc(nazev)}"></div>`;
+                    html += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j + 1}.</span><img src="${logoNeboFallback(tym)}" ${ONERR} class="t-logo" title="${esc(nazev)}" alt="${esc(nazev)}"></div>`;
                 });
                 html += `</div>`;
             }
@@ -1002,7 +1003,7 @@
                     ptsHtml = `<span class="t-pts ${b > 0 ? 'pts-high' : 'pts-zero'}">${b} b.</span>`;
                 }
                 const badgeHtml = jeZolik ? `<span class="zolik-badge" title="Žolík – body za umístění ${KONFIG.ZOLIK_NASOBEK_UMISTENI}x">ŽOLÍK</span>` : '';
-                html += `<div class="team-col${jeZolik ? ' zolik' : ''}"${bodovaniAktivni ? '' : ' style="justify-content: flex-start; padding-top: 15px;"'}><span class="t-pos">${j + 1}.</span><img src="${logoNeboFallback(tipTym)}" class="t-logo" title="${esc(nazev)}" alt="${esc(nazev)}">${ptsHtml}${badgeHtml}</div>`;
+                html += `<div class="team-col${jeZolik ? ' zolik' : ''}"${bodovaniAktivni ? '' : ' style="justify-content: flex-start; padding-top: 15px;"'}><span class="t-pos">${j + 1}.</span><img src="${logoNeboFallback(tipTym)}" ${ONERR} class="t-logo" title="${esc(nazev)}" alt="${esc(nazev)}">${ptsHtml}${badgeHtml}</div>`;
             }
             html += `</div>`;
             if (zolici.length > 0) html += `<div class="zolik-legenda"><i class="fas fa-star"></i>Žolík = body za umístění se počítají ${KONFIG.ZOLIK_NASOBEK_UMISTENI}x.</div>`;

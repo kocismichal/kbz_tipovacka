@@ -407,7 +407,7 @@
                 EXTRALIGA.KONFIG.PORADI_2526.forEach((tym, i) => {
                     const teamDiv = document.createElement("div");
                     teamDiv.className = "history-team";
-                    teamDiv.innerHTML = `<span class="pos">${i + 1}.</span><img src="${teamLogos[tym] || ''}" title="${tym}" alt="${tym}">`;
+                    teamDiv.innerHTML = `<span class="pos">${i + 1}.</span><img src="${teamLogos[tym] || 'logo_neznamy.svg'}" onerror="this.onerror=null;this.src='logo_neznamy.svg'" title="${tym}" alt="${tym}">`;
                     histDiv.appendChild(teamDiv);
                 });
             }
@@ -421,7 +421,7 @@
                     teamDiv.className = "history-team";
                     teamDiv.id = `live-pos-${i}`;
                     // Zástupný obrázek, dokud není nic vybráno; štítek ŽOLÍK se ukáže jen u žolíkových týmů
-                    teamDiv.innerHTML = `<span class="pos">${i}.</span><img src="https://i.imgur.com/1fk6XQE.png" alt="Zatím nevybráno" style="opacity: 0.2; transition: opacity 0.3s;"><span class="zolik-badge">ŽOLÍK</span>`;
+                    teamDiv.innerHTML = `<span class="pos">${i}.</span><img src="https://i.imgur.com/1fk6XQE.png" onerror="this.onerror=null;this.src='logo_neznamy.svg'" alt="Zatím nevybráno" style="opacity: 0.2; transition: opacity 0.3s;"><span class="zolik-badge">ŽOLÍK</span>`;
                     liveGridDiv.appendChild(teamDiv);
                 }
             }
@@ -711,7 +711,7 @@
                             optDiv.className = 'custom-option' + (opt.disabled ? ' disabled' : '') + (isCurrentSelection ? ' focused' : '');
                             optDiv.dataset.index = index;
 
-                            let logoHtml = teamLogos[opt.value] ? `<img src="${teamLogos[opt.value]}" class="opt-logo">` : '';
+                            let logoHtml = teamLogos[opt.value] ? `<img src="${teamLogos[opt.value]}" onerror="this.onerror=null;this.src='logo_neznamy.svg'" class="opt-logo">` : '';
                             optDiv.innerHTML = `${logoHtml} ${opt.text}`;
 
                             if(!opt.disabled) {
@@ -776,7 +776,7 @@
                     select.addEventListener('custom-update', () => {
                         const opt = select.options[select.selectedIndex];
                         if(opt && opt.value !== "") {
-                            let logoHtml = teamLogos[opt.value] ? `<img src="${teamLogos[opt.value]}" class="opt-logo">` : '';
+                            let logoHtml = teamLogos[opt.value] ? `<img src="${teamLogos[opt.value]}" onerror="this.onerror=null;this.src='logo_neznamy.svg'" class="opt-logo">` : '';
                             trigger.innerHTML = `<span>${logoHtml} ${opt.text}</span>`;
                         } else {
                             trigger.innerHTML = '<span>-- Vyber tým --</span>';
