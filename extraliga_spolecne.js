@@ -13,6 +13,8 @@ var EXTRALIGA = (function () {
     DEADLINE: "2026-09-30T23:59:59",
     DEADLINE_TEXT: "STŘEDA 30. 9. 2026 23:59",
     DEADLINE_DATUM_TEXT: "30. 9. 2026",
+    // Od kdy web ukazuje body (do té doby jen tipy). Výchozí = uzávěrka tipování; kdyby měly body běžet dřív, stačí posunout.
+    BODOVANI_OD: "2026-09-30T23:59:59",
     POCET_MIST: 14,
     MAX_BODU_TYMU: 156,
     // Žolíci: každý tipující označí POCET_ZOLIKU týmů ze svého pořadí jako žolíky a u každého tipne,
@@ -209,11 +211,16 @@ var EXTRALIGA = (function () {
     return Math.round(x * 10) / 10;
   }
 
-  // Název týmu z buňky s pořadím. Prázdná buňka nebo pouhé číslo (např. 0, které vrátí vzorec =F11
-  // odkazující na prázdnou buňku) znamená "zatím neznámé".
+  // Název týmu z buňky s pořadím: vrací kanonický název z KONFIG.TYMY (bez ohledu na velikost písmen a diakritiku).
+  // Prázdná buňka, pouhé číslo (např. 0, které vrátí vzorec =F11 na prázdný řádek) nebo neznámý text = "zatím neznámé".
   function normTym(v) {
     var s = norm(v);
-    return (s === "" || cislo(s) !== null) ? "" : s;
+    if (s === "" || cislo(s) !== null) return "";
+    var k = bezDiakritiky(s);
+    for (var i = 0; i < KONFIG.TYMY.length; i++) {
+      if (bezDiakritiky(KONFIG.TYMY[i]) === k) return KONFIG.TYMY[i];
+    }
+    return "";
   }
 
   function nasobitel(presne) {
@@ -262,6 +269,13 @@ var EXTRALIGA = (function () {
       if (normTym(vysledkyRow[j]) !== "") return true;
     }
     return false;
+  }
+
+  // Bodování se zobrazuje až od KONFIG.BODOVANI_OD a jen když už jsou v tabulce výsledky (jinak jen tipy).
+  function bodovaniZapnuto(vysledkyRow, ted) {
+    var od = new Date(KONFIG.BODOVANI_OD);
+    var nyni = ted === undefined ? new Date() : new Date(ted);
+    return nyni >= od && jsouVysledky(vysledkyRow);
   }
 
   // Indexy sloupců k-tého žolíka (k od 0).
@@ -403,6 +417,7 @@ var EXTRALIGA = (function () {
     bodyZaText: bodyZaText,
     seznamOficialni: seznamOficialni,
     jsouVysledky: jsouVysledky,
+    bodovaniZapnuto: bodovaniZapnuto,
     sloupceZolika: sloupceZolika,
     zolikTymy: zolikTymy,
     bodyUmisteni: bodyUmisteni,

@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="extraliga.css">
 
     <style>
         .top-tools-container {
@@ -174,12 +175,12 @@
         @media (max-width: 700px) { #bonusy-tymy-container { grid-template-columns: 1fr; } }
     </style>
 </head>
-<body>
+<body class="extraliga">
 
     <div class="container">
 
-        <header style="display: flex; align-items: center; justify-content: center; gap: 50px; margin-top: 10px; margin-bottom: 30px;">
-            <img src="KBZ_basic.png" alt="KBZ Logo" style="height: 180px; object-fit: contain;">
+        <header class="extraliga-header">
+            <img src="KBZ_basic.png" alt="KBZ Logo" class="extraliga-logo">
             <div style="text-align: center;">
                 <div class="logo-text" style="margin: 0;">KBZ <span>TIPOVAČKA</span></div>
                 <div style="margin-top: 10px;">
@@ -210,7 +211,7 @@
                     <div class="autocomplete-dropdown" id="searchResults"></div>
                 </div>
 
-                <button class="tab-btn" style="background: var(--accent-primary); color: #000; border-color: var(--accent-primary); font-weight: bold; flex-shrink: 0; height: 42px; display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0;" onclick="otevriPorovnani()">
+                <button class="tab-btn btn-porovnat" style="background: var(--accent-primary); color: #fff; border-color: var(--accent-primary); font-weight: bold; flex-shrink: 0; height: 42px; display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0;" onclick="otevriPorovnani()">
                     <i class="fas fa-balance-scale"></i> Porovnat
                 </button>
             </div>
@@ -313,7 +314,7 @@
 
             <h2 style="text-align: center; color: var(--accent-primary); margin-top: 15px; margin-bottom: 20px; font-family: 'Oswald', sans-serif; text-transform: uppercase;">Porovnej svůj tip s někým dalším!</h2>
 
-            <div style="display: flex; justify-content: center; gap: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; max-width: 800px; margin: 0 auto; width: 100%;">
+            <div style="display: flex; justify-content: center; gap: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; max-width: 800px; margin: 0 auto; width: 100%;">
                 <div class="search-container-relative" style="flex: 1; max-width: 320px; height: 42px;">
                     <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
                     <input type="text" id="searchLeft" class="search-input" placeholder="Vyhledej prvního hráče..."
@@ -378,6 +379,7 @@
         function getLogoSrc(nazev) { const n = norm(nazev); return n && KONFIG.LOGA[n] ? KONFIG.LOGA[n] : ''; }
         function logoNeboFallback(nazev) { return getLogoSrc(nazev) || FALLBACK_LOGO; }
         function najdiBonus(klic) { return EXTRALIGA.BONUSY.find(q => q.klic === klic); }
+        function datumBodovaniText() { const d = new Date(KONFIG.BODOVANI_OD); return `${d.getDate()}. ${d.getMonth() + 1}. ${d.getFullYear()}`; }
         function seznamOficialni() { return EXTRALIGA.seznamOficialni(vysledky); }
         // Skutečné body týmu na daném místě oficiálního pořadí (sloupce Body 1.–14. místa listu Přehled HOTOVO), nebo ''.
         function skutecneBodyMista(pozice) { return pozice >= 0 ? norm(vysledky[SL.BODY_MISTO_OD + pozice]) : ''; }
@@ -394,7 +396,7 @@
         function getAvatarHTML(hrac, fontSize) {
             const foto = EXTRALIGA.fotoMistra(hrac.jmeno);
             if (foto) return `<img src="${foto}" alt="${esc(hrac.jmeno)}" style="width:100%; height:100%; border-radius:50%; object-fit:cover; display:block;">`;
-            return `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg, #ff4d29, var(--accent-primary));border-radius:50%;color:#fff;font-weight:bold;font-size:${fontSize};">${esc(getInitials(hrac.jmeno))}</div>`;
+            return `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg, var(--navy), var(--accent-primary));border-radius:50%;color: var(--text-main);font-weight:bold;font-size:${fontSize};">${esc(getInitials(hrac.jmeno))}</div>`;
         }
 
         // --- ČISTÁ FUNKCE pridelPoradi (bez DOM, testuje se samostatně) ---
@@ -425,7 +427,7 @@
 
         function zpracujData(dataTipy, dataHotovo) {
             vysledky = (dataHotovo.length > 1 && Array.isArray(dataHotovo[1])) ? dataHotovo[1] : [];
-            bodovaniAktivni = EXTRALIGA.jsouVysledky(vysledky);
+            bodovaniAktivni = EXTRALIGA.bodovaniZapnuto(vysledky);
 
             vsichniHraci = [];
             for (let i = 1; i < dataTipy.length; i++) {
@@ -481,9 +483,9 @@
             if (!bodovaniAktivni) {
                 c.innerHTML = `
                     <div class="hlasovani-info" style="margin-bottom: 10px;">
-                        <p class="note" style="font-size: 1rem; color: #fff; margin: 0;">
+                        <p class="note" style="font-size: 1rem; color: var(--text-main); margin: 0;">
                             <i class="fa-solid fa-hockey-puck" style="color: var(--accent-primary); margin-right: 8px;"></i>
-                            Sezóna ještě nezačala, body se objeví po prvním odehraném kole. Zatím vidíš jen tipy.
+                            Zatím vidíš jen tipy. Body se objeví po uzávěrce tipování (${esc(datumBodovaniText())}), jakmile bude v tabulce první odehrané kolo.
                         </p>
                     </div>`;
                 return;
@@ -504,7 +506,7 @@
             } else {
                 html += `<div class="bonus-list">`;
                 vyhodnocene.forEach(p => {
-                    html += `<div class="bonus-item" style="border-color: rgba(1,254,1,0.2);">
+                    html += `<div class="bonus-item vyhodnoceno">
                         <div class="bonus-text">
                             <div class="b-question">${esc(p.otazka)}</div>
                             <div class="b-answer" style="color: var(--accent-primary);">${esc(p.spravne)}</div>
@@ -648,7 +650,7 @@
             spocitejMatici().forEach(r => {
                 html += `<tr>
                     <td>
-                        <div style="display:flex; align-items:center; gap:10px; text-align:left; min-width: 140px; font-weight: bold; color: #fff;">
+                        <div style="display:flex; align-items:center; gap:10px; text-align:left; min-width: 140px; font-weight: bold; color: var(--text-main);">
                             ${logoTymuHTML(r.tym, 28)}
                             <span>${esc(r.tym)}</span>
                         </div>
@@ -710,7 +712,7 @@
                 const ma = r.pocet > 0;
                 html += `<tr>
                     <td>
-                        <div style="display:flex; align-items:center; gap:10px; text-align:left; min-width: 140px; font-weight: bold; color: #fff;">
+                        <div style="display:flex; align-items:center; gap:10px; text-align:left; min-width: 140px; font-weight: bold; color: var(--text-main);">
                             ${sLogem ? logoTymuHTML(r.text, 28) : ''}
                             <span>${esc(r.text)}</span>
                         </div>
@@ -730,7 +732,7 @@
             radky.forEach((r, i) => {
                 html += `<tr>
                     <td style="width:40px; text-align:center; color:var(--text-muted); font-weight:bold;">${i + 1}.</td>
-                    <td style="font-weight:600; color:#fff; text-align:left; min-width: 140px;">${esc(r.text)}</td>
+                    <td style="font-weight:600; color: var(--text-main); text-align:left; min-width: 140px;">${esc(r.text)}</td>
                     <td style="text-align:center; color:var(--accent-primary); font-weight:bold;">${r.pocet}</td>
                 </tr>`;
             });
@@ -744,7 +746,7 @@
                 <tr><th style="text-align:left;">Otázka</th><th style="width:70px;">Ano</th><th style="width:70px;">Ne</th></tr></thead><tbody>`;
             radky.forEach(r => {
                 const bunka = n => `<td style="text-align:center; color:${n > 0 ? 'var(--accent-primary)' : 'var(--text-muted)'}; font-weight:${n > 0 ? 'bold' : 'normal'};">${n > 0 ? n : '-'}</td>`;
-                html += `<tr><td style="text-align:left; white-space: normal; min-width: 220px; font-weight: 600; color: #fff;">${esc(r.otazka)}</td>${bunka(r.ano)}${bunka(r.ne)}</tr>`;
+                html += `<tr><td style="text-align:left; white-space: normal; min-width: 220px; font-weight: 600; color: var(--text-main);">${esc(r.otazka)}</td>${bunka(r.ano)}${bunka(r.ne)}</tr>`;
             });
             return html + `</tbody></table></div>`;
         }
@@ -773,7 +775,7 @@
             radky.forEach(r => {
                 const ma = r.pocet > 0;
                 const styl = `text-align:center; white-space: nowrap; color:${ma ? 'var(--accent-primary)' : 'var(--text-muted)'}; font-weight:${ma ? 'bold' : 'normal'};`;
-                html += `<tr><td style="text-align:left; white-space: normal; min-width: 220px; font-weight: 600; color: #fff;">${esc(r.otazka)}</td>
+                html += `<tr><td style="text-align:left; white-space: normal; min-width: 220px; font-weight: 600; color: var(--text-main);">${esc(r.otazka)}</td>
                     <td style="${styl}">${ma ? formatBody(r.prumer) : '-'}</td>
                     <td style="${styl}">${ma ? `${formatBody(r.nejcastejsi)} <span style="color:var(--text-muted); font-weight:normal;">(${r.nejPocet}x)</span>` : '-'}</td>
                     <td style="${styl}">${ma ? `${formatBody(r.min)} – ${formatBody(r.max)}` : '-'}</td></tr>`;
@@ -858,11 +860,11 @@
                 const styl = `text-align:center; white-space: nowrap; color:${ma ? 'var(--accent-primary)' : 'var(--text-muted)'}; font-weight:${ma ? 'bold' : 'normal'};`;
                 const skutecne = bodovaniAktivni ? skutecneBodyMista(oficialni.indexOf(r.tym)) : '';
                 html += `<tr>
-                    <td><div style="display:flex; align-items:center; gap:10px; text-align:left; min-width: 140px; font-weight: bold; color: #fff;">${logoTymuHTML(r.tym, 28)}<span>${esc(r.tym)}</span></div></td>
+                    <td><div style="display:flex; align-items:center; gap:10px; text-align:left; min-width: 140px; font-weight: bold; color: var(--text-main);">${logoTymuHTML(r.tym, 28)}<span>${esc(r.tym)}</span></div></td>
                     <td style="${styl}">${ma ? r.pocet : '-'}</td>
                     <td style="${styl}">${ma ? (r.pocet / sZoliky * 100).toFixed(1).replace('.', ',') + ' %' : '-'}</td>
                     <td style="${styl}">${r.prumer !== null ? formatBody(r.prumer) + ' b.' : '-'}</td>
-                    ${bodovaniAktivni ? `<td style="text-align:center; color:#fff; font-weight:bold;">${skutecne !== '' ? esc(skutecne) + ' b.' : '-'}</td>` : ''}
+                    ${bodovaniAktivni ? `<td style="text-align:center; color: var(--text-main); font-weight:bold;">${skutecne !== '' ? esc(skutecne) + ' b.' : '-'}</td>` : ''}
                 </tr>`;
             });
             c.innerHTML = html + `</tbody></table></div>`;
@@ -906,7 +908,7 @@
             for (let j = 1; j <= pocetMist; j++) html += `<th style="text-align:center;">${j}.</th>`;
             html += `</tr></thead><tbody>`;
             maticeRadky.forEach(r => {
-                html += `<tr><td><div style="display:flex; align-items:center; gap:10px; text-align:left; min-width: 120px; font-weight: bold; color: #fff;"><span>${esc(r.text)}</span></div></td>`;
+                html += `<tr><td><div style="display:flex; align-items:center; gap:10px; text-align:left; min-width: 120px; font-weight: bold; color: var(--text-main);"><span>${esc(r.text)}</span></div></td>`;
                 r.pocty.forEach(pocet => {
                     const ma = pocet > 0;
                     html += `<td style="text-align:center; color:${ma ? 'var(--accent-primary)' : 'var(--text-muted)'}; font-weight:${ma ? 'bold' : 'normal'};">${ma ? pocet : '-'}</td>`;
