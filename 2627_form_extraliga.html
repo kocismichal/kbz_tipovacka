@@ -214,7 +214,7 @@
             <div class="note" style="margin: 15px 0;">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</div>
 
             <div class="note"><strong>🎯 BONUSOVÉ OTÁZKY:</strong></div>
-            <div class="note"><strong>Textové:</strong> týmové otázky a otázky na hráče = <strong>20 b.</strong> // otázky ANO / NE (baráž, rekordy, Duda, Galvas) = <strong>10 b.</strong></div>
+            <div class="note"><strong>Textové:</strong> týmové otázky (včetně finále play-off) a otázky na hráče = <strong>20 b.</strong> // otázky ANO / NE (baráž, rekordy, Duda, Galvas) = <strong>10 b.</strong></div>
             <div class="note"><strong>Číselné:</strong> Přesně = <strong>10 b.</strong> // o 1 vedle = <strong>8 b.</strong> // o 2 vedle = <strong>6 b.</strong> // o 3 vedle = <strong>4 b.</strong> // o 4 vedle = <strong>2 b.</strong></div>
         </div>
 
@@ -304,17 +304,19 @@
                     <textarea name="poznamky" rows="3" placeholder="Chceš nám něco vzkázat? Máš možnost!!"></textarea>
                 </fieldset>
 
-                <div style="text-align: center; font-style: italic; margin-bottom: 20px;">
-                    <label id="souhlas-label">
-                        <input type="checkbox" name="souhlas" id="souhlas" required style="margin-right: 6px; margin-top: 10px; width: auto; display: inline-block;">
-                        Souhlasím se zveřejněním svého jména ve veřejné tabulce<br> a zveřejněním na sociálních sítích v případě výhry.
-                    </label>
-                </div>
+                <div class="odeslani-panel">
+                    <div style="margin-bottom: 20px;">
+                        <label id="souhlas-label">
+                            <input type="checkbox" name="souhlas" id="souhlas" required style="margin-right: 6px; margin-top: 10px; width: auto; display: inline-block;">
+                            Souhlasím se zveřejněním svého jména ve veřejné tabulce<br> a zveřejněním na sociálních sítích v případě výhry.
+                        </label>
+                    </div>
 
-                <div style="text-align: center;">
-                    <button type="submit"><i class="fas fa-paper-plane"></i> Odeslat tip</button>
-                    <!-- Zobrazí se hned při načtení, dokud SCRIPT_URL začíná "__" (Apps Script ještě není nasazený) -->
-                    <p id="napojeni-info">Formulář ještě není napojený na tabulku, tip zatím nejde odeslat.</p>
+                    <div>
+                        <button type="submit"><i class="fas fa-paper-plane"></i> Odeslat tip</button>
+                        <!-- Zobrazí se hned při načtení, dokud SCRIPT_URL začíná "__" (Apps Script ještě není nasazený) -->
+                        <p id="napojeni-info">Formulář ještě není napojený na tabulku, tip zatím nejde odeslat.</p>
+                    </div>
                 </div>
             </form>
         </div>
@@ -820,6 +822,14 @@
                 const zolici = vybraniZolici();
                 if (new Set(zolici).size !== zolici.length) {
                     document.getElementById("vysledek").innerHTML = "<h3 style='color: var(--accent-red);'>Každý žolík musí být jiný tým.</h3>";
+                    return;
+                }
+
+                // Vítěz finále a poražený finalista musí být dva různé týmy
+                const finVyhra = document.querySelector("select[name='finalevyhra']");
+                const finProhra = document.querySelector("select[name='finaleprohra']");
+                if (finVyhra && finProhra && finVyhra.value !== "" && finVyhra.value === finProhra.value) {
+                    document.getElementById("vysledek").innerHTML = "<h3 style='color: var(--accent-red);'>Vítěz finále a poražený finalista musí být dva různé týmy.</h3>";
                     return;
                 }
 

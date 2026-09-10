@@ -97,6 +97,8 @@ Počet žolíků a násobky jsou v `extraliga_spolecne.js` (`POCET_ZOLIKU`, `ZOL
 
 ## 4. Nové bonusové otázky a jejich bodování
 
+Zapnuté je i **finále play-off** (původní sloupce S a T: vítěz finále a poražený finalista, výběr týmu, 20 b.).
+
 | Otázka | Typ | Body |
 |--------|-----|------|
 | Bude v základní části překonán rekord v celkovém počtu vstřelených gólů (všechny týmy dohromady)? | Ano/Ne | 10 |

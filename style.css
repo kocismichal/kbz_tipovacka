@@ -113,6 +113,15 @@
     flex-shrink: 0;
 }
 
+/* Na užších displejích (obsah lišty má cca 1200 px) se lišta zalomí do více řádků místo oříznutí */
+@media (max-width: 1240px) {
+    .main-navbar { flex-wrap: wrap; justify-content: center; white-space: normal; overflow: visible; row-gap: 10px; column-gap: 12px; }
+    .nav-center-wrap { flex-wrap: wrap; justify-content: center; margin: 0; row-gap: 10px; }
+    .nav-group-links { flex-wrap: wrap; justify-content: center; }
+    .nav-right-wrap { width: 100%; justify-content: center; }
+    .nav-separator { display: none; }
+}
+
 /* --- TLAČÍTKA VPRAVO V LIŠTĚ (SHOP A DISCORD) --- */
 .nav-right-wrap {
     display: flex;
