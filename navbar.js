@@ -9,6 +9,7 @@ const navbarHTML = `
             <div class="nav-group-links">
                 <a href="2627_form_extraliga.html" class="nav-tile extraliga-color">TIP EXTRALIGA</a>
                 <a href="2627_prehled_extraliga.html" class="nav-tile extraliga-color">PŘEHLED EXTRALIGA</a>
+                <a href="2526_extraliga.html" class="nav-tile extraliga-color">VYHODNOCENÍ 25/26</a>
             </div>
         </div>
         <div class="nav-separator"></div>
