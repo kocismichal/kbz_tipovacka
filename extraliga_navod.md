@@ -4,20 +4,26 @@ Web (formulář, přehled i bodování) je hotový. Aby se nové tipy ukládaly 
 **doplnit sloupce v tabulce a nasadit novou verzi Apps Scriptu**. Původní sloupce A–AJ zůstávají
 beze změny, všechno nové je přidané **na konec**, takže se nic neposouvá a staré tipy zůstávají platné.
 
-## 0. Nejjednodušší cesta: jeden soubor, jedno vložení
+## 0. Co kam vložit (podle toho, jak vypadá projekt Apps Scriptu)
 
-Soubor **`extraliga_apps_script_komplet.gs`** má v sobě obojí (společnou konfiguraci i kód skriptu).
-Otevři ho jako čistý text tady:
+**Projekt má víc souborů** (typicky `spolecne.gs`, `web.gs`, `Bodování.gs`, `statistiky.gs`, `Menu-SKRIPTY.gs`):
 
-https://raw.githubusercontent.com/kocismichal/kbz_tipovacka/claude/extraliga-tips-upgrade-aazaxb/extraliga_apps_script_komplet.gs
+1. `spolecne.gs` → smaž celý obsah a vlož nový `extraliga_spolecne.js`
+   (čistý text: https://raw.githubusercontent.com/kocismichal/kbz_tipovacka/claude/extraliga-tips-upgrade-aazaxb/extraliga_spolecne.js).
+   Všechny původní funkce a názvy zůstaly, jen přibyly nové, takže ostatní soubory dál fungují.
+2. `web.gs` (soubor s `doPost` a `doGet`) → nahradit podle `extraliga_apps_script.gs`, aby `doPost` zapisoval
+   i nové sloupce AK–AX. Ostatní soubory nech být.
+3. **Nepoužívej** `extraliga_apps_script_komplet.gs` – má v sobě znovu celé `EXTRALIGA` i `doPost`/`doGet`
+   a v projektu by to bylo dvakrát.
 
-(po sloučení větve do `main` funguje i `.../kbz_tipovacka/main/extraliga_apps_script_komplet.gs`).
-Na stránce dej Ctrl+A, Ctrl+C, v Apps Scriptu smaž celý obsah souboru `Kód.gs` a vlož. Pokud máš
-v projektu ještě další soubor se starým kódem, smaž ho. Pak Nasadit → Spravovat nasazení → tužka →
-Nová verze → Nasadit a spusť `doplnHlavicky` (bod 2 níže, kroky 4–7).
+**Projekt má jen jeden soubor** (`Kód.gs`): smaž jeho obsah a vlož `extraliga_apps_script_komplet.gs`
+(čistý text: https://raw.githubusercontent.com/kocismichal/kbz_tipovacka/claude/extraliga-tips-upgrade-aazaxb/extraliga_apps_script_komplet.gs).
+Je to slepenec `extraliga_spolecne.js` + `extraliga_apps_script.gs`; když se některý z nich změní, je potřeba
+ho vytvořit znovu (obsah prvního, pod něj obsah druhého).
 
-Soubor je slepenec `extraliga_spolecne.js` + `extraliga_apps_script.gs`. Když se některý z nich změní,
-je potřeba slepenec vytvořit znovu (obsah prvního, pod něj obsah druhého).
+V obou případech pak: spustit `doplnHlavicky` (doplní názvy nových sloupců, viz bod 2 níže) a
+Nasadit → Spravovat nasazení → tužka → Nová verze → Nasadit. Dokud novou verzi nenasadíš, běží na webu
+pořád ta stará, takže úpravy v editoru nic nerozbijí.
 
 ## 1. Nové sloupce
 
