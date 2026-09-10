@@ -34,9 +34,9 @@
         .podium-grid { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 20px; margin: 0 auto 40px auto; }
         .podium-card { width: 240px; text-align: center; padding: 22px 18px 18px 18px; border-radius: 14px; background: #fff; border: 2px solid var(--border-color); box-shadow: 0 10px 25px rgba(7, 32, 58, 0.25); cursor: pointer; transition: transform 0.2s; position: relative; }
         .podium-card:hover { transform: translateY(-5px); }
-        .podium-card.misto-1 { border-color: #e0b400; order: 2; transform: scale(1.06); }
+        .podium-card.misto-1 { border-color: #e0b400; order: 1; transform: scale(1.06); }
         .podium-card.misto-1:hover { transform: scale(1.06) translateY(-5px); }
-        .podium-card.misto-2 { border-color: #9aa7b5; order: 1; }
+        .podium-card.misto-2 { border-color: #9aa7b5; order: 2; }
         .podium-card.misto-3 { border-color: #c47a3c; order: 3; }
         .podium-medaile { font-size: 2.2rem; line-height: 1; margin-bottom: 8px; }
         .podium-jmeno { font-family: 'Oswald', sans-serif; font-size: 1.3rem; color: var(--navy); }
@@ -210,7 +210,7 @@
         function getInitials(name) { const parts = name.trim().split(/\s+/); return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase(); }
         function formatBody(x) { const n = Number(x) || 0; return String(Number.isInteger(n) ? n : Math.round(n * 10) / 10).replace('.', ','); }
         function sklonujBody(x) { const n = Number(x) || 0; if (!Number.isInteger(n)) return 'bodu'; if (n === 1) return 'bod'; if (n >= 2 && n <= 4) return 'body'; return 'bodů'; }
-        function formatProcenta(pocet) { if (!vsichniHraci.length) return '0,0 %'; return (pocet / vsichniHraci.length * 100).toFixed(1).replace('.', ',') + ' %'; }
+        function formatProcenta(pocet) { if (!vsichniHraci.length) return '0,0'; return (pocet / vsichniHraci.length * 100).toFixed(1).replace('.', ','); }   // bez znaku %, ten je v přepínači
         function getLogoSrc(nazev) { const n = EXTRALIGA.normTym(nazev); return n && KONFIG.LOGA[n] ? KONFIG.LOGA[n] : ''; }
         function logoNeboFallback(nazev) { return getLogoSrc(nazev) || FALLBACK_LOGO; }
         function ziskejLogoKlubuHTML(klub) { const src = getLogoSrc(klub); return src ? `<img src="${src}"${ONERR} class="fav-club-badge" style="width:24px; height:24px; object-fit:contain; vertical-align:middle; margin-left:6px;" title="Oblíbený klub: ${esc(klub)}">` : ''; }
@@ -497,7 +497,7 @@
                 });
                 html += `</tr>`;
             });
-            c.innerHTML = html + `</tbody></table><div style="padding: 8px 12px; font-size: 0.8rem; color: var(--text-muted);">Zeleně orámované políčko = skutečné umístění týmu.</div>`;
+            c.innerHTML = html + `</tbody></table><div style="padding: 8px 12px; font-size: 0.8rem; color: var(--text-muted);">Zeleně orámované políčko = skutečné umístění týmu.${isProc ? ' Čísla = podíl tipujících v procentech.' : ''}</div>`;
         }
 
         // ---------- BONUSOVÉ OTÁZKY (statistiky) ----------
@@ -516,7 +516,7 @@
             });
             const out = [];
             skupiny.forEach(s => { let nej = '', nejvic = -1; s.varianty.forEach((n, text) => { if (n > nejvic) { nejvic = n; nej = text; } }); out.push({ text: nej, pocet: s.pocet }); });
-            return out.sort((a, b) => b.pocet - a.pocet || a.text.localeCompare(b.text, 'cs')).slice(0, limit);
+            return limit ? out.sort((a, b) => b.pocet - a.pocet || a.text.localeCompare(b.text, 'cs')).slice(0, limit) : out.sort((a, b) => b.pocet - a.pocet || a.text.localeCompare(b.text, 'cs'));
         }
         function tabulkaPoctu(nadpis, radky, sLogem, spravnaOdpoved) {
             let html = `<div class="matrix-container" style="flex: 1 1 300px; margin-bottom: 0;"><table>
@@ -529,16 +529,24 @@
             });
             return html + `</tbody></table></div>`;
         }
-        function tabulkaTop(nadpis, radky, spravnaOdpoved) {
+        // radky = všechny odpovědi seřazené podle četnosti; ukáže se prvních `limit`. Správná odpověď je vidět vždy:
+        // když není v desítce, přidá se pod ni jako řádek navíc se skutečným pořadím a počtem tipů (i 0).
+        function tabulkaTop(nadpis, radky, spravnaOdpoved, limit) {
+            limit = limit || 10;
+            const top = radky.slice(0, limit), jeSpravna = r => shoda(r.text, spravnaOdpoved) === true;
+            let navic = null;
+            if (spravnaOdpoved && !top.some(jeSpravna)) {
+                const i = radky.findIndex(jeSpravna);
+                navic = i !== -1 ? { poradi: i + 1, text: radky[i].text, pocet: radky[i].pocet } : { poradi: null, text: spravnaOdpoved, pocet: 0 };
+            }
             let html = `<div class="matrix-container" style="flex: 1 1 300px; margin-bottom: 0;"><table>
                 <thead><tr><th colspan="3" style="white-space: normal; line-height: 1.4; padding: 12px; font-size: 0.9rem; text-align:center; vertical-align: middle;">${esc(nadpis)}${spravnaOdpoved ? `<br><span style="color:#1f9d55; text-transform:none; font-weight:normal;">správně: ${esc(spravnaOdpoved)}</span>` : ''}</th></tr></thead><tbody>`;
-            if (radky.length === 0) html += `<tr><td colspan="3" style="color:var(--text-muted); font-style:italic;">Žádný tip.</td></tr>`;
-            radky.forEach((r, i) => {
-                const trefa = shoda(r.text, spravnaOdpoved) === true;
-                html += `<tr${trefa ? ' style="background: rgba(31, 157, 85, 0.12);"' : ''}><td style="width:40px; text-align:center; color:var(--text-muted); font-weight:bold;">${i + 1}.</td>
-                    <td style="font-weight:600; color: var(--text-main); text-align:left; min-width: 140px;">${esc(r.text)}${trefa ? ' <i class="fas fa-check" style="color:#1f9d55;"></i>' : ''}</td>
-                    <td style="text-align:center; color:var(--accent-primary); font-weight:bold;">${r.pocet}</td></tr>`;
-            });
+            if (top.length === 0 && !navic) html += `<tr><td colspan="3" style="color:var(--text-muted); font-style:italic;">Žádný tip.</td></tr>`;
+            const radek = (poradi, text, pocet, trefa, navicStyl) => `<tr style="${trefa ? 'background: rgba(31, 157, 85, 0.12);' : ''}${navicStyl}"><td style="width:40px; text-align:center; color:var(--text-muted); font-weight:bold;">${poradi}</td>
+                    <td style="font-weight:600; color: var(--text-main); text-align:left; min-width: 140px;">${esc(text)}${trefa ? ' <i class="fas fa-check" style="color:#1f9d55;"></i>' : ''}</td>
+                    <td style="text-align:center; color:${pocet > 0 ? 'var(--accent-primary)' : 'var(--text-muted)'}; font-weight:bold;">${pocet}</td></tr>`;
+            top.forEach((r, i) => { html += radek(`${i + 1}.`, r.text, r.pocet, jeSpravna(r), ''); });
+            if (navic) html += radek(navic.poradi ? `${navic.poradi}.` : '–', navic.text, navic.pocet, true, ' border-top: 2px dashed rgba(31, 157, 85, 0.6);');
             return html + `</tbody></table></div>`;
         }
         function vykresliBonusy() {
@@ -551,7 +559,7 @@
                 vsichniHraci.forEach(h => { const v = norm(h.bonus[q.klic]).toLowerCase(); if (v === 'ano') p.ano++; else if (v === 'ne') p.ne++; });
                 html += tabulkaPoctu(q.otazka, [{ text: 'Ano', pocet: p.ano }, { text: 'Ne', pocet: p.ne }], false, spravne[q.klic]);
             });
-            OTAZKY.filter(q => q.vstup === 'text' || q.vstup === 'cislo').forEach(q => { html += tabulkaTop('TOP 10 – ' + q.otazka, topOdpovedi(q.klic, 10), spravne[q.klic]); });
+            OTAZKY.filter(q => q.vstup === 'text' || q.vstup === 'cislo').forEach(q => { html += tabulkaTop('TOP 10 – ' + q.otazka, topOdpovedi(q.klic), spravne[q.klic], 10); });
             cOstatni.innerHTML = html;
         }
 
@@ -643,7 +651,8 @@
             });
             html += `</div>`;
 
-            const mistriTipy = [hrac.mistrVitez ? `Vítěz tipovačky Mistrů: <strong>${esc(hrac.mistrVitez)}</strong>` : '', hrac.mistrPoradi.some(m => m) ? `Oblíbenost Mistrů: <strong>${esc(hrac.mistrPoradi.filter(m => m).join(' · '))}</strong>` : ''].filter(Boolean);
+            // Oblíbenost Mistrů (pořadí 1.–4.) se u jednotlivých lidí neukazuje, jen souhrnně ve statistikách Mistrů.
+            const mistriTipy = [hrac.mistrVitez ? `Vítěz tipovačky Mistrů: <strong>${esc(hrac.mistrVitez)}</strong>` : ''].filter(Boolean);
             if (mistriTipy.length) html += `<div class="modal-subtitle" style="margin-top: 10px;">Mistři</div><div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 25px; line-height: 1.7;">${mistriTipy.join('<br>')}</div>`;
             return html;
         }

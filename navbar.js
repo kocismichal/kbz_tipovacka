@@ -5,10 +5,10 @@ const navbarHTML = `
     </a>
     <div class="nav-center-wrap">
         <div class="nav-group">
-            <span class="nav-group-title">Tipovačka Mistrů světa</span>
+            <span class="nav-group-title">Tipovačka Mistrů světa · Extraliga</span>
             <div class="nav-group-links">
-                <a href="2627_form_extraliga.html" class="nav-tile extraliga-color">TIP EXTRALIGA</a>
-                <a href="2627_prehled_extraliga.html" class="nav-tile extraliga-color">PŘEHLED EXTRALIGA</a>
+                <a href="2627_form_extraliga.html" class="nav-tile extraliga-color">TIP 26/27</a>
+                <a href="2627_prehled_extraliga.html" class="nav-tile extraliga-color">PŘEHLED 26/27</a>
                 <a href="2526_extraliga.html" class="nav-tile extraliga-color">VYHODNOCENÍ 25/26</a>
             </div>
         </div>
@@ -16,16 +16,16 @@ const navbarHTML = `
         <div class="nav-group">
             <span class="nav-group-title">Probíhající tipovačky</span>
             <div class="nav-group-links">
-                <a href="2627_prehled_chance.html" class="nav-tile chance-color">PŘEHLED CHL</a>
-                <a href="2627_prehled_chnl.html" class="nav-tile chnl-color">PŘEHLED CHNL</a>
+                <a href="2627_prehled_chance.html" class="nav-tile chance-color">CHL 26/27</a>
+                <a href="2627_prehled_chnl.html" class="nav-tile chnl-color">CHNL 26/27</a>
             </div>
         </div>
         <div class="nav-separator"></div>
         <div class="nav-group">
             <span class="nav-group-title">Vyhodnocené soutěže</span>
             <div class="nav-group-links">
-                <a href="2526_chanceliga.html" class="nav-tile chance-color">CHL</a>
-                <a href="2526_chnl.html" class="nav-tile chnl-color">CHNL</a>
+                <a href="2526_chanceliga.html" class="nav-tile chance-color">CHL 25/26</a>
+                <a href="2526_chnl.html" class="nav-tile chnl-color">CHNL 25/26</a>
             </div>
         </div>
     </div>

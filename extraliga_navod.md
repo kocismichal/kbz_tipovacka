@@ -97,7 +97,8 @@ Počet žolíků a násobky jsou v `extraliga_spolecne.js` (`POCET_ZOLIKU`, `ZOL
 
 ## 4. Nové bonusové otázky a jejich bodování
 
-Zapnuté je i **finále play-off** (původní sloupce S a T: vítěz finále a poražený finalista, výběr týmu, 20 b.).
+Zapnuté je i **finále play-off** (původní sloupce S a T: vítěz finále a poražený finalista, výběr týmu, 10 b. za každou
+z obou otázek – stejně jako v ročníku 2025/26).
 
 | Otázka | Typ | Body |
 |--------|-----|------|
