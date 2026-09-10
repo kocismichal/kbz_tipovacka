@@ -37,6 +37,19 @@
         .tile-chance { background: #eaff00 !important; border-color: #eaff00 !important; box-shadow: 0 10px 20px rgba(174, 255, 0, 0.2) !important; }
         .tile-chnl { background: #00ffa3 !important; border-color: #00ffa3 !important; box-shadow: 0 10px 20px rgba(0, 255, 163, 0.2) !important; }
 
+        /* Loga u jednotlivých sekcí */
+        .section-logo { text-align: center; margin: 5px 0 0 0; }
+        .section-logo img { height: 130px; width: auto; max-width: 100%; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.5)); }
+        .section-logo.kbz img { height: 70px; }
+
+        /* Dlaždice Extraligy: led Mistrů světa místo kresleného kluziště, bílý text */
+        .tile-extraliga { background: #1d5fa8 url('mistri_led_mobil.jpg') center center / cover no-repeat !important; border-color: #a9dbff !important; color: #fff !important; }
+        .tile-extraliga::before, .tile-extraliga::after { display: none; }
+        .tile-extraliga .tile-logo { height: 80px; width: 100%; object-fit: contain; margin-bottom: 15px; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5)); }
+        .tile-extraliga .tile-title { color: #fff; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7); }
+        .tile-extraliga .tile-desc { color: #eaf6ff; font-weight: 600; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7); }
+        .tile-extraliga .participant-count { color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
+
         .participant-count {
             position: absolute;
             bottom: 10px;
@@ -58,13 +71,14 @@
             <img src="KBZ_basic.png" alt="KBZ Logo" style="max-width: 400px; width: 100%; height: auto;">
         </header>
 
-        <div class="section-title" style="border: none;">Extraliga Mistrů světa</div>
-        <div class="section-subtitle">Podcast Mistři světa tipuje hokejovou Tipsport extraligu. Tipni si konečné pořadí základní části 2026/27 a sleduj živé bodování po každém kole.</div>
+        <div class="section-logo"><img src="mistri_sveta_logo.png" alt="Mistři světa"></div>
+        <div class="section-title" style="border: none; margin-top: 10px;">Tipovačka Mistrů světa · Extraliga 2026/27</div>
+        <div class="section-subtitle">Podcast Mistři světa tipuje hokejovou Tipsport extraligu. Tipni si konečné pořadí základní části, vyber si žolíky, odpověz na bonusové otázky a po uzávěrce sleduj bodování.</div>
         <div class="tiles-container" id="tiles-extraliga">
 
             <!-- TIP EXTRALIGA (po deadlinu se schová) -->
             <a href="2627_form_extraliga.html" class="tile tile-extraliga" id="tile-extraliga-form">
-                <div class="tile-icon"><i class="fa-solid fa-hockey-puck"></i></div>
+                <img src="mistri_sveta_logo.png" alt="Mistři světa" class="tile-logo">
                 <div class="tile-title">Tipuj Extraligu 26/27</div>
                 <div class="tile-desc" id="tile-extraliga-deadline">Tipování do 30. 9. 2026</div>
             </a>
@@ -72,16 +86,17 @@
             <!-- PŘEHLED EXTRALIGA -->
             <a href="2627_prehled_extraliga.html" class="tile tile-extraliga">
                 <span class="participant-count" id="count-extraliga" title="Počet tipujících"><i class="fas fa-spinner fa-spin"></i></span>
-                <div class="tile-icon"><i class="fa-solid fa-ranking-star"></i></div>
+                <img src="mistri_sveta_logo.png" alt="Mistři světa" class="tile-logo">
                 <div class="tile-title">Přehled tipů Extraliga</div>
-                <div class="tile-desc">Ročník 2026/2027 · živé bodování</div>
+                <div class="tile-desc">Ročník 2026/2027 · tipy a bodování</div>
             </a>
 
         </div>
 
         <hr class="section-divider">
 
-        <div class="section-title" style="border: none; margin-top: 0; padding-top: 0;">Probíhající tipovačky</div>
+        <div class="section-logo kbz"><img src="KBZ_basic.png" alt="KBZ"></div>
+        <div class="section-title" style="border: none; margin-top: 10px; padding-top: 0;">Probíhající tipovačky KBZ</div>
         <div class="section-subtitle">Tipování pro ročník 2026/2027 je uzavřeno a sezóna běží. Podívej se, jak tipovali ostatní, a porovnej svůj tip s kamarády.</div>
         <div class="tiles-container">
             
