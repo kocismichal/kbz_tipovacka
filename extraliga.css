@@ -1,0 +1,283 @@
+/* =====================================================================
+   extraliga.css – ledový vzhled sekce Extraliga Mistrů světa
+   Načítá se až po style.css a jen na stránkách Extraligy (body.extraliga).
+   Světlý led s čárami hřiště, červené nadpisy, bílé dlaždice týmů, tmavá
+   hlavička kvůli bílému logu KBZ. Ostatní stránky (KBZ zelená) se nemění.
+   ===================================================================== */
+
+body.extraliga {
+    --bg-main: #eaf3fa;                    /* led */
+    --bg-card: rgba(255, 255, 255, 0.9);   /* zamrzlé panely, čáry hřiště lehce prosvítají */
+    --text-main: #0b2a4a;                  /* tmavě modrá */
+    --text-muted: #4f6b86;
+    --border-color: rgba(31, 95, 191, 0.25);
+    --accent-primary: #c8102e;             /* hokejová červená – nadpisy, body, tlačítka */
+    --accent-red: #c8102e;
+    --accent-blue: #1f5fbf;                /* modrá čára – rámečky, odkazy */
+    --navy: #0b2a4a;
+    --th-bg: #e6f0f8;                      /* hlavičky tabulek */
+    --panel-soft: #f4f8fc;                 /* vnitřní boxy v panelech */
+    --hover-row: rgba(31, 95, 191, 0.07);
+    /* poloměry kruhů na ledu – na úzkém displeji menší, ať se nepřekrývají */
+    --led-stred: min(118px, 13vw);
+    --led-vhazovani: min(78px, 9vw);
+    --led-branka: min(70px, 8vw);
+
+    background: var(--bg-main);
+    color: var(--text-main);
+}
+
+/* Ledová plocha přes celé okno (fixní vrstva, funguje i na iPadu, kde background-attachment: fixed nejde) */
+body.extraliga::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        /* středový bod a středový kruh */
+        radial-gradient(circle at 50% 50%, rgba(200, 16, 46, 0.55) 0 7px, transparent 8px),
+        radial-gradient(circle at 50% 50%, transparent 0 var(--led-stred), rgba(200, 16, 46, 0.42) calc(var(--led-stred) + 1px) calc(var(--led-stred) + 5px), transparent calc(var(--led-stred) + 6px)),
+        /* kruhy pro vhazování v útočných pásmech */
+        radial-gradient(circle at 22% 19%, rgba(200, 16, 46, 0.5) 0 5px, transparent 6px),
+        radial-gradient(circle at 78% 19%, rgba(200, 16, 46, 0.5) 0 5px, transparent 6px),
+        radial-gradient(circle at 22% 81%, rgba(200, 16, 46, 0.5) 0 5px, transparent 6px),
+        radial-gradient(circle at 78% 81%, rgba(200, 16, 46, 0.5) 0 5px, transparent 6px),
+        radial-gradient(circle at 22% 19%, transparent 0 var(--led-vhazovani), rgba(200, 16, 46, 0.38) calc(var(--led-vhazovani) + 1px) calc(var(--led-vhazovani) + 4px), transparent calc(var(--led-vhazovani) + 5px)),
+        radial-gradient(circle at 78% 19%, transparent 0 var(--led-vhazovani), rgba(200, 16, 46, 0.38) calc(var(--led-vhazovani) + 1px) calc(var(--led-vhazovani) + 4px), transparent calc(var(--led-vhazovani) + 5px)),
+        radial-gradient(circle at 22% 81%, transparent 0 var(--led-vhazovani), rgba(200, 16, 46, 0.38) calc(var(--led-vhazovani) + 1px) calc(var(--led-vhazovani) + 4px), transparent calc(var(--led-vhazovani) + 5px)),
+        radial-gradient(circle at 78% 81%, transparent 0 var(--led-vhazovani), rgba(200, 16, 46, 0.38) calc(var(--led-vhazovani) + 1px) calc(var(--led-vhazovani) + 4px), transparent calc(var(--led-vhazovani) + 5px)),
+        /* brankoviště nahoře a dole */
+        radial-gradient(ellipse at 50% 4%, rgba(31, 95, 191, 0.16) 0 var(--led-branka), rgba(200, 16, 46, 0.45) var(--led-branka) calc(var(--led-branka) + 3px), transparent calc(var(--led-branka) + 4px)),
+        radial-gradient(ellipse at 50% 96%, rgba(31, 95, 191, 0.16) 0 var(--led-branka), rgba(200, 16, 46, 0.45) var(--led-branka) calc(var(--led-branka) + 3px), transparent calc(var(--led-branka) + 4px)),
+        /* červená středová čára */
+        linear-gradient(to bottom, transparent calc(50% - 2px), rgba(200, 16, 46, 0.5) calc(50% - 2px), rgba(200, 16, 46, 0.5) calc(50% + 2px), transparent calc(50% + 2px)),
+        /* dvě modré čáry */
+        linear-gradient(to bottom,
+            transparent calc(33% - 3px), rgba(31, 95, 191, 0.42) calc(33% - 3px), rgba(31, 95, 191, 0.42) calc(33% + 3px), transparent calc(33% + 3px),
+            transparent calc(67% - 3px), rgba(31, 95, 191, 0.42) calc(67% - 3px), rgba(31, 95, 191, 0.42) calc(67% + 3px), transparent calc(67% + 3px)),
+        /* brankové čáry */
+        linear-gradient(to bottom,
+            transparent calc(4% - 1px), rgba(200, 16, 46, 0.35) calc(4% - 1px), rgba(200, 16, 46, 0.35) calc(4% + 1px), transparent calc(4% + 1px),
+            transparent calc(96% - 1px), rgba(200, 16, 46, 0.35) calc(96% - 1px), rgba(200, 16, 46, 0.35) calc(96% + 1px), transparent calc(96% + 1px)),
+        /* škrábance od bruslí a lesk ledu */
+        repeating-linear-gradient(115deg, transparent 0 9px, rgba(120, 160, 200, 0.07) 9px 10px),
+        repeating-linear-gradient(68deg, transparent 0 15px, rgba(255, 255, 255, 0.4) 15px 16px),
+        radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 55%),
+        linear-gradient(180deg, #f7fbfe 0%, #e5f0f8 55%, #d9e9f4 100%);
+}
+
+/* ---------- Hlavička: tmavá „kostka“ nad ledem, aby bílé logo KBZ zůstalo vidět ---------- */
+body.extraliga .extraliga-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px 50px;
+    margin: 10px 0 25px 0;
+    padding: 18px 30px;
+    background: linear-gradient(135deg, #07203a 0%, #123a66 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(11, 42, 74, 0.35);
+    position: relative;
+    overflow: hidden;
+}
+/* tenká červená a modrá linka jako mantinel */
+body.extraliga .extraliga-header::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 6px;
+    background: linear-gradient(to right, var(--accent-primary) 0 50%, var(--accent-blue) 50% 100%);
+}
+body.extraliga .extraliga-logo { height: 180px; object-fit: contain; }
+body.extraliga .extraliga-header .logo-text { color: #fff; margin: 0; }
+body.extraliga .extraliga-header .logo-text span { color: #ff5a6e; }
+@media (max-width: 768px) {
+    body.extraliga .extraliga-logo { height: 110px; }
+    body.extraliga .extraliga-header { padding: 14px 16px; gap: 10px 20px; }
+    body.extraliga .extraliga-header .logo-text { font-size: 2rem; }
+}
+
+/* ---------- Navigační lišta ---------- */
+body.extraliga .main-navbar {
+    background-color: rgba(255, 255, 255, 0.92);
+    border-color: var(--border-color);
+    box-shadow: 0 4px 15px rgba(11, 42, 74, 0.12);
+}
+body.extraliga .nav-home-btn, body.extraliga .nav-shop-btn, body.extraliga .nav-discord-btn {
+    background-color: #fff;
+    border-color: var(--border-color);
+    color: var(--navy);
+}
+body.extraliga .nav-shop-btn { color: var(--accent-primary); }
+body.extraliga .nav-home-btn:hover, body.extraliga .nav-shop-btn:hover {
+    background-color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: #fff;
+}
+body.extraliga .nav-separator { background-color: var(--border-color); }
+/* Dlaždice Extraligy je na ledu červená, ať je vidět, na ostatních stránkách zůstává ledová */
+body.extraliga .nav-tile.extraliga-color {
+    background: var(--accent-primary);
+    color: #fff !important;
+    box-shadow: 0 2px 8px rgba(200, 16, 46, 0.35);
+}
+body.extraliga .nav-tile.extraliga-color:hover { box-shadow: 0 4px 12px rgba(200, 16, 46, 0.5); }
+
+/* ---------- Společné panely a texty ---------- */
+body.extraliga .section-title { color: var(--accent-primary); border-top-color: var(--border-color); }
+body.extraliga .hlasovani-info {
+    background-color: var(--bg-card);
+    border-color: var(--border-color);
+    box-shadow: 0 8px 25px rgba(11, 42, 74, 0.12);
+}
+body.extraliga .hlasovani-info h4 { color: var(--navy); border-bottom-color: var(--border-color); }
+body.extraliga .hlasovani-info .note { color: var(--text-muted); }
+body.extraliga .hlasovani-info .note strong { color: var(--navy); }
+body.extraliga .hlasovani-info .note strong[style] { color: var(--accent-primary); }
+
+body.extraliga fieldset {
+    background-color: var(--bg-card);
+    border-color: var(--border-color);
+    box-shadow: 0 4px 15px rgba(11, 42, 74, 0.1);
+}
+body.extraliga label { color: var(--navy); }
+body.extraliga .otazka-poznamka, body.extraliga .zolici-info { color: var(--text-muted); }
+
+/* Formulářová pole */
+body.extraliga input[type="text"], body.extraliga input[type="email"], body.extraliga input[type="number"],
+body.extraliga textarea, body.extraliga select {
+    background-color: #fff;
+    color: var(--navy);
+    border: 1px solid var(--border-color);
+}
+body.extraliga input::placeholder, body.extraliga textarea::placeholder { color: #8fa3b8; }
+body.extraliga input:focus, body.extraliga textarea:focus, body.extraliga select:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(31, 95, 191, 0.15);
+}
+body.extraliga .custom-select-trigger { background-color: #fff; color: var(--navy); border-color: var(--border-color); }
+body.extraliga .custom-select-trigger:focus, body.extraliga .custom-select-wrapper.open .custom-select-trigger {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(31, 95, 191, 0.15);
+}
+body.extraliga .custom-select-options {
+    background-color: #fff !important;
+    border: 1px solid var(--accent-blue) !important;
+    box-shadow: 0 10px 30px rgba(11, 42, 74, 0.25) !important;
+}
+body.extraliga .custom-option { color: var(--navy); border-bottom-color: rgba(31, 95, 191, 0.12); }
+body.extraliga .custom-option:hover, body.extraliga .custom-option.focused {
+    background-color: var(--th-bg) !important;
+    border-left: 3px solid var(--accent-primary);
+}
+body.extraliga .custom-option.disabled, body.extraliga .custom-option.disabled:hover {
+    background-color: #f2f5f9 !important;
+    color: #9db0c3;
+    border-left: none;
+}
+body.extraliga .info-icon .tooltip-text {
+    background-color: var(--navy);
+    color: #fff;
+    border-color: var(--accent-primary);
+    box-shadow: 0 6px 20px rgba(11, 42, 74, 0.35);
+}
+body.extraliga .info-icon .tooltip-text strong { color: #ff5a6e !important; }
+
+body.extraliga button[type="submit"] {
+    background-color: var(--accent-primary);
+    color: #fff;
+    border-color: var(--accent-primary);
+    box-shadow: 0 6px 20px rgba(200, 16, 46, 0.3);
+}
+body.extraliga button[type="submit"]:hover { background-color: #a50d26; border-color: #a50d26; color: #fff; }
+body.extraliga .btn-history:hover { background-color: var(--accent-primary); color: #fff; }
+body.extraliga #souhlas-label { color: var(--text-muted); }
+body.extraliga #souhlas-label.green { color: var(--accent-primary); }
+
+/* Dlaždice týmů (pořadí 25/26, živý náhled, mřížky v přehledu) – bílé, ať loga vyniknou */
+body.extraliga .history-grid { background: rgba(31, 95, 191, 0.06); border-color: var(--border-color); }
+body.extraliga .history-team, body.extraliga .team-col {
+    background: #fff;
+    border: 1px solid rgba(31, 95, 191, 0.3);
+    box-shadow: 0 2px 6px rgba(11, 42, 74, 0.08);
+}
+body.extraliga .history-team.zolik, body.extraliga .team-col.zolik {
+    border-color: #e0b400;
+    box-shadow: 0 0 0 2px rgba(224, 180, 0, 0.35);
+}
+body.extraliga .t-pts { color: var(--navy); }
+body.extraliga .zolik-card { background: var(--panel-soft); border-color: var(--border-color); }
+
+/* ---------- Přehled: nástroje, vyhledávání, záložky ---------- */
+body.extraliga .search-input { background-color: #fff; color: var(--navy); border-color: var(--border-color); }
+body.extraliga .search-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(31, 95, 191, 0.15); }
+body.extraliga .autocomplete-dropdown {
+    background: #fff;
+    border-color: var(--accent-blue);
+    box-shadow: 0 10px 25px rgba(11, 42, 74, 0.25);
+}
+body.extraliga .autocomplete-item { border-bottom-color: rgba(31, 95, 191, 0.12); }
+body.extraliga .autocomplete-item:hover { background: var(--hover-row); }
+body.extraliga .autocomplete-item.active-item { background: var(--th-bg) !important; border-left-color: var(--accent-primary); }
+body.extraliga .tab-btn { background-color: #fff; border-color: var(--border-color); color: var(--text-muted); }
+body.extraliga .tab-btn:hover:not(.active) { background-color: var(--th-bg); color: var(--navy); }
+body.extraliga .tab-btn.active { background-color: var(--accent-primary); border-color: var(--accent-primary); color: #fff; }
+body.extraliga .btn-porovnat { background: var(--accent-primary); color: #fff; border-color: var(--accent-primary); }
+
+/* Tabulky */
+body.extraliga .table-container, body.extraliga .matrix-container {
+    background-color: var(--bg-card);
+    border-color: var(--border-color);
+    scrollbar-color: var(--accent-blue) #e6f0f8;
+}
+body.extraliga .table-container::-webkit-scrollbar-thumb { background: var(--accent-blue); }
+body.extraliga th {
+    background-color: var(--th-bg);
+    color: #1f4f7a;
+    border-bottom: 2px solid var(--accent-primary);
+    box-shadow: 0 2px 6px rgba(11, 42, 74, 0.08);
+}
+body.extraliga th, body.extraliga td { border-color: rgba(31, 95, 191, 0.15); }
+body.extraliga tr:hover { background-color: var(--hover-row); }
+body.extraliga .matrix-container th { background: var(--th-bg); }
+body.extraliga .matrix-container td:first-child, body.extraliga .matrix-container th:first-child { background: #fff; }
+body.extraliga .matrix-container th:first-child { background: var(--th-bg); }
+body.extraliga .table-container-narrow tr { border-bottom-color: rgba(31, 95, 191, 0.12); }
+body.extraliga .table-container-narrow tr:hover { background: var(--hover-row); }
+body.extraliga .tym-bunka, body.extraliga .b-answer { color: var(--navy); }
+
+/* Karty Mistrů */
+body.extraliga .zajic-card {
+    background: #fff;
+    border-color: var(--border-color);
+    box-shadow: 0 4px 15px rgba(11, 42, 74, 0.1);
+}
+body.extraliga .zajic-card:hover { border-color: var(--accent-primary); }
+body.extraliga .zajic-avatar, body.extraliga .modal-avatar { background: linear-gradient(135deg, var(--navy), var(--accent-primary)); color: #fff; }
+body.extraliga .avatar-inicialy { background: linear-gradient(135deg, var(--navy), var(--accent-primary)); }
+
+/* Aktuální stav, bonusové položky, násobek */
+body.extraliga .stav-box { background-color: var(--bg-card); border-color: var(--border-color); box-shadow: 0 4px 15px rgba(11, 42, 74, 0.1); }
+body.extraliga .bonus-item { background: var(--panel-soft); border-color: var(--border-color); }
+body.extraliga .bonus-item.vyhodnoceno { border-color: rgba(200, 16, 46, 0.3); }
+body.extraliga .nasobek-badge { background: rgba(200, 16, 46, 0.05); }
+body.extraliga .zolik-legenda { color: var(--text-muted); }
+
+/* Modaly */
+body.extraliga .modal-overlay { background-color: rgba(11, 42, 74, 0.6); }
+body.extraliga .modal-card {
+    background-color: #fff;
+    border-color: var(--border-color);
+    box-shadow: 0 20px 50px rgba(11, 42, 74, 0.4);
+    scrollbar-color: var(--accent-blue) #e6f0f8;
+}
+body.extraliga .modal-card::-webkit-scrollbar-thumb { background: var(--accent-blue); }
+body.extraliga .close-btn { background: rgba(11, 42, 74, 0.08); color: var(--navy); }
+body.extraliga .close-btn:hover { background: var(--accent-primary); color: #fff; }
+body.extraliga .modal-stat-box { background: var(--panel-soft); border-color: var(--border-color); }
+body.extraliga .modal-stat-box.box-highlight { background: rgba(200, 16, 46, 0.06); border-color: rgba(200, 16, 46, 0.3); }
+body.extraliga .compare-col:first-child { border-right-color: rgba(31, 95, 191, 0.15); }
+body.extraliga .compare-hlavicka { border-bottom-color: rgba(31, 95, 191, 0.15); }

@@ -118,6 +118,10 @@ otázka je bez čísla.
 
 ## 5. Na co myslet
 
+- Web ukazuje body až od `KONFIG.BODOVANI_OD` v `extraliga_spolecne.js` (výchozí = uzávěrka tipování
+  30. 9. 2026) a jen když jsou v řádku 2 listu Přehled HOTOVO názvy týmů. Do té doby jsou vidět jen tipy.
+  Kdyby měly body běžet dřív, stačí datum posunout. Názvy týmů ve výsledcích musí odpovídat seznamu
+  `KONFIG.TYMY` (na velikosti písmen a diakritice nezáleží), jiný text se bere jako „zatím neznámé“.
 - Tipy odeslané **před** touto změnou nemají žolíky ani nové odpovědi (web u nich ukáže „bez žolíků“ /
   „Nevyplněno“ a 0 b.). Stačí, když dotyčný vyplní formulář znovu se stejným e-mailem – tip se přepíše.
 - Změny na webu jsou jen v sekci Extraliga (`2627_form_extraliga.html`, `2627_prehled_extraliga.html`,

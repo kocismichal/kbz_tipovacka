@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="extraliga.css">
     <style>
         /* Centrování a zvětšení legend (nadpisů sekcí ve formuláři) */
         fieldset legend {
@@ -178,14 +179,14 @@
         }
     </style>
 </head>
-<body>
+<body class="extraliga">
 
     <div class="wrapper">
 
         <!-- PODSTRÁNKY: Logo vlevo vedle textu, obojí společně vycentrováno -->
-        <header style="display: flex; align-items: center; justify-content: center; gap: 50px; margin-top: 10px; margin-bottom: 30px;">
-            <!-- Logo KBZ -->
-            <img src="KBZ_basic.png" alt="KBZ Logo" style="height: 180px; object-fit: contain;">
+        <header class="extraliga-header">
+            <!-- Logo KBZ je bílé, proto má hlavička tmavý podklad (extraliga.css) -->
+            <img src="KBZ_basic.png" alt="KBZ Logo" class="extraliga-logo">
 
             <!-- Blok s textem a dlaždicí -->
             <div style="text-align: center;">
