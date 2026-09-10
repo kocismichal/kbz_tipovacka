@@ -374,7 +374,7 @@
         function getInitials(name) { const parts = name.trim().split(/\s+/); return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase(); }
         function formatBody(x) { const n = Number(x) || 0; return String(Number.isInteger(n) ? n : Math.round(n * 10) / 10).replace('.', ','); }
         function sklonujBody(x) { const n = Number(x) || 0; if (!Number.isInteger(n)) return 'bodu'; if (n === 1) return 'bod'; if (n >= 2 && n <= 4) return 'body'; return 'bodů'; }
-        function formatProcenta(pocet) { if (!vsichniHraci.length) return '0,0 %'; return (pocet / vsichniHraci.length * 100).toFixed(1).replace('.', ',') + ' %'; }
+        function formatProcenta(pocet) { if (!vsichniHraci.length) return '0,0'; return (pocet / vsichniHraci.length * 100).toFixed(1).replace('.', ','); }   // bez znaku %, ten je v přepínači
         function getLogoSrc(nazev) { const n = norm(nazev); return n && KONFIG.LOGA[n] ? KONFIG.LOGA[n] : ''; }
         function logoNeboFallback(nazev) { return getLogoSrc(nazev) || FALLBACK_LOGO; }
         function najdiBonus(klic) { return EXTRALIGA.BONUSY.find(q => q.klic === klic); }
@@ -661,7 +661,7 @@
                 });
                 html += `</tr>`;
             });
-            c.innerHTML = html + `</tbody></table>`;
+            c.innerHTML = html + `</tbody></table>${isProc ? '<div style="padding: 8px 12px; font-size: 0.8rem; color: var(--text-muted);">Čísla = podíl tipujících v procentech.</div>' : ''}`;
         }
 
         // ---------- BONUSOVÉ OTÁZKY ----------
