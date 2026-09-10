@@ -42,13 +42,34 @@
         .section-logo img { height: 130px; width: auto; max-width: 100%; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.5)); }
         .section-logo.kbz img { height: 70px; }
 
-        /* Dlaždice Extraligy: led Mistrů světa místo kresleného kluziště, bílý text */
-        .tile-extraliga { background: #1d5fa8 url('mistri_led_mobil.jpg') center center / cover no-repeat !important; border-color: #a9dbff !important; color: #fff !important; }
+        /* Sekce Mistrů světa: jejich led jako podklad, aby se vizuálně oddělila od zeleného KBZ */
+        .sekce-mistri {
+            background: #1d5fa8 url('mistri_led.jpg') center center / cover no-repeat;
+            border: 2px solid rgba(255, 255, 255, 0.45);
+            border-radius: 22px;
+            padding: 25px 20px 35px 20px;
+            margin: 5px 0 40px 0;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+        @media (max-width: 768px) { .sekce-mistri { background-image: url('mistri_led_mobil.jpg'); padding: 15px 12px 25px 12px; border-radius: 16px; } }
+        .sekce-mistri .section-title {
+            color: #e3242b;
+            text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff,
+                         2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff,
+                         4px 5px 0 #143a7a;
+            letter-spacing: 1px;
+        }
+        .sekce-mistri .section-subtitle { color: #fff; text-shadow: 0 1px 4px rgba(7, 32, 58, 0.8); font-weight: 600; }
+        .sekce-mistri .tiles-container { margin-bottom: 0; }
+
+        /* Dlaždice Extraligy na ledu: bílé karty, ať se s pozadím nemelou */
+        .tile-extraliga { background: rgba(255, 255, 255, 0.93) !important; border-color: rgba(255, 255, 255, 0.9) !important; color: #0b2a4a !important; box-shadow: 0 10px 25px rgba(7, 32, 58, 0.35) !important; }
+        .tile-extraliga:hover { border-color: #c8102e !important; box-shadow: 0 12px 30px rgba(200, 16, 46, 0.35) !important; }
         .tile-extraliga::before, .tile-extraliga::after { display: none; }
-        .tile-extraliga .tile-logo { height: 80px; width: 100%; object-fit: contain; margin-bottom: 15px; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5)); }
-        .tile-extraliga .tile-title { color: #fff; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7); }
-        .tile-extraliga .tile-desc { color: #eaf6ff; font-weight: 600; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7); }
-        .tile-extraliga .participant-count { color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
+        .tile-extraliga .tile-logo { height: 80px; width: 100%; object-fit: contain; margin-bottom: 15px; filter: drop-shadow(0 3px 6px rgba(7, 32, 58, 0.3)); }
+        .tile-extraliga .tile-title { color: #0b2a4a; }
+        .tile-extraliga .tile-desc { color: #24466b; font-weight: 600; }
+        .tile-extraliga .participant-count { color: rgba(11, 42, 74, 0.75); }
 
         .participant-count {
             position: absolute;
@@ -71,6 +92,7 @@
             <img src="KBZ_basic.png" alt="KBZ Logo" style="max-width: 400px; width: 100%; height: auto;">
         </header>
 
+        <section class="sekce-mistri">
         <div class="section-logo"><img src="mistri_sveta_logo.png" alt="Mistři světa"></div>
         <div class="section-title" style="border: none; margin-top: 10px;">Tipovačka Mistrů světa · Extraliga 2026/27</div>
         <div class="section-subtitle">Podcast Mistři světa tipuje hokejovou Tipsport extraligu. Tipni si konečné pořadí základní části, vyber si žolíky, odpověz na bonusové otázky a po uzávěrce sleduj bodování.</div>
@@ -92,6 +114,7 @@
             </a>
 
         </div>
+        </section>
 
         <hr class="section-divider">
 
