@@ -124,6 +124,30 @@ body.extraliga fieldset {
     box-shadow: 0 4px 15px rgba(11, 42, 74, 0.1);
 }
 body.extraliga label { color: var(--navy); }
+/* Nadpis fieldsetu sedí půlkou na ledu – dostane bílý štítek, ať je čitelný */
+body.extraliga legend {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 4px 18px;
+    box-shadow: 0 2px 8px rgba(11, 42, 74, 0.15);
+}
+/* Souhlas a tlačítko Odeslat jsou mimo fieldsety – vlastní bílý panel */
+body.extraliga .odeslani-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px 25px 25px 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(11, 42, 74, 0.1);
+    text-align: center;
+}
+body.extraliga #vysledek:not(:empty) {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 20px;
+}
 body.extraliga .otazka-poznamka, body.extraliga .zolici-info { color: var(--text-muted); }
 
 /* Formulářová pole */
@@ -174,7 +198,7 @@ body.extraliga button[type="submit"] {
 }
 body.extraliga button[type="submit"]:hover { background-color: #a50d26; border-color: #a50d26; color: #fff; }
 body.extraliga .btn-history:hover { background-color: var(--accent-primary); color: #fff; }
-body.extraliga #souhlas-label { color: var(--text-muted); }
+body.extraliga #souhlas-label { color: var(--navy); font-style: normal; font-size: 0.95rem; }
 body.extraliga #souhlas-label.green { color: var(--accent-primary); }
 
 /* Dlaždice týmů (pořadí 25/26, živý náhled, mřížky v přehledu) – bílé, ať loga vyniknou */

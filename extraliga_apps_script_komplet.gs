@@ -115,11 +115,6 @@ var EXTRALIGA = (function () {
   // vstup:  "cislo" = číselné pole, "tym" = výběr týmu, "anone" = Ano/Ne, "text" = jméno hráče.
   // skupina = nadpis sekce ve formuláři, nadpis = krátký název sloupce v tabulce, popis = pro hlášku o chybějícím výběru.
   var BONUSY = [
-    { idx: 18, klic: "finalevyhra",   typ: "text10", aktivni: false, vstup: "tym", skupina: "Play-off", nadpis: "Vítěz finále",
-      otazka: "Který tým vyhraje finále play-off?" },
-    { idx: 19, klic: "finaleprohra",  typ: "text10", aktivni: false, vstup: "tym", skupina: "Play-off", nadpis: "Poražený finalista",
-      otazka: "Který tým prohraje ve finále play-off?" },
-
     { idx: 20, klic: "body_mistr",    typ: "cislo",  aktivni: true, vstup: "cislo", max: "tymy", skupina: "Tabulka po základní části", nadpis: "Body 1. místa",
       otazka: "Kolik bodů získá tým na 1. místě po základní části?" },
     { idx: 21, klic: "rozdil_1_2",    typ: "cislo",  aktivni: true, vstup: "cislo", max: "tymy", skupina: "Tabulka po základní části", nadpis: "Rozdíl 1.–2.",
@@ -128,6 +123,11 @@ var EXTRALIGA = (function () {
       otazka: "Kolik bodů získá poslední tým tabulky po základní části?" },
     { idx: 42, klic: "rekord_goly",   typ: "text10", aktivni: true, vstup: "anone", skupina: "Tabulka po základní části", nadpis: "Rekord gólů ZČ",
       otazka: sRekordem("Bude v základní části překonán rekord v celkovém počtu vstřelených gólů (všechny týmy dohromady)?", KONFIG.REKORDY.goly_zakladni_cast) },
+
+    { idx: 18, klic: "finalevyhra",   typ: "text20", aktivni: true, vstup: "tym", skupina: "Play-off", nadpis: "Vítěz finále", popis: "vítěz finále play-off",
+      otazka: "Který tým vyhraje finále play-off?" },
+    { idx: 19, klic: "finaleprohra",  typ: "text20", aktivni: true, vstup: "tym", skupina: "Play-off", nadpis: "Poražený finalista", popis: "poražený finalista",
+      otazka: "Který tým prohraje ve finále play-off?" },
 
     { idx: 23, klic: "tymgoly",       typ: "text20", aktivni: true, vstup: "tym", skupina: "Týmové statistiky", nadpis: "Nejvíc gólů", popis: "tým s nejvíce góly",
       otazka: "Který tým vstřelí nejvíce gólů v základní části?" },
