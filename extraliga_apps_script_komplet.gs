@@ -301,6 +301,32 @@ var EXTRALIGA = (function () {
 
   // Body za pořadí týmů. Za každý tým v oficiálním pořadí: 10 mínus rozdíl míst (min 0),
   // u žolíkového týmu krát ZOLIK_NASOBEK_UMISTENI. Součet se pak násobí bonusem za přesné trefy.
+  // ---------- Automaticky stažená tabulka (2627_extraliga_stav.json z GitHub Actions) ----------
+  // Snímek je platný, když má přesně POCET_MIST známých týmů (každý jednou) a u každého číselné body.
+  function platnyStavTabulky(stav) {
+    if (!stav || !Array.isArray(stav.poradi) || stav.poradi.length !== KONFIG.POCET_MIST) return false;
+    var videne = {};
+    for (var i = 0; i < stav.poradi.length; i++) {
+      var p = stav.poradi[i] || {};
+      var t = normTym(p.tym);
+      if (t === "" || videne[t] || cislo(p.body) === null) return false;
+      videne[t] = true;
+    }
+    return true;
+  }
+  // Kopie řádku 2 listu "Přehled HOTOVO", do níž je zapsané pořadí (sloupce E–R) a body týmů
+  // (sloupce AY–BL) ze snímku tabulky. Ostatní sloupce (bonusové odpovědi) zůstávají z listu.
+  // Neplatný snímek řádek nemění.
+  function slucStavTabulky(vysledkyRow, stav) {
+    var radek = (vysledkyRow || []).slice();
+    if (!platnyStavTabulky(stav)) return radek;
+    for (var j = 0; j < KONFIG.POCET_MIST; j++) {
+      radek[SLOUPCE.MISTO_OD + j] = normTym(stav.poradi[j].tym);
+      radek[SLOUPCE.BODY_MISTO_OD + j] = String(cislo(stav.poradi[j].body));
+    }
+    return radek;
+  }
+
   function bodyUmisteni(tipRow, vysledkyRow) {
     var tipy = [], oficialni = seznamOficialni(vysledkyRow), body = [], bodyZaklad = [], zolik = [];
     var zolici = zolikTymy(tipRow);
@@ -424,6 +450,8 @@ var EXTRALIGA = (function () {
     nasobitel: nasobitel,
     bodyZaCislo: bodyZaCislo,
     bodyZaText: bodyZaText,
+    platnyStavTabulky: platnyStavTabulky,
+    slucStavTabulky: slucStavTabulky,
     seznamOficialni: seznamOficialni,
     jsouVysledky: jsouVysledky,
     bodovaniZapnuto: bodovaniZapnuto,
@@ -471,6 +499,9 @@ if (typeof module !== "undefined" && module.exports) {
 
 var WEB_LIST_TIPY = "Tipy";
 var WEB_LIST_HOTOVO = "Přehled HOTOVO";
+// Automaticky stažená tabulka Extraligy (GitHub Actions v repu webu). Když existuje a je platná, bere se z ní
+// pořadí a body týmů; bonusové odpovědi zůstávají v řádku 2 listu Přehled HOTOVO.
+var WEB_STAV_URL = "https://raw.githubusercontent.com/kocismichal/kbz_tipovacka/main/2627_extraliga_stav.json";
 
 // ---------- POST: uložení tipu ----------
 function doPost(e) {
@@ -578,6 +609,18 @@ function webDoplnHlavickuListu(sheet, pocet) {
   range.setValues([hodnoty]);
 }
 
+// Stáhne snímek automatické tabulky z GitHubu; vrátí null, když neexistuje nebo neprojde kontrolou.
+function webNactiStavTabulky() {
+  try {
+    var odpoved = UrlFetchApp.fetch(WEB_STAV_URL + "?v=" + Date.now(), { muteHttpExceptions: true });
+    if (odpoved.getResponseCode() !== 200) return null;
+    var stav = JSON.parse(odpoved.getContentText());
+    return EXTRALIGA.platnyStavTabulky(stav) ? stav : null;
+  } catch (err) {
+    return null;
+  }
+}
+
 /**
  * Kontrola bodování přímo v tabulce: do protokolu (Zobrazit → Protokoly) vypíše body všech tipujících
  * podle řádku 2 listu Přehled HOTOVO – stejný výpočet, jaký dělá web.
@@ -587,6 +630,9 @@ function vypisBodovaniDoProtokolu() {
   var tipy = ss.getSheetByName(WEB_LIST_TIPY).getDataRange().getValues();
   var hotovo = ss.getSheetByName(WEB_LIST_HOTOVO).getDataRange().getValues();
   var vysledky = hotovo.length > 1 ? hotovo[1] : [];
+  var stav = webNactiStavTabulky();
+  if (stav) { vysledky = EXTRALIGA.slucStavTabulky(vysledky, stav); Logger.log("Pořadí a body týmů: automatická tabulka z " + stav.aktualizovano + " (" + stav.zdroj + ")"); }
+  else Logger.log("Pořadí a body týmů: řádek 2 listu " + WEB_LIST_HOTOVO + " (automatická tabulka není k dispozici)");
   Logger.log("Výsledky k dispozici: " + EXTRALIGA.jsouVysledky(vysledky));
   for (var i = 1; i < tipy.length; i++) {
     var jmeno = EXTRALIGA.norm(tipy[i][EXTRALIGA.SLOUPCE.JMENO]);

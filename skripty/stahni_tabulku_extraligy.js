@@ -5,11 +5,14 @@
  * (.github/workflows/extraliga_tabulka.yml) každé ráno – web i Apps Script pak berou pořadí a body
  * týmů z tohoto souboru, bonusové odpovědi zůstávají v listu "Přehled HOTOVO".
  *
- *   node skripty/stahni_tabulku_extraligy.js                 stáhne tabulku a uloží JSON
+ *   node skripty/stahni_tabulku_extraligy.js                 stáhne tabulku a uloží JSON (když se změnila)
  *   node skripty/stahni_tabulku_extraligy.js --rezim sonda   jen vypíše, co zdroje vracejí (ladění)
  *
- * Pořadí se ukládá jen tehdy, když projde kontrolou: přesně 14 týmů z konfigurace, každý jednou,
- * body i zápasy jsou čísla. Jinak skript skončí chybou a JSON se nemění (web spadne na ruční tabulku).
+ * Zdroje v pořadí: hokej.cz (stránka tabulky), hokej.cz (stránka soutěže s malou tabulkou),
+ * česká Wikipedie (šablona {{Hokejová tabulka}} – aktualizují ji dobrovolníci, jen záloha).
+ * Uloží se jen tabulka, která projde kontrolou: přesně 14 týmů z konfigurace, každý jednou, body i zápasy
+ * jsou čísla, body ≤ 3 × zápasy a pořadí jde podle bodů. Jinak skript skončí chybou a JSON se nemění
+ * (web pak bere pořadí z ručního zápisu v listu Přehled HOTOVO).
  */
 const fs = require("fs");
 const path = require("path");
@@ -47,6 +50,7 @@ const KLICE = {
 const bezDiakritiky = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 function poznejTym(text) {
   const t = bezDiakritiky(text);
+  if (/\b(b|juniori|junior|u20|u17|dorost)\b/.test(t)) return "";   // "HC Dynamo Pardubice B", juniorky apod.
   for (const [tym, klice] of Object.entries(KLICE)) if (klice.some((k) => t.includes(k))) return tym;
   return "";
 }
@@ -61,7 +65,7 @@ async function stahni(url) {
   return { status: r.status, typ: r.headers.get("content-type") || "", text: await r.text(), url: r.url };
 }
 
-// ---------- Parser HTML tabulky (řádky <tr>, buňky <td>/<th>) ----------
+// ---------- HTML tabulky (hokej.cz) ----------
 const odstranTagy = (h) => h.replace(/<script[\s\S]*?<\/script>/gi, "").replace(/<style[\s\S]*?<\/style>/gi, "").replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
 function radkyTabulky(html) {
   const radky = [];
@@ -76,52 +80,79 @@ function radkyTabulky(html) {
   }
   return radky;
 }
-// Z řádků tabulky vytáhne 14 týmů: tým = první buňka s poznaným názvem, zápasy = první číslo za ní, body = poslední číslo řádku
-function poradiZRadku(radky) {
+const jeCislo = (x) => /^-?\d+$/.test(String(x).replace(/\s/g, ""));
+// Jedna HTML tabulka → pořadí. Sloupce Z a B se berou podle hlavičky ("Z", "B"/"Body"); bez hlavičky
+// je zápasy = první číslo za názvem týmu a body = poslední číslo řádku.
+function poradiZTabulky(radky) {
+  const hlavicka = radky.find((r) => r.some((c) => /^(z|záp\.?|zápasy)$/i.test(c)) && r.some((c) => /^(b|body)$/i.test(c)));
+  let iZ = -1, iB = -1, iKlub = -1, posun = 0;
+  if (hlavicka) {
+    iZ = hlavicka.findIndex((c) => /^(z|záp\.?|zápasy)$/i.test(c));
+    iB = hlavicka.findIndex((c) => /^(b|body)$/i.test(c));
+    iKlub = hlavicka.findIndex((c) => /^(klub|tým|team)$/i.test(c));
+  }
   const out = [];
   for (const bunky of radky) {
+    if (bunky === hlavicka) continue;
     let iTym = -1, tym = "";
-    for (let i = 0; i < bunky.length; i++) { const t = poznejTym(bunky[i]); if (t && !/^\d+$/.test(bunky[i])) { iTym = i; tym = t; break; } }
-    if (iTym === -1) continue;
-    const cisla = bunky.slice(iTym + 1).map((x) => x.replace(/\s/g, "")).filter((x) => /^-?\d+$/.test(x)).map(Number);
+    for (let i = 0; i < bunky.length; i++) { const t = poznejTym(bunky[i]); if (t && !jeCislo(bunky[i])) { iTym = i; tym = t; break; } }
+    if (iTym === -1 || out.some((o) => o.tym === tym)) continue;
+    let zapasy, body;
+    if (hlavicka && iZ !== -1 && iB !== -1) {
+      // Datové řádky mívají o buňku víc než hlavička (např. logo) – posun podle pozice názvu klubu
+      posun = iKlub !== -1 ? iTym - iKlub : bunky.length - hlavicka.length;
+      const z = bunky[iZ + posun], b = bunky[iB + posun];
+      if (!jeCislo(z) || !jeCislo(b)) continue;
+      zapasy = Number(z); body = Number(b);
+    } else {
+      const cisla = bunky.slice(iTym + 1).map((x) => x.replace(/\s/g, "")).filter(jeCislo).map(Number);
+      if (cisla.length < 2) continue;
+      zapasy = cisla[0]; body = cisla[cisla.length - 1];
+    }
+    out.push({ tym, zapasy, body, _bunky: bunky });
+  }
+  return out;
+}
+// Ze všech tabulek na stránce vybere první, která dá přesně 14 známých týmů
+function poradiZHtml(html) {
+  const tabulky = html.match(/<table[\s\S]*?<\/table>/gi) || [];
+  let nejlepsi = [];
+  for (const t of tabulky) {
+    const p = poradiZTabulky(radkyTabulky(t));
+    if (p.length === EXTRALIGA.KONFIG.POCET_MIST) return p;
+    if (p.length > nejlepsi.length) nejlepsi = p;
+  }
+  return nejlepsi;
+}
+
+// ---------- Wikipedie: {{Hokejová tabulka|1.|[[Klub]]|Z|V|VP|PP|P|VG|OG|'''B'''|barva|2.|...}} ----------
+function poradiZWikitextu(txt) {
+  const m = txt.match(/\{\{Hokejová tabulka\|([\s\S]*?)\}\}/i);
+  if (!m) return [];
+  const casti = m[1].split("|").map((x) => x.trim());
+  const out = [];
+  for (let i = 0; i < casti.length; i++) {
+    const link = casti[i].match(/^\[\[([^\]|]+)/);
+    if (!link) continue;
+    const tym = poznejTym(link[1]);
+    if (!tym || out.some((o) => o.tym === tym)) continue;
+    const cisla = [];
+    for (let j = i + 1; j < casti.length && !/^\[\[/.test(casti[j]) && !/^\d+\.$/.test(casti[j]); j++) {
+      const c = casti[j].replace(/'''/g, "").trim();
+      if (jeCislo(c)) cisla.push({ n: Number(c), tucne: /'''/.test(casti[j]) });
+    }
     if (cisla.length < 2) continue;
-    if (out.some((o) => o.tym === tym)) continue;
-    out.push({ tym, zapasy: cisla[0], body: cisla[cisla.length - 1], _bunky: bunky });
+    const tucne = cisla.find((c) => c.tucne);
+    out.push({ tym, zapasy: cisla[0].n, body: (tucne || cisla[cisla.length - 1]).n, _bunky: casti.slice(i, i + 11) });
   }
   return out;
 }
 
 const ZDROJE = [
-  { nazev: "hokej.cz", url: "https://www.hokej.cz/tipsport-extraliga/tabulka" },
-  { nazev: "telh.cz", url: "https://www.telh.cz/tabulka" },
-  { nazev: "telh.cz (úvod)", url: "https://www.telh.cz/" },
-  { nazev: "ceskyhokej.cz", url: "https://www.ceskyhokej.cz/tipsport-extraliga/tabulka" },
-  { nazev: "cs.wikipedia (wikitext)", url: "https://cs.wikipedia.org/w/index.php?title=%C4%8Cesk%C3%A1_hokejov%C3%A1_extraliga_2026/2027&action=raw" },
-  { nazev: "en.wikipedia (wikitext)", url: "https://en.wikipedia.org/w/index.php?title=2026%E2%80%9327_Czech_Extraliga_season&action=raw" }
+  { nazev: "hokej.cz", url: "https://www.hokej.cz/tipsport-extraliga/table", parser: poradiZHtml },
+  { nazev: "hokej.cz", url: "https://www.hokej.cz/tipsport-extraliga", parser: poradiZHtml },
+  { nazev: "cs.wikipedia.org", url: "https://cs.wikipedia.org/w/index.php?title=%C4%8Cesk%C3%A1_hokejov%C3%A1_extraliga_2026/2027&action=raw", parser: poradiZWikitextu }
 ];
-
-async function sonda() {
-  for (const z of ZDROJE) {
-    console.log("\n==================== " + z.nazev + " ====================\n" + z.url);
-    try {
-      const r = await stahni(z.url);
-      const txt = r.text;
-      const tymu = Object.keys(KLICE).filter((t) => KLICE[t].some((k) => bezDiakritiky(txt).includes(k))).length;
-      console.log(`status ${r.status} | ${r.typ} | ${txt.length} znaků | finální URL ${r.url} | <table: ${(txt.match(/<table/gi) || []).length} | poznaných týmů: ${tymu}`);
-      const api = Array.from(new Set((txt.match(/https?:\/\/[^"'\s<>]*(api|json|tabulk|standing)[^"'\s<>]*/gi) || []))).slice(0, 15);
-      if (api.length) console.log("URL s api/json/tabulka: " + api.join("  |  "));
-      const idx = bezDiakritiky(txt).indexOf("pardubice");
-      if (idx !== -1) console.log("--- okolí prvního 'Pardubice' (surové HTML, zkráceno) ---\n" + txt.slice(Math.max(0, idx - 1500), idx + 2500).replace(/\s+/g, " "));
-      const it = txt.search(/<table/i);
-      if (it !== -1) console.log("--- první <table (surové HTML, zkráceno) ---\n" + txt.slice(it, it + 3000).replace(/\s+/g, " "));
-      const poradi = poradiZRadku(radkyTabulky(txt));
-      console.log("--- parser: " + poradi.length + " týmů ---");
-      poradi.forEach((p, i) => console.log(`${i + 1}. ${p.tym} | zápasy ${p.zapasy} | body ${p.body} | buňky: ${JSON.stringify(p._bunky).slice(0, 200)}`));
-    } catch (e) {
-      console.log("CHYBA: " + e.message);
-    }
-  }
-}
 
 function overPoradi(poradi) {
   const tymy = EXTRALIGA.KONFIG.TYMY;
@@ -138,15 +169,42 @@ function overPoradi(poradi) {
   return "";
 }
 
-async function aktualizace() {
-  const chyby = [];
-  for (const z of ZDROJE.filter((x) => x.url.includes("hokej.cz") || x.url.includes("telh.cz"))) {
+async function sonda() {
+  for (const z of ZDROJE) {
+    console.log("\n==================== " + z.nazev + " ====================\n" + z.url);
     try {
       const r = await stahni(z.url);
-      if (r.status !== 200) { chyby.push(z.nazev + ": HTTP " + r.status); continue; }
-      const poradi = poradiZRadku(radkyTabulky(r.text));
+      const titul = (r.text.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || ["", ""])[1].replace(/\s+/g, " ").trim();
+      console.log(`status ${r.status} | ${r.typ} | ${r.text.length} znaků | <table: ${(r.text.match(/<table/gi) || []).length} | title: ${titul}`);
+      if (z.parser === poradiZHtml) {
+        (r.text.match(/<table[\s\S]*?<\/table>/gi) || []).slice(0, 10).forEach((t, i) => {
+          const radky = radkyTabulky(t);
+          console.log(`--- tabulka ${i + 1}: ${radky.length} řádků; první 3: ${JSON.stringify(radky.slice(0, 3)).slice(0, 500)}`);
+        });
+      }
+      const poradi = z.parser(r.text);
       const chyba = overPoradi(poradi);
-      if (chyba) { chyby.push(z.nazev + ": " + chyba); continue; }
+      console.log("--- parser: " + poradi.length + " týmů | kontrola: " + (chyba || "OK") + " ---");
+      poradi.forEach((p, i) => console.log(`${i + 1}. ${p.tym} | zápasy ${p.zapasy} | body ${p.body} | ${JSON.stringify(p._bunky).slice(0, 160)}`));
+    } catch (e) {
+      console.log("CHYBA: " + e.message + (e.cause ? " | příčina: " + (e.cause.code || e.cause.message) : ""));
+    }
+  }
+}
+
+async function aktualizace() {
+  const chyby = [];
+  for (const z of ZDROJE) {
+    try {
+      const r = await stahni(z.url);
+      if (r.status !== 200) { chyby.push(z.nazev + " (" + z.url + "): HTTP " + r.status); continue; }
+      const poradi = z.parser(r.text);
+      const chyba = overPoradi(poradi);
+      if (chyba) { chyby.push(z.nazev + " (" + z.url + "): " + chyba); continue; }
+      if (poradi.every((p) => p.zapasy === 0)) {
+        console.log("Sezóna ještě nezačala (všechny týmy 0 zápasů) – zdroj " + z.nazev + ", JSON se neukládá.");
+        return;
+      }
       const vysledek = {
         sezona: EXTRALIGA.KONFIG.SEZONA,
         aktualizovano: new Date().toISOString(),
@@ -165,7 +223,7 @@ async function aktualizace() {
       vysledek.poradi.forEach((p, i) => console.log(`${String(i + 1).padStart(2)}. ${p.tym.padEnd(18)} ${String(p.zapasy).padStart(2)} z.  ${String(p.body).padStart(3)} b.`));
       return;
     } catch (e) {
-      chyby.push(z.nazev + ": " + e.message);
+      chyby.push(z.nazev + " (" + z.url + "): " + e.message);
     }
   }
   console.error("Tabulku se nepodařilo stáhnout z žádného zdroje:\n - " + chyby.join("\n - "));

@@ -191,7 +191,7 @@
 
         <div class="top-tools-container">
             <div style="flex: 1; display: flex; justify-content: center; min-width: 250px;">
-                <div class="stats-header" style="margin: 0; justify-content: center; background: transparent; padding: 0;">
+                <div class="stats-header" style="margin: 0; justify-content: center;">
                     <div class="stat-item" style="margin: 0;">
                         <div class="stat-value" id="count-players"><i class="fas fa-spinner fa-spin"></i></div>
                         <div class="stat-label">Počet tipujících (Extraliga 26/27)</div>
@@ -348,6 +348,9 @@
     <script>
         // Adresa nasazené webové aplikace Apps Scriptu. Doplní se po nasazení, zatím je tu jen zástupný text.
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyN9J4KwXyuq9AoOOS2bWhawJa5fofaqffxDeuY8kcKLHjigt7wrMj1gl2LpHmsZJY/exec";
+        // Automaticky stažená tabulka Extraligy (GitHub Actions → 2627_extraliga_stav.json); když chybí nebo je neplatná,
+        // pořadí a body týmů se berou z řádku 2 listu Přehled HOTOVO (ruční zápis).
+        const STAV_URL = '2627_extraliga_stav.json';
 
         const KONFIG = EXTRALIGA.KONFIG;
         const SL = EXTRALIGA.SLOUPCE;
@@ -360,7 +363,8 @@
 
         // Sloupec C (index 2, e-mail) API vrací vždy prázdný a stránka ho nikde nečte.
         let vsichniHraci = [];      // { originalIndex, radek, jmeno, klub, jeMistr, vysledek, poradi }
-        let vysledky = [];          // řádek 2 listu Přehled HOTOVO (nebo prázdné pole)
+        let vysledky = [];          // řádek 2 listu Přehled HOTOVO (nebo prázdné pole), pořadí a body případně ze snímku tabulky
+        let stavTabulky = null;     // platný snímek 2627_extraliga_stav.json (aktualizovano, zdroj, poradi[]) nebo null
         let bodovaniAktivni = false;
         let aktivniZalozka = 'celkem';
         let matrixRezim = 'cisla';
@@ -378,6 +382,7 @@
         function getLogoSrc(nazev) { const n = norm(nazev); return n && KONFIG.LOGA[n] ? KONFIG.LOGA[n] : ''; }
         function logoNeboFallback(nazev) { return getLogoSrc(nazev) || FALLBACK_LOGO; }
         function najdiBonus(klic) { return EXTRALIGA.BONUSY.find(q => q.klic === klic); }
+        function formatDatumCas(iso) { const d = new Date(iso); if (isNaN(d)) return String(iso || ''); return d.toLocaleDateString('cs-CZ') + ' ' + d.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' }); }
         function datumBodovaniText() { const d = new Date(KONFIG.BODOVANI_OD); return `${d.getDate()}. ${d.getMonth() + 1}. ${d.getFullYear()}`; }
         function seznamOficialni() { return EXTRALIGA.seznamOficialni(vysledky); }
         // Skutečné body týmu na daném místě oficiálního pořadí (sloupce Body 1.–14. místa listu Přehled HOTOVO), nebo ''.
@@ -410,23 +415,28 @@
         async function nactiData() {
             if (!SCRIPT_URL || SCRIPT_URL.indexOf("__") === 0) { zobrazNedostupne(); return; }
             try {
-                const [resTipy, resHotovo] = await Promise.all([
+                const [resTipy, resHotovo, stav] = await Promise.all([
                     fetch(SCRIPT_URL + "?action=data&sheet=Tipy"),
-                    fetch(SCRIPT_URL + "?action=data&sheet=" + encodeURIComponent("Přehled HOTOVO"))
+                    fetch(SCRIPT_URL + "?action=data&sheet=" + encodeURIComponent("Přehled HOTOVO")),
+                    fetch(STAV_URL + "?v=" + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null)
                 ]);
                 const dataTipy = await resTipy.json();
                 const dataHotovo = await resHotovo.json();
                 if (!Array.isArray(dataTipy) || !Array.isArray(dataHotovo)) throw new Error("Neplatná odpověď API");
-                zpracujData(dataTipy, dataHotovo);
+                zpracujData(dataTipy, dataHotovo, stav);
             } catch (e) {
                 console.warn("Data tipovačky se nepodařilo načíst:", e);
                 zobrazNedostupne();
             }
         }
 
-        function zpracujData(dataTipy, dataHotovo) {
+        function zpracujData(dataTipy, dataHotovo, stav) {
             vysledky = (dataHotovo.length > 1 && Array.isArray(dataHotovo[1])) ? dataHotovo[1] : [];
+            stavTabulky = EXTRALIGA.platnyStavTabulky(stav) ? stav : null;
+            if (stavTabulky) vysledky = EXTRALIGA.slucStavTabulky(vysledky, stavTabulky);
             bodovaniAktivni = EXTRALIGA.bodovaniZapnuto(vysledky);
+            // Do spuštění bodování web z řádku výsledků nic neukazuje (ani správné odpovědi v kartách) – jen tipy.
+            if (!bodovaniAktivni) vysledky = [];
 
             vsichniHraci = [];
             for (let i = 1; i < dataTipy.length; i++) {
@@ -486,15 +496,26 @@
                             <i class="fa-solid fa-hockey-puck" style="color: var(--accent-primary); margin-right: 8px;"></i>
                             Zatím vidíš jen tipy. Body se objeví po uzávěrce tipování (${esc(datumBodovaniText())}), jakmile bude v tabulce první odehrané kolo.
                         </p>
+                        <p class="note" style="font-size: 0.95rem; color: var(--text-muted); margin: 8px 0 0 0;">
+                            Tabulku Extraligy se budeme snažit průběžně aktualizovat, takže tady po celou sezónu uvidíš průběžné pořadí svého tipu i tipů ostatních.
+                        </p>
                     </div>`;
                 return;
             }
 
             const oficialni = seznamOficialni();
-            let html = `<div class="stav-box"><div class="modal-subtitle" style="margin-top: 0;">Aktuální pořadí základní části</div><div class="teams-grid-8x2 grid-14">`;
+            const zdrojHtml = stavTabulky
+                ? `Tabulka aktualizována <strong>${esc(formatDatumCas(stavTabulky.aktualizovano))}</strong> automaticky (${esc(stavTabulky.zdroj || 'web Extraligy')}).`
+                : `Tabulka podle ručního zápisu v tabulce tipovačky.`;
+            let html = `<div class="stav-box"><div class="modal-subtitle" style="margin-top: 0;">Aktuální pořadí základní části</div>
+                <div style="font-size: 0.9rem; color: var(--text-muted); margin: -4px 0 12px 0;">${zdrojHtml} Tabulku se snažíme průběžně aktualizovat – průběžné pořadí svého tipu vidíš v žebříčku a v kartě hráče.</div>
+                <div class="teams-grid-8x2 grid-14">`;
             oficialni.forEach((tym, j) => {
                 const nazev = tym || 'Zatím neznámé';
-                html += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j + 1}.</span><img src="${logoNeboFallback(tym)}" ${ONERR} class="t-logo" title="${esc(nazev)}" alt="${esc(nazev)}"></div>`;
+                const body = skutecneBodyMista(j);
+                const zap = stavTabulky && stavTabulky.poradi[j] && stavTabulky.poradi[j].zapasy !== undefined ? stavTabulky.poradi[j].zapasy : '';
+                const bodyHtml = body !== '' ? `<span class="t-pts" title="${zap !== '' ? esc(zap) + ' zápasů' : ''}">${esc(body)} b.${zap !== '' ? `<small style="color: var(--text-muted); font-weight: normal;"> / ${esc(zap)} z.</small>` : ''}</span>` : '';
+                html += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j + 1}.</span><img src="${logoNeboFallback(tym)}" ${ONERR} class="t-logo" title="${esc(nazev)}" alt="${esc(nazev)}">${bodyHtml}</div>`;
             });
             html += `</div>`;
 
@@ -531,7 +552,7 @@
             mistri.forEach(mistr => {
                 const card = document.createElement('div'); card.className = 'zajic-card'; card.onclick = () => otevriModalJeden(mistr);
                 const korunaHtml = (bodovaniAktivni && mistr.vysledek.celkem === maxBodu && maxBodu > 0)
-                    ? `<img src="koruna.png" alt="Koruna" style="position: absolute; top: -22px; left: 50%; transform: translateX(-50%); width: 38px; height: auto; z-index: 5;">` : '';
+                    ? `<img src="koruna_mala.png" alt="Koruna" style="position: absolute; top: -22px; left: 50%; transform: translateX(-50%); width: 38px; height: auto; z-index: 5;">` : '';
                 const bodyHtml = bodovaniAktivni
                     ? `<div class="zajic-points" style="margin-top: 8px;">${formatBody(mistr.vysledek.celkem)} ${sklonujBody(mistr.vysledek.celkem)}</div>
                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Celkově ${mistr.poradi.celkem}. místo</div>` : '';
@@ -1040,7 +1061,7 @@
             html += `<div class="modal-subtitle" style="margin-top: 25px;">Bonusové otázky</div><div class="bonus-list">`;
             v.bonusy.polozky.forEach(p => {
                 if (!p.aktivni && p.tip === '' && p.spravne === '') return;   // finále play-off se letos netipuje
-                const spravneHtml = p.spravne !== '' ? ` <span style="color: var(--accent-primary); font-style: italic; font-weight: 600; margin-left: 3px;">(${esc(p.spravne)})</span>` : '';
+                const spravneHtml = (bodovaniAktivni && p.spravne !== '') ? ` <span style="color: var(--accent-primary); font-style: italic; font-weight: 600; margin-left: 3px;">(${esc(p.spravne)})</span>` : '';
                 const tipHtml = p.tip !== '' ? esc(p.tip) : '<span style="color: var(--text-muted); font-weight: normal;">Nevyplněno</span>';
                 const ptsHtml = bodovaniAktivni ? `<span style="color: ${p.body > 0 ? 'var(--accent-primary)' : 'var(--text-muted)'};">${p.body}</span>` : '';
                 html += `

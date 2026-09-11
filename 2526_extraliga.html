@@ -68,7 +68,7 @@
 
         <div class="top-tools-container">
             <div style="flex: 1; display: flex; justify-content: center; min-width: 250px;">
-                <div class="stats-header" style="margin: 0; justify-content: center; background: transparent; padding: 0; gap: 40px;">
+                <div class="stats-header" style="margin: 0; justify-content: center; gap: 40px;">
                     <div class="stat-item" style="margin: 0;">
                         <div class="stat-value" id="count-players"><i class="fas fa-spinner fa-spin"></i></div>
                         <div class="stat-label">Tipujících (Extraliga 25/26)</div>
@@ -431,7 +431,7 @@
             const maxBodu = Math.max(...mistri.map(m => m.body.celkem));
             mistri.forEach(mistr => {
                 const card = document.createElement('div'); card.className = 'zajic-card'; card.onclick = () => otevriModalJeden(mistr);
-                const korunaHtml = (mistr.body.celkem === maxBodu && maxBodu > 0) ? `<img src="koruna.png" alt="Koruna" style="position: absolute; top: -22px; left: 50%; transform: translateX(-50%); width: 38px; height: auto; z-index: 5;">` : '';
+                const korunaHtml = (mistr.body.celkem === maxBodu && maxBodu > 0) ? `<img src="koruna_mala.png" alt="Koruna" style="position: absolute; top: -22px; left: 50%; transform: translateX(-50%); width: 38px; height: auto; z-index: 5;">` : '';
                 card.innerHTML = `
                     <div class="zajic-avatar-container">${korunaHtml}<div class="zajic-avatar" style="background: transparent;">${getAvatarHTML(mistr, '1.5rem')}</div></div>
                     <div class="zajic-name" style="margin-bottom: 5px;">${esc(mistr.jmeno)}</div>
