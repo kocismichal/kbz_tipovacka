@@ -93,11 +93,12 @@ function poradiZRadku(radky) {
 
 const ZDROJE = [
   { nazev: "hokej.cz", url: "https://www.hokej.cz/tipsport-extraliga/tabulka" },
+  { nazev: "hokej.cz (úvod)", url: "https://www.hokej.cz/" },
+  { nazev: "hokej.cz (soutěž)", url: "https://www.hokej.cz/tipsport-extraliga" },
+  { nazev: "hokej.cz (tabulky)", url: "https://www.hokej.cz/tabulky" },
   { nazev: "telh.cz", url: "https://www.telh.cz/tabulka" },
-  { nazev: "telh.cz (úvod)", url: "https://www.telh.cz/" },
-  { nazev: "ceskyhokej.cz", url: "https://www.ceskyhokej.cz/tipsport-extraliga/tabulka" },
-  { nazev: "cs.wikipedia (wikitext)", url: "https://cs.wikipedia.org/w/index.php?title=%C4%8Cesk%C3%A1_hokejov%C3%A1_extraliga_2026/2027&action=raw" },
-  { nazev: "en.wikipedia (wikitext)", url: "https://en.wikipedia.org/w/index.php?title=2026%E2%80%9327_Czech_Extraliga_season&action=raw" }
+  { nazev: "telh.cz bez www", url: "https://telh.cz/" },
+  { nazev: "cs.wikipedia (wikitext)", url: "https://cs.wikipedia.org/w/index.php?title=%C4%8Cesk%C3%A1_hokejov%C3%A1_extraliga_2026/2027&action=raw" }
 ];
 
 async function sonda() {
@@ -107,18 +108,28 @@ async function sonda() {
       const r = await stahni(z.url);
       const txt = r.text;
       const tymu = Object.keys(KLICE).filter((t) => KLICE[t].some((k) => bezDiakritiky(txt).includes(k))).length;
-      console.log(`status ${r.status} | ${r.typ} | ${txt.length} znaků | finální URL ${r.url} | <table: ${(txt.match(/<table/gi) || []).length} | poznaných týmů: ${tymu}`);
-      const api = Array.from(new Set((txt.match(/https?:\/\/[^"'\s<>]*(api|json|tabulk|standing)[^"'\s<>]*/gi) || []))).slice(0, 15);
-      if (api.length) console.log("URL s api/json/tabulka: " + api.join("  |  "));
-      const idx = bezDiakritiky(txt).indexOf("pardubice");
-      if (idx !== -1) console.log("--- okolí prvního 'Pardubice' (surové HTML, zkráceno) ---\n" + txt.slice(Math.max(0, idx - 1500), idx + 2500).replace(/\s+/g, " "));
-      const it = txt.search(/<table/i);
-      if (it !== -1) console.log("--- první <table (surové HTML, zkráceno) ---\n" + txt.slice(it, it + 3000).replace(/\s+/g, " "));
+      const titul = (txt.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || ["", ""])[1].replace(/\s+/g, " ").trim();
+      console.log(`status ${r.status} | ${r.typ} | ${txt.length} znaků | finální URL ${r.url} | <table: ${(txt.match(/<table/gi) || []).length} | poznaných týmů: ${tymu} | title: ${titul}`);
+      const odkazy = Array.from(new Set((txt.match(/href="([^"]*)"/gi) || []).map((h) => h.slice(6, -1)).filter((h) => /tabulk|extralig|soutez|standing|competition/i.test(h)).map((h) => h.split("?")[0])));
+      if (odkazy.length) console.log("odkazy (tabulk/extralig/soutez): " + odkazy.slice(0, 60).join("  |  "));
+      const api = Array.from(new Set((txt.match(/https?:\/\/[^"'\s<>]*(api|json|standing)[^"'\s<>]*/gi) || []))).slice(0, 15);
+      if (api.length) console.log("URL s api/json: " + api.join("  |  "));
+      if (/wiki/.test(z.url)) {
+        const it = txt.search(/==\s*Tabulka/i);
+        console.log("--- wikitext kolem 'Tabulka' ---\n" + (it !== -1 ? txt.slice(it, it + 3000) : "(sekce Tabulka nenalezena) " + txt.slice(0, 1500)).replace(/\s+/g, " "));
+      } else {
+        // všechny tabulky: hlavička + první 2 řádky (zkráceně)
+        const tabulky = txt.match(/<table[\s\S]*?<\/table>/gi) || [];
+        tabulky.slice(0, 8).forEach((t, i) => {
+          const radky = radkyTabulky(t);
+          console.log(`--- tabulka ${i + 1}: ${radky.length} řádků; prvních 3: ${JSON.stringify(radky.slice(0, 3)).slice(0, 400)}`);
+        });
+      }
       const poradi = poradiZRadku(radkyTabulky(txt));
       console.log("--- parser: " + poradi.length + " týmů ---");
       poradi.forEach((p, i) => console.log(`${i + 1}. ${p.tym} | zápasy ${p.zapasy} | body ${p.body} | buňky: ${JSON.stringify(p._bunky).slice(0, 200)}`));
     } catch (e) {
-      console.log("CHYBA: " + e.message);
+      console.log("CHYBA: " + e.message + (e.cause ? " | příčina: " + (e.cause.code || e.cause.message || JSON.stringify(e.cause)) : ""));
     }
   }
 }
