@@ -10,9 +10,8 @@ on:
         description: "aktualizace = stáhnout a uložit tabulku, sonda = jen vypsat, co zdroje vracejí"
         required: false
         default: "aktualizace"
-  # Plánované spouštění se zapne, až bude stahování ověřené na ostrých datech (viz extraliga_navod.md).
-  # schedule:
-  #   - cron: "30 4 * * *"   # 6:30 v létě / 5:30 v zimě našeho času
+  schedule:
+    - cron: "30 4 * * *"   # každý den 6:30 (letní čas) / 5:30 (zimní čas); ručně kdykoli přes Run workflow
 
 permissions:
   contents: write
