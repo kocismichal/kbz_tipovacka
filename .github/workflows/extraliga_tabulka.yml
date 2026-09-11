@@ -1,0 +1,40 @@
+# Automatická tabulka Extraligy pro tipovačku Mistrů světa: každé ráno stáhne aktuální pořadí a body
+# týmů a uloží je do 2627_extraliga_stav.json (web i Apps Script z něj berou pořadí a body).
+# Ručně: záložka Actions → "Tabulka Extraligy" → Run workflow.
+name: Tabulka Extraligy
+
+on:
+  workflow_dispatch:
+    inputs:
+      rezim:
+        description: "aktualizace = stáhnout a uložit tabulku, sonda = jen vypsat, co zdroje vracejí"
+        required: false
+        default: "aktualizace"
+  schedule:
+    - cron: "30 4 * * *"   # 6:30 v létě / 5:30 v zimě našeho času
+
+permissions:
+  contents: write
+
+jobs:
+  tabulka:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Stáhnout tabulku
+        run: node skripty/stahni_tabulku_extraligy.js --rezim "${{ github.event.inputs.rezim || 'aktualizace' }}"
+      - name: Uložit změnu do repa
+        if: ${{ (github.event.inputs.rezim || 'aktualizace') == 'aktualizace' }}
+        run: |
+          if git diff --quiet -- 2627_extraliga_stav.json && [ -z "$(git ls-files --others --exclude-standard -- 2627_extraliga_stav.json)" ]; then
+            echo "Tabulka beze změny, není co ukládat."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add 2627_extraliga_stav.json
+          git commit -m "Tabulka Extraligy: automatická aktualizace $(date -u +%Y-%m-%d)"
+          git push
