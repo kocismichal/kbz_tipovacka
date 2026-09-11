@@ -27,10 +27,22 @@ body.extraliga {
 body.extraliga::before {
     content: "";
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* Výška podle NEJVĚTŠÍHO výřezu okna: na iPhonu/iPadu se při schování lišty Safari mění výška okna
+       a vrstva s "cover" obrázkem by se přepočítala (led se přiblíží a poskočí). 100lvh to drží stabilní. */
+    height: 100vh;
+    height: 100lvh;
     z-index: -1;
     pointer-events: none;
     background: #1d5fa8 url("mistri_led.jpg") center center / cover no-repeat;
+    transform: translateZ(0);
+}
+/* iOS přibližuje stránku při ťuknutí do pole s písmem menším než 16 px – na dotykových displejích držíme 16 px */
+@media (pointer: coarse) {
+    body.extraliga input[type="text"], body.extraliga input[type="email"], body.extraliga input[type="number"],
+    body.extraliga select, body.extraliga textarea, body.extraliga .search-input { font-size: 16px !important; }
 }
 @media (max-width: 768px) {
     body.extraliga::before { background-image: url("mistri_led_mobil.jpg"); }
@@ -214,6 +226,15 @@ body.extraliga .history-team.zolik, body.extraliga .team-col.zolik {
 }
 body.extraliga .t-pts { color: var(--navy); }
 body.extraliga .zolik-card { background: var(--panel-soft); border-color: var(--border-color); }
+
+/* Počítadla (počet tipujících, vítěz) sedí přímo na ledu – bílý panel, ať jsou čitelná */
+body.extraliga .stats-header {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 28px;
+    box-shadow: 0 4px 15px rgba(11, 42, 74, 0.1);
+}
 
 /* ---------- Přehled: nástroje, vyhledávání, záložky ---------- */
 body.extraliga .search-input { background-color: #fff; color: var(--navy); border-color: var(--border-color); }

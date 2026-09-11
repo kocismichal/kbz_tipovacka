@@ -126,7 +126,35 @@ Stránka `2526_extraliga.html` bere data ze snímku `2526_extraliga_data.json` (
 Google tabulka minulého ročníku už kvůli webu nemusí být sdílená. Kdyby se v ní něco opravilo, stačí poslat
 nový export a snímek přegenerovat.
 
-## 6. Na co myslet
+## 6. Automatická tabulka Extraligy (GitHub Actions)
+
+Pořadí a body týmů se nemusí přepisovat ručně. V repu je workflow **„Tabulka Extraligy“**
+(`.github/workflows/extraliga_tabulka.yml`), které každý den ráno (6:30 letního času) spustí skript
+`skripty/stahni_tabulku_extraligy.js`:
+
+1. stáhne tabulku z hokej.cz (stránka tabulky Tipsport extraligy, záložně stránka soutěže; poslední
+   záloha je šablona tabulky na české Wikipedii),
+2. zkontroluje ji (přesně 14 týmů z `KONFIG.TYMY`, každý jednou, body ≤ 3 × zápasy, pořadí podle bodů),
+3. když se něco změnilo, uloží ji do `2627_extraliga_stav.json` a commitne do `main` (GitHub Pages se
+   samy přegenerují).
+
+Web (`2627_prehled_extraliga.html`) i Apps Script (`vypisBodovaniDoProtokolu`) pak berou **pořadí a body
+týmů z tohoto souboru**; z řádku 2 listu Přehled HOTOVO zůstávají **jen odpovědi na bonusové otázky**
+(ty se dál vyplňují ručně, až budou známé). Když soubor chybí nebo neprojde kontrolou, web sáhne po
+ručním zápisu pořadí v listu (E2–R2, body AY2–BL2) jako dřív. Body se na webu ukazují až od
+`KONFIG.BODOVANI_OD` (30. 9. 2026), do té doby jen tipy.
+
+- **Ručně kdykoli:** GitHub → záložka *Actions* → „Tabulka Extraligy“ → *Run workflow* (jde i z mobilu/iPadu
+  v prohlížeči). Volba `sonda` jen vypíše, co zdroje vracejí, nic neukládá.
+- **Kontrola:** v přehledu 26/27 je u aktuálního pořadí napsáno „Tabulka aktualizována <datum> automaticky
+  (hokej.cz)“. Když tam stojí „podle ručního zápisu“, automatika nedoběhla – v *Actions* je vidět proč.
+- **Pozor:** GitHub plánované spouštění vypne, když se v repu 60 dní nic neděje (přijde e-mail, stačí
+  workflow znovu povolit tlačítkem). Před startem sezóny (16. 9. 2026) skript hlásí „sezóna ještě nezačala“
+  a nic neukládá.
+- Kdyby hokej.cz změnil vzhled stránky a parser přestal tabulku poznávat, workflow skončí chybou (přijde
+  e-mail) a web zůstane na ručním zápisu – nic se nerozbije.
+
+## 7. Na co myslet
 
 - Web ukazuje body až od `KONFIG.BODOVANI_OD` v `extraliga_spolecne.js` (výchozí = uzávěrka tipování
   30. 9. 2026) a jen když jsou v řádku 2 listu Přehled HOTOVO názvy týmů. Do té doby jsou vidět jen tipy.
