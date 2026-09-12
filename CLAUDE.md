@@ -24,6 +24,7 @@ Majitel pracuje často jen z iPadu, proto má vše jít nasadit bez PC (PR → m
 | `extraliga_apps_script_komplet.gs` | **Generovaný** bundle = `skripty/apps_script_hlavicka.gs` + `extraliga_spolecne.js` + `extraliga_apps_script.gs`. Po změně zdrojů spusť `node skripty/sestav_apps_script.js` (test `test_bundle.js` to hlídá). |
 | `extraliga_zavadec.gs` | Jediný soubor v projektu Apps Scriptu u majitele: stahuje bundle z `main` (cache 5 min, záloha v PropertiesService). Změna v repu se v tabulce projeví sama, nic se nekopíruje. |
 | `skripty/stahni_tabulku_extraligy.js` + `.github/workflows/extraliga_tabulka.yml` | Automatická tabulka: denně 4:30 UTC (i ručně) stáhne pořadí a body z hokej.cz (záloha cs.wikipedia), zkontroluje a uloží `2627_extraliga_stav.json`. |
+| `extraliga_soupisky.js` | **Generovaný** seznam hráčů 14 klubů (jméno, tým, pozice) pro našeptávač u otázek na hráče ve formuláři. Vytváří ho `skripty/stahni_soupisky.js` z hokej.cz (stránky klubů → Soupiska); workflow `.github/workflows/extraliga_soupisky.yml` ho obnovuje každé pondělí (i ručně). Neupravovat ručně. |
 | `extraliga_navod.md` | Návod pro majitele (sloupce tabulky, žolíci, otázky, automatika). Při změně chování aktualizuj. |
 | `testy/` | Testy (Node + Playwright), viz `testy/README.md`. |
 
@@ -42,6 +43,12 @@ Majitel pracuje často jen z iPadu, proto má vše jít nasadit bez PC (PR → m
   týmové a hráčské 20 b.; finále play-off a Ano/Ne 10 b. Text pravidel ve formuláři musí sedět s kódem.
 - **Loga týmů** jsou z imgur (`KONFIG.LOGA`), při chybě náhradní `logo_neznamy.svg` (`onerror`).
 - **Lišta** (`navbar.js`): dlaždice nesou ročník, obsah se musí vejít do 1200 px (test `test_lista.js`).
+  Na ledových stránkách je tmavě modrá (kontrast k ledu) a do 1150 px šířky se zalamuje do více řádků místo
+  skrytého vodorovného posuvníku (iPad).
+- **Našeptávač hráčů** (formulář, `initNaseptavacHracu`): u každé textové otázky (střelec, nejtrestanější hráč,
+  icetime, procento gólů) nabízí jména z `extraliga_soupisky.js` podle začátku jména nebo příjmení bez diakritiky,
+  s klubem a pozicí; výběr doplní přesné „Jméno Příjmení“ (tak se pak boduje shoda textu). U icetime jsou brankáři
+  vynechaní. Volný text zůstává možný (test `test_naseptavac.js`).
 
 ## Pracovní postup
 

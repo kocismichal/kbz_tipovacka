@@ -325,6 +325,7 @@
     </div>
 
     <script src="extraliga_spolecne.js?v=2627b"></script>
+    <script src="extraliga_soupisky.js?v=1"></script>
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyN9J4KwXyuq9AoOOS2bWhawJa5fofaqffxDeuY8kcKLHjigt7wrMj1gl2LpHmsZJY/exec"; // doplní se po nasazení Apps Scriptu
 
@@ -578,6 +579,95 @@
                     pole.id = "otazka-" + q.klic;
                     pole.required = true;
                     container.appendChild(pole);
+                });
+            }
+
+            // Našeptávač jmen hráčů u textových otázek (soupisky klubů z hokej.cz v extraliga_soupisky.js).
+            // Hledá podle začátku jména i příjmení bez ohledu na diakritiku, u každého hráče ukáže klub a pozici,
+            // výběr doplní přesné "Jméno Příjmení" (tak se pak porovnává se správnou odpovědí). Volný text zůstává možný.
+            function initNaseptavacHracu() {
+                if (typeof EXTRALIGA_SOUPISKY === "undefined" || !Array.isArray(EXTRALIGA_SOUPISKY.hraci)) return;
+                const POZICE = { B: "brankář", O: "obránce", U: "útočník" };
+                const FILTR = { icetime: h => h.p !== "B" };   // hráči v poli, brankáři se u icetime nepočítají
+                const MAX_POLOZEK = 12;
+                const norm = s => EXTRALIGA.bezDiakritiky(s);
+                const hraci = EXTRALIGA_SOUPISKY.hraci.map(h => {
+                    const klic = norm(h.j);
+                    const tokeny = klic.split(/[\s-]+/).filter(Boolean);
+                    return { j: h.j, t: h.t, p: h.p, klic, tokeny, prijmeni: tokeny[tokeny.length - 1] || "" };
+                });
+
+                function najdi(dotaz, filtr) {
+                    const q = norm(dotaz);
+                    if (!q) return [];
+                    const casti = q.split(/\s+/).filter(Boolean);
+                    const poradi = h => h.klic.startsWith(q) ? 0 : (h.prijmeni.startsWith(casti[0]) ? 1 : 2);
+                    return hraci
+                        .filter(h => (!filtr || filtr(h)) && casti.every(c => h.tokeny.some(t => t.startsWith(c))))
+                        .sort((a, b) => poradi(a) - poradi(b) || a.prijmeni.localeCompare(b.prijmeni) || a.klic.localeCompare(b.klic))
+                        .slice(0, MAX_POLOZEK);
+                }
+
+                document.querySelectorAll("#bonusove-otazky input[type='text']").forEach(input => {
+                    input.setAttribute("autocomplete", "off");
+                    input.setAttribute("spellcheck", "false");
+                    const obal = document.createElement("div");
+                    obal.className = "hrac-naseptavac";
+                    input.parentNode.insertBefore(obal, input);
+                    obal.appendChild(input);
+                    const nabidka = document.createElement("div");
+                    nabidka.className = "hrac-nabidka";
+                    obal.appendChild(nabidka);
+
+                    let polozky = [], aktivni = -1;
+                    const zavri = () => { nabidka.style.display = "none"; nabidka.innerHTML = ""; polozky = []; aktivni = -1; };
+                    const vyber = h => { input.value = h.j; zavri(); input.dispatchEvent(new Event("change")); };
+                    const oznac = i => {
+                        aktivni = i;
+                        polozky.forEach((el, k) => el.classList.toggle("aktivni", k === i));
+                        if (polozky[i]) polozky[i].scrollIntoView({ block: "nearest" });
+                    };
+                    const vykresli = () => {
+                        const vysledky = najdi(input.value, FILTR[input.name]);
+                        zavri();
+                        if (!vysledky.length) return;
+                        vysledky.forEach(h => {
+                            const div = document.createElement("div");
+                            div.className = "hrac-polozka";
+                            const logo = EXTRALIGA.KONFIG.LOGA[h.t];
+                            if (logo) {
+                                const img = document.createElement("img");
+                                img.src = logo; img.alt = ""; img.className = "opt-logo";
+                                img.onerror = () => { img.style.visibility = "hidden"; };
+                                div.appendChild(img);
+                            }
+                            const jmeno = document.createElement("span");
+                            jmeno.className = "hrac-jmeno"; jmeno.textContent = h.j;
+                            const klub = document.createElement("span");
+                            klub.className = "hrac-klub"; klub.textContent = h.t + " · " + (POZICE[h.p] || "");
+                            div.appendChild(jmeno); div.appendChild(klub);
+                            // mousedown místo click: proběhne dřív než blur pole, a tak výběr nezmizí
+                            div.addEventListener("mousedown", ev => { ev.preventDefault(); vyber(h); });
+                            nabidka.appendChild(div);
+                            polozky.push(div);
+                        });
+                        nabidka.style.display = "block";
+                    };
+
+                    input.addEventListener("input", vykresli);
+                    input.addEventListener("focus", () => { if (input.value.trim() !== "") vykresli(); });
+                    input.addEventListener("blur", () => setTimeout(zavri, 150));
+                    input.addEventListener("keydown", e => {
+                        if (nabidka.style.display !== "block") return;
+                        if (e.key === "ArrowDown") { e.preventDefault(); oznac((aktivni + 1) % polozky.length); }
+                        else if (e.key === "ArrowUp") { e.preventDefault(); oznac(aktivni <= 0 ? polozky.length - 1 : aktivni - 1); }
+                        else if (e.key === "Enter") {
+                            e.preventDefault();   // Enter v otevřené nabídce nikdy neodešle formulář
+                            if (aktivni >= 0) polozky[aktivni].dispatchEvent(new MouseEvent("mousedown", { cancelable: true }));
+                            else zavri();
+                        }
+                        else if (e.key === "Escape") { e.preventDefault(); zavri(); }
+                    });
                 });
             }
 
@@ -860,6 +950,7 @@
             naplnitMistry();
             hlidatNevyplneneTymy();
             initCustomSelects();
+            initNaseptavacHracu();
         }
     </script>
     <script src="navbar.js"></script>
