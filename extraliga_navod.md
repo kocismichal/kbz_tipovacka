@@ -154,7 +154,19 @@ ručním zápisu pořadí v listu (E2–R2, body AY2–BL2) jako dřív. Body se
 - Kdyby hokej.cz změnil vzhled stránky a parser přestal tabulku poznávat, workflow skončí chybou (přijde
   e-mail) a web zůstane na ručním zápisu – nic se nerozbije.
 
-## 7. Na co myslet
+## 7. Našeptávač jmen hráčů
+
+U otázek, kde se píše jméno hráče (nejlepší střelec, nejtrestanější hráč, největší icetime, procento gólů
+týmu), formulář napovídá jména ze soupisek všech 14 klubů (hokej.cz → stránka klubu → Soupiska). Stačí začít
+psát jméno nebo příjmení, i bez diakritiky („str“ → Matěj Stránský · Pardubice · útočník). Výběr doplní přesné
+„Jméno Příjmení“, takže se odpověď pak správně porovná s tou správnou. Kdo chce, může napsat i jméno mimo
+seznam (nováček po přestupu) – text se uloží tak, jak je. U otázky na icetime se brankáři nenabízejí.
+
+Soupisky jsou v souboru `extraliga_soupisky.js` a obnovují se samy každé pondělí (workflow „Soupisky Extraligy“
+v záložce Actions, jde spustit i ručně). Když hokej.cz změní vzhled stránky, workflow skončí chybou a na webu
+zůstane poslední uložená soupiska – nic se nerozbije.
+
+## 8. Na co myslet
 
 - Testy a pomocné skripty jsou v repu: `testy/README.md` (jak je spustit na PC) a `skripty/sestav_apps_script.js`
   (sestaví bundle pro Apps Script po změně `extraliga_spolecne.js` nebo `extraliga_apps_script.gs`).

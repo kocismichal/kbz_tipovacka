@@ -1,0 +1,40 @@
+# Soupisky klubů Extraligy pro našeptávač jmen ve formuláři tipovačky Mistrů světa: jednou týdně stáhne
+# soupisky z hokej.cz a uloží je do extraliga_soupisky.js (jen když se něco změnilo, např. přestup).
+# Ručně: záložka Actions → "Soupisky Extraligy" → Run workflow.
+name: Soupisky Extraligy
+
+on:
+  workflow_dispatch:
+    inputs:
+      rezim:
+        description: "aktualizace = stáhnout a uložit soupisky, sonda = jen vypsat, co hokej.cz vrací"
+        required: false
+        default: "aktualizace"
+  schedule:
+    - cron: "45 4 * * 1"   # každé pondělí 6:45 (letní čas) / 5:45 (zimní čas)
+
+permissions:
+  contents: write
+
+jobs:
+  soupisky:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Stáhnout soupisky
+        run: node skripty/stahni_soupisky.js --rezim "${{ github.event.inputs.rezim || 'aktualizace' }}"
+      - name: Uložit změnu do repa
+        if: ${{ (github.event.inputs.rezim || 'aktualizace') == 'aktualizace' }}
+        run: |
+          if git diff --quiet -- extraliga_soupisky.js; then
+            echo "Soupisky beze změny, není co ukládat."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add extraliga_soupisky.js
+          git commit -m "Soupisky Extraligy: automatická aktualizace $(date -u +%Y-%m-%d)"
+          git push
