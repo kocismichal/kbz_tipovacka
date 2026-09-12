@@ -156,6 +156,10 @@ ručním zápisu pořadí v listu (E2–R2, body AY2–BL2) jako dřív. Body se
 
 ## 7. Na co myslet
 
+- Testy a pomocné skripty jsou v repu: `testy/README.md` (jak je spustit na PC) a `skripty/sestav_apps_script.js`
+  (sestaví bundle pro Apps Script po změně `extraliga_spolecne.js` nebo `extraliga_apps_script.gs`).
+  Kontext pro Claude Code je v `CLAUDE.md` v kořeni repa.
+
 - Web ukazuje body až od `KONFIG.BODOVANI_OD` v `extraliga_spolecne.js` (výchozí = uzávěrka tipování
   30. 9. 2026) a jen když jsou v řádku 2 listu Přehled HOTOVO názvy týmů. Do té doby jsou vidět jen tipy.
   Kdyby měly body běžet dřív, stačí datum posunout. Názvy týmů ve výsledcích musí odpovídat seznamu
