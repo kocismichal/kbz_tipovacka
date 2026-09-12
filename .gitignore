@@ -1,0 +1,4 @@
+# testy (Node + Playwright) – balíčky a výstupy se do repa nedávají
+testy/node_modules/
+testy/vystup/
+testy/package-lock.json

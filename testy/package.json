@@ -1,0 +1,12 @@
+{
+  "name": "kbz-tipovacka-testy",
+  "private": true,
+  "description": "Testy tipovačky Extraligy (Node + Playwright). Web samotný žádné balíčky nepotřebuje.",
+  "scripts": {
+    "test": "node spust_vse.js",
+    "prohlizec": "playwright install chromium"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.1"
+  }
+}
