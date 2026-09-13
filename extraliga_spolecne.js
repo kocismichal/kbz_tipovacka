@@ -75,9 +75,11 @@ var EXTRALIGA = (function () {
       tympresilovky: "Pardubice",
       tymfauly: "Sparta Praha",
       baraz: "Ne",
+      tym_nejmene_trestany: "Olomouc",
       strelec: "Anthony Nellis",
-      gol_strelec: "25 gólů",
+      gol_strelec: "25 gólů (Anthony Nellis)",
       trestyhrac: "John Ludvig",
+      icetime: "Libor Zábranský",
       tomek_body: "20 bodů (13 gólů + 7 asistencí)"
     }
   };
@@ -132,15 +134,15 @@ var EXTRALIGA = (function () {
       otazka: "Sestoupí extraligový tým do Maxa ligy po prohře v baráži?" },
 
     { idx: 27, klic: "strelec",       typ: "text20", aktivni: true, vstup: "text", skupina: "Hráči", nadpis: "Nejlepší střelec",
-      otazka: "Nejlepší střelec základní části", placeholder: "např. Anthony Nellis (snaž se napsat celé jméno správně)" },
+      otazka: "Nejlepší střelec základní části", placeholder: "Jméno a příjmení hráče" },
     { idx: 28, klic: "gol_strelec",   typ: "cislo",  aktivni: true, vstup: "cislo", max: 100, skupina: "Hráči", nadpis: "Góly střelce",
       otazka: "Kolik gólů vstřelí nejlepší střelec?" },
     { idx: 44, klic: "stransky_ruzicka", typ: "text10", aktivni: true, vstup: "anone", skupina: "Hráči", nadpis: "Stránský vs. Růžička",
       otazka: sRekordem("Překoná Matěj Stránský (Pardubice) rekord Martina Růžičky v počtu gólů za jednu základní část?", KONFIG.REKORDY.ruzicka_goly_sezona) },
     { idx: 29, klic: "trestyhrac",    typ: "text20", aktivni: true, vstup: "text", skupina: "Hráči", nadpis: "Nejtrestanější hráč",
-      otazka: "Nejtrestanější hráč základní části", placeholder: "např. John Ludvig (snaž se napsat celé jméno správně)" },
+      otazka: "Nejtrestanější hráč základní části", placeholder: "Jméno a příjmení hráče" },
     { idx: 45, klic: "icetime",       typ: "text20", aktivni: true, vstup: "text", skupina: "Hráči", nadpis: "Největší icetime",
-      otazka: "Který hráč v poli bude mít za základní část největší celkový čas na ledě (icetime)?", placeholder: "Jméno a příjmení hráče (brankáři se nepočítají)" },
+      otazka: "Který hráč v poli bude mít za základní část největší celkový čas na ledě (icetime)?", placeholder: "Jméno a příjmení hráče" },
     { idx: 46, klic: "procento_golu", typ: "text20", aktivni: true, vstup: "text", skupina: "Hráči", nadpis: "Procento gólů týmu",
       otazka: "Který hráč vstřelí největší procento gólů svého týmu v základní části?", placeholder: "Jméno a příjmení hráče" },
     { idx: 47, klic: "tomek_body",    typ: "cislo",  aktivni: true, vstup: "cislo", max: 100, skupina: "Hráči", nadpis: "Body P. Tomek",

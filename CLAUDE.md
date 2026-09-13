@@ -43,8 +43,9 @@ Majitel pracuje často jen z iPadu, proto má vše jít nasadit bez PC (PR → m
   týmové a hráčské 20 b.; finále play-off a Ano/Ne 10 b. Text pravidel ve formuláři musí sedět s kódem.
 - **Loga týmů** jsou z imgur (`KONFIG.LOGA`), při chybě náhradní `logo_neznamy.svg` (`onerror`).
 - **Lišta** (`navbar.js`): dlaždice nesou ročník, obsah se musí vejít do 1200 px (test `test_lista.js`).
-  Na ledových stránkách je tmavě modrá (kontrast k ledu) a do 1150 px šířky se zalamuje do více řádků místo
-  skrytého vodorovného posuvníku (iPad).
+  Na ledových stránkách je tmavě modrá (kontrast k ledu), nikdy se neořezává (co se nevejde, zalomí se pod
+  řádek, např. iPad) a na počítači je se skutečnými fonty na jednom řádku. `test_lista.js` proto fonty
+  z fonts.googleapis.com načítá – s náhradními fonty je obsah užší a ořez by se neodhalil.
 - **Našeptávač hráčů** (formulář, `initNaseptavacHracu`): u každé textové otázky (střelec, nejtrestanější hráč,
   icetime, procento gólů) nabízí jména z `extraliga_soupisky.js` podle začátku jména nebo příjmení bez diakritiky,
   s klubem a pozicí; výběr doplní přesné „Jméno Příjmení“ (tak se pak boduje shoda textu). U icetime jsou brankáři
