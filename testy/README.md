@@ -37,7 +37,7 @@ Screenshoty se ukládají do `testy/vystup/` (složka je v .gitignore).
 | `test_stav.js` | automatická tabulka: platný snímek, neplatný snímek (záloha z listu), před uzávěrkou nic z výsledků |
 | `test_zmeny.js` | vyhodnocení 25/26: stupně vítězů, karta bez oblíbenosti, matice bez %, TOP 10 se správnou odpovědí, lišta s ročníkem, text pravidel |
 | `test_2526_snap.js` | vyhodnocení 25/26 ze snímku dat (298 tipujících, vítěz, karta) |
-| `test_lista.js` | lišta se nikde neořezává (400–1300 px) |
+| `test_lista.js` | lišta se nikde neořezává (400–1440 px) a od 1250 px je na jednom řádku; měří se skutečnými fonty (potřebuje internet) |
 | `test_naseptavac.js` | našeptávač jmen hráčů ve formuláři: nabídka podle jména i příjmení, klub u hráče, výběr klávesnicí, brankáři mimo icetime |
 | `test_index.js` | úvodní stránka bez chyb v konzoli |
 | `test_vzhled.js` | screenshoty formuláře a přehledu (desktop/iPad/mobil) do `vystup/` |
