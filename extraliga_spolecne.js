@@ -75,9 +75,11 @@ var EXTRALIGA = (function () {
       tympresilovky: "Pardubice",
       tymfauly: "Sparta Praha",
       baraz: "Ne",
+      tym_nejmene_trestany: "Olomouc",
       strelec: "Anthony Nellis",
-      gol_strelec: "25 gólů",
+      gol_strelec: "25 gólů (Anthony Nellis)",
       trestyhrac: "John Ludvig",
+      icetime: "Libor Zábranský",
       tomek_body: "20 bodů (13 gólů + 7 asistencí)"
     }
   };
