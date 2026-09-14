@@ -46,6 +46,12 @@ Majitel pracuje často jen z iPadu, proto má vše jít nasadit bez PC (PR → m
   Na ledových stránkách je tmavě modrá (kontrast k ledu), nikdy se neořezává (co se nevejde, zalomí se pod
   řádek, např. iPad) a na počítači je se skutečnými fonty na jednom řádku. `test_lista.js` proto fonty
   z fonts.googleapis.com načítá – s náhradními fonty je obsah užší a ořez by se neodhalil.
+- **Mistři v přehledu**: karty se poznávají podle jména tipu (`KONFIG.MISTRI_DETAIL`, `jeMistr`). Pátá položka
+  je **společný tip podcastu** odeslaný pod jménem „Mistři světa“ (`spolecny: true`, `jeSpolecnyTip`): má kartu
+  s logem `mistri_sveta_logo.png` a štítkem, řadí se poslední, nedostává korunu, není ve fanoušcích ani v otázkách
+  „Kdo z Mistrů…“ (ty jdou z `KONFIG.MISTRI`). V žebříčku soutěží jako kdokoli jiný.
+- **Filtr matice „Jak vidíte tabulku vy?“**: výběr `#matrix-klub` (fanoušci klubu podle oblíbeného týmu z tipu,
+  s počty) přepočítá matici i procenta jen z vybrané podmnožiny (`spocitejMatici(hraci)`, `formatProcenta(pocet, zaklad)`).
 - **Našeptávač hráčů** (formulář, `initNaseptavacHracu`): u každé textové otázky (střelec, nejtrestanější hráč,
   icetime, procento gólů) nabízí jména z `extraliga_soupisky.js` podle začátku jména nebo příjmení bez diakritiky,
   s klubem a pozicí; výběr doplní přesné „Jméno Příjmení“ (tak se pak boduje shoda textu). U icetime jsou brankáři

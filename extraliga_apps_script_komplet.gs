@@ -57,11 +57,14 @@ var EXTRALIGA = (function () {
     MISTRI_INDEXY: [1, 2, 3, 4],
     // Mistři: přezdívka, varianty jména pro rozpoznání tipu (bez diakritiky, malými písmeny, celé jméno nebo
     // nezaměnitelná přezdívka jako samostatné slovo) a soubor s fotkou v repu webu.
+    // Poslední položka je SPOLEČNÝ tip celého podcastu (odeslaný pod jménem "Mistři světa"): má vlastní kartu
+    // s logem, ale nesoutěží o korunu pro nejlepšího Mistra a není v otázkách "Kdo z Mistrů…" (ty jdou z MISTRI).
     MISTRI_DETAIL: [
       { prezdivka: "Vilda",    jmena: ["vilem franek"],                          foto: "vilda.jpg" },
       { prezdivka: "Bonifác",  jmena: ["honza homolka", "jan homolka", "bonifac"], foto: "bonifac.jpg" },
       { prezdivka: "Tlusťoch", jmena: ["jiri tlusty", "tlustoch"],               foto: "tlustoch.jpg" },
-      { prezdivka: "Dudák",    jmena: ["radek duda"],                            foto: "dudak.jpg" }
+      { prezdivka: "Dudák",    jmena: ["radek duda"],                            foto: "dudak.jpg" },
+      { prezdivka: "Mistři světa", jmena: ["mistri sveta"], foto: "mistri_sveta_logo.png", spolecny: true }
     ],
     // Konečné pořadí základní části 2025/26 (list Přehled HOTOVO loňské tabulky).
     PORADI_2526: [
@@ -432,6 +435,12 @@ var EXTRALIGA = (function () {
     return najdiMistra(jmeno) !== null;
   }
 
+  // Společný tip podcastu (karta mezi Mistry, ale bez koruny) – položka MISTRI_DETAIL s příznakem spolecny.
+  function jeSpolecnyTip(jmeno) {
+    var m = najdiMistra(jmeno);
+    return !!(m && m.spolecny);
+  }
+
   // Soubor s fotkou Mistra podle jména v tipu, nebo "" (pak se použijí iniciály).
   function fotoMistra(jmeno) {
     var m = najdiMistra(jmeno);
@@ -467,6 +476,7 @@ var EXTRALIGA = (function () {
     bezDiakritiky: bezDiakritiky,
     najdiMistra: najdiMistra,
     jeMistr: jeMistr,
+    jeSpolecnyTip: jeSpolecnyTip,
     fotoMistra: fotoMistra
   };
 })();

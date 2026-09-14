@@ -166,7 +166,16 @@ Soupisky jsou v souboru `extraliga_soupisky.js` a obnovují se samy každé pond
 v záložce Actions, jde spustit i ručně). Když hokej.cz změní vzhled stránky, workflow skončí chybou a na webu
 zůstane poslední uložená soupiska – nic se nerozbije.
 
-## 8. Na co myslet
+## 8. Společný tip Mistrů a pohled fanoušků klubu
+
+- **Společný tip podcastu** se odesílá formulářem jako kdokoli jiný, jen pod jménem **„Mistři světa“** (na velikosti
+  písmen a háčcích nezáleží). Přehled ho ukáže jako pátou kartu mezi Mistry s logem podcastu a štítkem „Společný tip“.
+  Korunu pro nejlepšího Mistra nedostane (ta je pro jednotlivce), v celkovém žebříčku ale soutěží normálně.
+- **Jak vidí tabulku fanoušci klubu**: nad maticí „Jak vidíte tabulku vy?“ je výběr klubu (podle oblíbeného týmu,
+  který lidé zadali ve formuláři, s počtem tipujících). Po výběru se matice i procenta počítají jen z fanoušků
+  daného klubu; „Všichni tipující“ vrátí celkový pohled.
+
+## 9. Na co myslet
 
 - Testy a pomocné skripty jsou v repu: `testy/README.md` (jak je spustit na PC) a `skripty/sestav_apps_script.js`
   (sestaví bundle pro Apps Script po změně `extraliga_spolecne.js` nebo `extraliga_apps_script.gs`).
