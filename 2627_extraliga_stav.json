@@ -1,0 +1,78 @@
+{
+  "sezona": "2026/27",
+  "aktualizovano": "2026-09-16T09:22:52.546Z",
+  "zdroj": "hokej.cz",
+  "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
+  "poradi": [
+    {
+      "tym": "Třinec",
+      "zapasy": 1,
+      "body": 3
+    },
+    {
+      "tym": "České Budějovice",
+      "zapasy": 0,
+      "body": 0
+    },
+    {
+      "tym": "Mountfield HK",
+      "zapasy": 0,
+      "body": 0
+    },
+    {
+      "tym": "Vítkovice",
+      "zapasy": 0,
+      "body": 0
+    },
+    {
+      "tym": "Litvínov",
+      "zapasy": 0,
+      "body": 0
+    },
+    {
+      "tym": "Plzeň",
+      "zapasy": 0,
+      "body": 0
+    },
+    {
+      "tym": "Sparta Praha",
+      "zapasy": 0,
+      "body": 0
+    },
+    {
+      "tym": "Olomouc",
+      "zapasy": 0,
+      "body": 0
+    },
+    {
+      "tym": "Kometa Brno",
+      "zapasy": 0,
+      "body": 0
+    },
+    {
+      "tym": "Pardubice",
+      "zapasy": 0,
+      "body": 0
+    },
+    {
+      "tym": "Mladá Boleslav",
+      "zapasy": 0,
+      "body": 0
+    },
+    {
+      "tym": "Liberec",
+      "zapasy": 0,
+      "body": 0
+    },
+    {
+      "tym": "Kladno",
+      "zapasy": 0,
+      "body": 0
+    },
+    {
+      "tym": "Karlovy Vary",
+      "zapasy": 1,
+      "body": 0
+    }
+  ]
+}
