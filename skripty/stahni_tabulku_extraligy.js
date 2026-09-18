@@ -215,35 +215,52 @@ async function sonda() {
   }
 }
 
-// Historie snímků pro graf vývoje: nový stav tabulky (jiné pořadí nebo body) = nový snímek s datem stažení.
-// Stejné pořadí i body jako poslední snímek → jen se doplní statistiky (datum snímku zůstává).
-// Víc běhů v jeden den se stejným datem → poslední stav dne přepíše ten předchozí.
-function aktualizujHistorii(stav) {
+// Historie snímků pro graf vývoje tipovačky. Nový bod v grafu přibude JEN když se od posledního snímku
+// hrálo – tedy když se změnil součet odehraných zápasů nebo součet bodů všech týmů. Ve dnech bez zápasů
+// (volný den v programu, reprezentační přestávka) se nic nepřidává, takže graf má na ose jen hrací dny.
+// Když se nehrálo, ale tabulka se přesto mírně liší (web přerovná týmy se stejnými body nebo doplní
+// statistiky), aktualizuje se poslední snímek na místě – bod v grafu nepřibude.
+// Víc běhů v jeden den (odpolední a večerní zápasy) přepíše poslední snímek téhož dne.
+function aktualizujHistorii(stav, souborHistorie) {
+  const soubor = souborHistorie || HISTORIE;
   let historie = { sezona: EXTRALIGA.KONFIG.SEZONA, snimky: [] };
   try {
-    const h = JSON.parse(fs.readFileSync(HISTORIE, "utf8"));
+    const h = JSON.parse(fs.readFileSync(soubor, "utf8"));
     if (h && Array.isArray(h.snimky)) historie = h;
   } catch (e) {}
   const datum = String(stav.aktualizovano || new Date().toISOString()).slice(0, 10);
   const novy = { datum, aktualizovano: stav.aktualizovano, poradi: stav.poradi };
   if (stav.statistiky) novy.statistiky = stav.statistiky;
   const posledni = historie.snimky[historie.snimky.length - 1];
-  let zmena = "nový snímek";
-  if (posledni && JSON.stringify(posledni.poradi) === JSON.stringify(novy.poradi)) {
-    if (novy.statistiky && JSON.stringify(posledni.statistiky || null) !== JSON.stringify(novy.statistiky)) {
-      posledni.statistiky = novy.statistiky;
-      zmena = "doplněny statistiky k poslednímu snímku";
-    } else {
-      zmena = "";
+  const soucet = (poradi, klic) => (poradi || []).reduce((s, p) => s + (Number(p[klic]) || 0), 0);
+  const hralo = !posledni
+    || soucet(novy.poradi, "zapasy") !== soucet(posledni.poradi, "zapasy")
+    || soucet(novy.poradi, "body") !== soucet(posledni.poradi, "body");
+
+  let zmena = "";
+  if (!posledni) {
+    historie.snimky.push(novy);
+    zmena = "první snímek";
+  } else if (!hralo) {
+    // Od posledního snímku se nehrálo – bod v grafu nepřibývá
+    const stejne = JSON.stringify(posledni.poradi) === JSON.stringify(novy.poradi)
+      && JSON.stringify(posledni.statistiky || null) === JSON.stringify(novy.statistiky || null);
+    if (!stejne) {
+      posledni.poradi = novy.poradi;
+      if (novy.statistiky) posledni.statistiky = novy.statistiky;
+      posledni.aktualizovano = novy.aktualizovano;
+      zmena = "od minula se nehrálo – aktualizován poslední snímek (bez nového bodu)";
     }
-  } else if (posledni && posledni.datum === datum) {
+  } else if (posledni.datum === datum) {
     historie.snimky[historie.snimky.length - 1] = novy;
     zmena = "snímek dne přepsán";
   } else {
     historie.snimky.push(novy);
+    zmena = "nový snímek";
   }
-  if (!zmena) { console.log("Historie: beze změny (" + historie.snimky.length + " snímků)."); return; }
-  fs.writeFileSync(HISTORIE, JSON.stringify(historie, null, 1) + "\n");
+
+  if (!zmena) { console.log("Historie: beze změny, od minula se nehrálo (" + historie.snimky.length + " snímků)."); return; }
+  fs.writeFileSync(soubor, JSON.stringify(historie, null, 1) + "\n");
   console.log("Historie: " + zmena + " (" + historie.snimky.length + " snímků, poslední " + historie.snimky[historie.snimky.length - 1].datum + ").");
 }
 
@@ -291,4 +308,9 @@ async function aktualizace() {
   process.exit(1);
 }
 
-(rezim === "sonda" ? sonda() : aktualizace()).catch((e) => { console.error(e); process.exit(1); });
+if (require.main === module) {
+  (rezim === "sonda" ? sonda() : aktualizace()).catch((e) => { console.error(e); process.exit(1); });
+} else {
+  // Načtení přes require (testy): jen funkce, nic se nestahuje ani neukládá
+  module.exports = { aktualizujHistorii, poradiZHtml, poradiZTabulky, statistikyZPoradi, overPoradi, poznejTym };
+}
