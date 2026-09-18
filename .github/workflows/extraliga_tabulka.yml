@@ -50,7 +50,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add 2627_extraliga_stav.json 2627_extraliga_historie.json
           git commit -m "Tabulka Extraligy: automatická aktualizace $(date -u +%Y-%m-%d)"
-          git pull --rebase origin main
           git push
 
   hlidani:
@@ -91,12 +90,13 @@ jobs:
             if [ -n "$(git status --porcelain -- 2627_extraliga_stav.json 2627_extraliga_historie.json)" ]; then
               git add 2627_extraliga_stav.json 2627_extraliga_historie.json
               git commit -m "Tabulka Extraligy: automatická aktualizace $(TZ=Europe/Prague date '+%-d. %-m. %Y %H:%M')"
-              if git pull --rebase origin main && git push; then
+              if git push; then
                 echo "Změna tabulky uložena do main."
               else
-                echo "Uložení se nepovedlo (nejspíš souběh s jiným během) – srovnám se s main a zkusím to za chvíli znovu."
-                git rebase --abort || true
-                git reset --hard origin/main || true
+                # Někdo mezitím do main commitnul: zahodit vlastní commit, srovnat se s main a zkusit to za chvíli znovu
+                echo "Uložení se nepovedlo (nejspíš souběh s jiným během) – srovnám se s main a zkusím to znovu."
+                git fetch origin main
+                git reset --hard origin/main
               fi
             fi
             if grep -q "KONTROLA: hotovo" "$LOG"; then
