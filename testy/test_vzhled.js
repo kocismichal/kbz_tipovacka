@@ -35,7 +35,7 @@ function hotovo(sVysledky) {
 (async () => {
   const browser = await chromium.launch();
   const scenare = [
-    { nazev: 'pred', vysledky: true, cas: null },                 // výsledky v tabulce, ale před uzávěrkou → jen tipy
+    { nazev: 'pred', vysledky: false, cas: null },                // ještě žádné výsledky → jen tipy (bodování běží od startu sezóny)
     { nazev: 'live', vysledky: true, cas: '2026-10-05T12:00:00' } // po uzávěrce → bodování
   ];
   const sirky = [{ n: 'desktop', w: 1300, h: 900 }, { n: 'ipad', w: 1024, h: 1366 }, { n: 'mobil', w: 400, h: 850 }];

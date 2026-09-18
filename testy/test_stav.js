@@ -24,20 +24,26 @@ function hotovo(sPoradim) {
   return [E.HLAVICKA, r];
 }
 const stav = { sezona: '2026/27', aktualizovano: '2026-10-05T04:31:00Z', zdroj: 'hokej.cz', poradi: jsonPoradi.map((t, i) => ({ tym: t, zapasy: 5 + (i % 2), body: 30 - i * 2 })) };
+// Snímek se statistikami: Kladno nejvíc gólů, Třinec nejvíc přesilovek, Plzeň nejvíc trestů, Liberec nejméně
+const statistiky = {};
+T.forEach((t, i) => { statistiky[t] = { goly: 10 + (t === 'Kladno' ? 20 : i), obdrzene: 5, presilovky: t === 'Třinec' ? 9 : 2, tresty: t === 'Plzeň' ? 60 : (t === 'Liberec' ? 4 : 20 + i) }; });
+const stavStat = Object.assign({}, stav, { statistiky });
 
 (async () => {
   const browser = await chromium.launch();
   const scenare = [
-    { n: 'po uzávěrce + JSON', bodovaniOd: '2020-01-01T00:00:00', json: stav, sheet: hotovo(true) },
-    { n: 'po uzávěrce + neplatný JSON (13 týmů)', bodovaniOd: '2020-01-01T00:00:00', json: { poradi: stav.poradi.slice(1) }, sheet: hotovo(true) },
-    { n: 'před uzávěrkou (odpovědi v listu se neukazují)', bodovaniOd: '2099-01-01T00:00:00', json: stav, sheet: hotovo(true) },
+    { n: 'po uzávěrce + JSON', bodovaniOd: '2020-01-01T00:00:00', json: stav, sheet: hotovo(true), finale: true },
+    { n: 'po uzávěrce + neplatný JSON (13 týmů)', bodovaniOd: '2020-01-01T00:00:00', json: { poradi: stav.poradi.slice(1) }, sheet: hotovo(true), finale: true },
+    { n: 'před uzávěrkou (odpovědi v listu se neukazují)', bodovaniOd: '2099-01-01T00:00:00', json: stav, sheet: hotovo(true), finale: false },
+    { n: 'průběžně + JSON se statistikami', bodovaniOd: '2020-01-01T00:00:00', json: stavStat, sheet: hotovo(true), finale: false },
   ];
   for (const sc of scenare) {
     const page = await browser.newPage({ viewport: { width: 1300, height: 900 } });
     const errors = []; page.on('pageerror', e => errors.push('pageerror: ' + e.message));
     await page.route('**/*', route => {
       const url = route.request().url();
-      if (url.includes('extraliga_spolecne.js')) return route.fulfill({ status: 200, contentType: 'application/javascript', body: spolecne.replace(/BODOVANI_OD: "[^"]+"/, `BODOVANI_OD: "${sc.bodovaniOd}"`) });
+      if (url.includes('extraliga_spolecne.js')) return route.fulfill({ status: 200, contentType: 'application/javascript', body: spolecne.replace(/BODOVANI_OD: "[^"]+"/, `BODOVANI_OD: "${sc.bodovaniOd}"`).replace(/FINALE: (true|false)/, `FINALE: ${sc.finale ? 'true' : 'false'}`) });
+      if (url.includes('2627_extraliga_historie.json')) return route.fulfill({ status: 404, body: '' });
       if (url.includes('2627_extraliga_stav.json')) return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(sc.json) });
       if ((url.startsWith('file://') || url.startsWith('http://127.0.0.1:8765')) || url.startsWith('http://127.0.0.1:8765')) return route.continue();
       if (url.includes('script.google.com')) { const sheet = decodeURIComponent((url.match(/sheet=([^&]+)/) || [])[1] || ''); return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(sheet === 'Tipy' ? tipy : sc.sheet) }); }
@@ -52,7 +58,8 @@ const stav = { sezona: '2026/27', aktualizovano: '2026-10-05T04:31:00Z', zdroj: 
       const radky = [...document.querySelectorAll('#tabulka-telo tr')].map(tr => tr.innerText.replace(/\s+/g, ' ').trim());
       let karta = '';
       if (typeof vsichniHraci !== 'undefined' && vsichniHraci.length) { otevriModalJeden(vsichniHraci[0]); karta = document.getElementById('playerModalContent').innerText.replace(/\s+/g, ' '); zavriModal('playerModal'); }
-      return { text: c.innerText.replace(/\s+/g, ' ').slice(0, 260), poradi, body, radky, bodovaniAktivni, maStav: !!stavTabulky, karta: karta.slice(0, 900), spravneVKarte: /\(Sparta Praha\)|\(Ano\)/.test(karta) };
+      return { text: c.innerText.replace(/\s+/g, ' ').slice(0, 3000), poradi, body, radky, bodovaniAktivni, maStav: !!stavTabulky, karta: karta.slice(0, 1400), spravneVKarte: /\(Sparta Praha\)|\(Ano\)/.test(karta),
+        hlavicka: document.getElementById('tabulka-hlavicka').innerText.replace(/\s+/g, ' ').trim(), zoliciTab: document.getElementById('tab-zolici').style.display, poSezone: (karta.match(/po sezóně/g) || []).length };
     });
     console.log('=== ' + sc.n + ' ===\n' + JSON.stringify(info, null, 1).slice(0, 1800));
     if (sc.n.startsWith('po uzávěrce + JSON')) {
@@ -71,6 +78,17 @@ const stav = { sezona: '2026/27', aktualizovano: '2026-10-05T04:31:00Z', zdroj: 
       assert.deepStrictEqual(info.poradi, T, 'pořadí z listu');
       assert(info.text.includes('ručního zápisu'), 'text o ručním zápisu');
       assert(info.radky[0].startsWith('1. Listový Tip'), 'žebříček podle listu');
+    } else if (sc.n.startsWith('průběžně')) {
+      assert(info.bodovaniAktivni && info.maStav, 'průběžné bodování se snímkem');
+      assert(info.text.includes('Průběžné bodování') && info.text.includes('Průběžně vedou'), 'panel o průběžném bodování');
+      assert(info.text.includes('Kladno') && info.text.includes('gólů') && info.text.includes('Liberec') && info.text.includes('trestných minut'), 'průběžní vítězové týmových otázek se statistikou');
+      assert(/\(Kladno\)/.test(info.karta), 'v kartě průběžná odpověď ze statistik (Kladno)');
+      assert(!/\(Sparta Praha\)|\(Ano\)/.test(info.karta), 'v kartě se ruční odpovědi z listu průběžně neukazují');
+      assert(info.poSezone >= 2, 'nevyhodnocené položky mají „po sezóně“');
+      assert(!info.hlavicka.includes('žolíky') && info.zoliciTab === 'none', 'průběžně bez sloupce a záložky žolíků');
+      assert(info.body[0].startsWith('30 b.'), 'body týmů ze snímku i průběžně');
+      const box = await (await page.$('#aktualni-stav-container')).boundingBox();
+      await page.screenshot({ path: SCR + 'z_stav_prubezne.png', fullPage: true, clip: { x: 0, y: box.y - 60, width: 1300, height: Math.min(box.height + 80, 900) } });
     } else {
       assert(!info.bodovaniAktivni, 'před uzávěrkou bodování vypnuté');
       assert(!info.spravneVKarte, 'před uzávěrkou se správné odpovědi z listu neukazují');

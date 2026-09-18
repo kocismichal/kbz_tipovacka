@@ -155,8 +155,11 @@ function vypisBodovaniDoProtokolu() {
   var hotovo = ss.getSheetByName(WEB_LIST_HOTOVO).getDataRange().getValues();
   var vysledky = hotovo.length > 1 ? hotovo[1] : [];
   var stav = webNactiStavTabulky();
-  if (stav) { vysledky = EXTRALIGA.slucStavTabulky(vysledky, stav); Logger.log("Pořadí a body týmů: automatická tabulka z " + stav.aktualizovano + " (" + stav.zdroj + ")"); }
+  if (stav) Logger.log("Pořadí a body týmů: automatická tabulka z " + stav.aktualizovano + " (" + stav.zdroj + ")");
   else Logger.log("Pořadí a body týmů: řádek 2 listu " + WEB_LIST_HOTOVO + " (automatická tabulka není k dispozici)");
+  // Stejné složení výsledků jako na webu: průběžně jen pořadí a týmové otázky ze statistik, ve finále i řádek 2 listu
+  vysledky = EXTRALIGA.sestavVysledky(vysledky, stav);
+  Logger.log("Režim bodování: " + (EXTRALIGA.KONFIG.FINALE ? "finále (řádek 2 listu + automatická tabulka)" : "průběžně (jen pořadí z tabulky a týmové otázky ze statistik hokej.cz)"));
   Logger.log("Výsledky k dispozici: " + EXTRALIGA.jsouVysledky(vysledky));
   for (var i = 1; i < tipy.length; i++) {
     var jmeno = EXTRALIGA.norm(tipy[i][EXTRALIGA.SLOUPCE.JMENO]);

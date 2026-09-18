@@ -22,8 +22,15 @@ var EXTRALIGA = (function () {
     DEADLINE: "2026-09-30T23:59:59",
     DEADLINE_TEXT: "STŘEDA 30. 9. 2026 23:59",
     DEADLINE_DATUM_TEXT: "30. 9. 2026",
-    // Od kdy web ukazuje body (do té doby jen tipy). Výchozí = uzávěrka tipování; kdyby měly body běžet dřív, stačí posunout.
-    BODOVANI_OD: "2026-09-30T23:59:59",
+    // Od kdy web ukazuje body (do té doby jen tipy) = start sezóny: pořadí se boduje průběžně po každém kole.
+    BODOVANI_OD: "2026-09-16T00:00:00",
+    // Průběžné bodování během sezóny: web boduje pořadí (vč. žolíků 2×) z automatické tabulky a bonusové otázky
+    // v PRUBEZNE_BONUSY podle statistik hokej.cz (nejvíc gólů, nejvíc gólů v přesilovkách, nejvíc / nejméně
+    // trestných minut). Tipy na body žolíků a ostatní bonusy se bodují až po přepnutí FINALE na true
+    // (konec základní části, odpovědi vyplněné v řádku 2 listu Přehled HOTOVO). Do té doby se řádek 2 listu
+    // pro bonusy ignoruje.
+    FINALE: false,
+    PRUBEZNE_BONUSY: ["tymgoly", "tympresilovky", "tymfauly", "tym_nejmene_trestany"],
     POCET_MIST: 14,
     MAX_BODU_TYMU: 156,
     // Žolíci: každý tipující označí POCET_ZOLIKU týmů ze svého pořadí jako žolíky a u každého tipne,
@@ -332,6 +339,74 @@ var EXTRALIGA = (function () {
     return radek;
   }
 
+  function bonusPodleKlice(klic) {
+    for (var i = 0; i < BONUSY.length; i++) if (BONUSY[i].klic === klic) return BONUSY[i];
+    return null;
+  }
+  function jeBonusPrubezny(klic) {
+    return KONFIG.PRUBEZNE_BONUSY.indexOf(klic) !== -1;
+  }
+
+  // Průběžné odpovědi na týmové otázky ze statistik snímku (stav.statistiky = { tym: { goly, presilovky, tresty } }):
+  // nejvíc gólů, nejvíc gólů v přesilovkách, nejvíc trestných minut, nejméně trestných minut. Při shodě víc týmů
+  // jsou oddělené čárkou (bodyZaText bere kteroukoli variantu). Bez úplných statistik prázdný objekt.
+  function prubezneOdpovedi(stav) {
+    var st = stav && stav.statistiky;
+    if (!st) return {};
+    var tymy = KONFIG.TYMY, i;
+    for (i = 0; i < tymy.length; i++) {
+      var t = st[tymy[i]];
+      if (!t || cislo(t.goly) === null || cislo(t.presilovky) === null || cislo(t.tresty) === null) return {};
+    }
+    function extrem(klic, nejvic) {
+      var nej = null, vitezove = [];
+      for (var k = 0; k < tymy.length; k++) {
+        var v = cislo(st[tymy[k]][klic]);
+        if (nej === null || (nejvic ? v > nej : v < nej)) { nej = v; vitezove = [tymy[k]]; }
+        else if (v === nej) vitezove.push(tymy[k]);
+      }
+      return vitezove.join(", ");
+    }
+    return {
+      tymgoly: extrem("goly", true),
+      tympresilovky: extrem("presilovky", true),
+      tymfauly: extrem("tresty", true),
+      tym_nejmene_trestany: extrem("tresty", false)
+    };
+  }
+
+  // Řádek výsledků pro bodování.
+  // rezim "prubezne" (výchozí, dokud KONFIG.FINALE není true): jen pořadí ze snímku tabulky (bez platného snímku
+  //   pořadí z řádku listu) a průběžné týmové odpovědi ze statistik. Body týmů (AY–BL) ani ostatní odpovědi se
+  //   nevyplňují, takže tipy na body žolíků a ostatní bonusy dávají 0 b. a ruční odpovědi v listu se ignorují.
+  // rezim "finale": řádek 2 listu + pořadí a body týmů ze snímku (jako slucStavTabulky); prázdnou odpověď
+  //   na průběžnou otázku doplní hodnota ze statistik, ruční odpověď má přednost.
+  function sestavVysledky(vysledkyRow, stav, rezim) {
+    var r = rezim || (KONFIG.FINALE ? "finale" : "prubezne");
+    var platny = platnyStavTabulky(stav);
+    var odpovedi = platny ? prubezneOdpovedi(stav) : {};
+    var radek, j, k, q;
+    if (r === "finale") {
+      radek = slucStavTabulky(vysledkyRow, stav);
+      while (radek.length < SLOUPCE.POCET) radek.push("");
+      for (k = 0; k < KONFIG.PRUBEZNE_BONUSY.length; k++) {
+        q = bonusPodleKlice(KONFIG.PRUBEZNE_BONUSY[k]);
+        if (q && norm(radek[q.idx]) === "" && odpovedi[q.klic]) radek[q.idx] = odpovedi[q.klic];
+      }
+      return radek;
+    }
+    radek = [];
+    for (j = 0; j < SLOUPCE.POCET; j++) radek.push("");
+    for (j = 0; j < KONFIG.POCET_MIST; j++) {
+      radek[SLOUPCE.MISTO_OD + j] = platny ? normTym(stav.poradi[j].tym) : normTym(vysledkyRow ? vysledkyRow[SLOUPCE.MISTO_OD + j] : "");
+    }
+    for (k = 0; k < KONFIG.PRUBEZNE_BONUSY.length; k++) {
+      q = bonusPodleKlice(KONFIG.PRUBEZNE_BONUSY[k]);
+      if (q && odpovedi[q.klic]) radek[q.idx] = odpovedi[q.klic];
+    }
+    return radek;
+  }
+
   function bodyUmisteni(tipRow, vysledkyRow) {
     var tipy = [], oficialni = seznamOficialni(vysledkyRow), body = [], bodyZaklad = [], zolik = [];
     var zolici = zolikTymy(tipRow);
@@ -463,6 +538,10 @@ var EXTRALIGA = (function () {
     bodyZaText: bodyZaText,
     platnyStavTabulky: platnyStavTabulky,
     slucStavTabulky: slucStavTabulky,
+    prubezneOdpovedi: prubezneOdpovedi,
+    sestavVysledky: sestavVysledky,
+    bonusPodleKlice: bonusPodleKlice,
+    jeBonusPrubezny: jeBonusPrubezny,
     seznamOficialni: seznamOficialni,
     jsouVysledky: jsouVysledky,
     bodovaniZapnuto: bodovaniZapnuto,
@@ -643,8 +722,11 @@ function vypisBodovaniDoProtokolu() {
   var hotovo = ss.getSheetByName(WEB_LIST_HOTOVO).getDataRange().getValues();
   var vysledky = hotovo.length > 1 ? hotovo[1] : [];
   var stav = webNactiStavTabulky();
-  if (stav) { vysledky = EXTRALIGA.slucStavTabulky(vysledky, stav); Logger.log("Pořadí a body týmů: automatická tabulka z " + stav.aktualizovano + " (" + stav.zdroj + ")"); }
+  if (stav) Logger.log("Pořadí a body týmů: automatická tabulka z " + stav.aktualizovano + " (" + stav.zdroj + ")");
   else Logger.log("Pořadí a body týmů: řádek 2 listu " + WEB_LIST_HOTOVO + " (automatická tabulka není k dispozici)");
+  // Stejné složení výsledků jako na webu: průběžně jen pořadí a týmové otázky ze statistik, ve finále i řádek 2 listu
+  vysledky = EXTRALIGA.sestavVysledky(vysledky, stav);
+  Logger.log("Režim bodování: " + (EXTRALIGA.KONFIG.FINALE ? "finále (řádek 2 listu + automatická tabulka)" : "průběžně (jen pořadí z tabulky a týmové otázky ze statistik hokej.cz)"));
   Logger.log("Výsledky k dispozici: " + EXTRALIGA.jsouVysledky(vysledky));
   for (var i = 1; i < tipy.length; i++) {
     var jmeno = EXTRALIGA.norm(tipy[i][EXTRALIGA.SLOUPCE.JMENO]);

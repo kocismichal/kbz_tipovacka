@@ -23,7 +23,7 @@ Majitel pracuje často jen z iPadu, proto má vše jít nasadit bez PC (PR → m
 | `extraliga_apps_script.gs` | Kód Google Apps Scriptu (doPost ukládá tip, doGet vrací data listů, `doplnHlavicky`, `vypisBodovaniDoProtokolu`). |
 | `extraliga_apps_script_komplet.gs` | **Generovaný** bundle = `skripty/apps_script_hlavicka.gs` + `extraliga_spolecne.js` + `extraliga_apps_script.gs`. Po změně zdrojů spusť `node skripty/sestav_apps_script.js` (test `test_bundle.js` to hlídá). |
 | `extraliga_zavadec.gs` | Jediný soubor v projektu Apps Scriptu u majitele: stahuje bundle z `main` (cache 5 min, záloha v PropertiesService). Změna v repu se v tabulce projeví sama, nic se nekopíruje. |
-| `skripty/stahni_tabulku_extraligy.js` + `.github/workflows/extraliga_tabulka.yml` | Automatická tabulka: denně 4:30 UTC (i ručně) stáhne pořadí a body z hokej.cz (záloha cs.wikipedia), zkontroluje a uloží `2627_extraliga_stav.json`. |
+| `skripty/stahni_tabulku_extraligy.js` + `.github/workflows/extraliga_tabulka.yml` | Automatická tabulka: denně 4:30 UTC (i ručně) stáhne pořadí, body a statistiky týmů (góly, góly v přesilovkách, trestné minuty ze sloupců Skóre/GPř/T široké tabulky) z hokej.cz (záloha cs.wikipedia bez statistik), zkontroluje a uloží `2627_extraliga_stav.json`; každý nový stav tabulky přidá do `2627_extraliga_historie.json` (snímky pro graf). |
 | `extraliga_soupisky.js` | **Generovaný** seznam hráčů 14 klubů (jméno, tým, pozice) pro našeptávač u otázek na hráče ve formuláři. Vytváří ho `skripty/stahni_soupisky.js` z hokej.cz (stránky klubů → Soupiska); workflow `.github/workflows/extraliga_soupisky.yml` ho obnovuje každé pondělí (i ručně). Neupravovat ručně. |
 | `extraliga_navod.md` | Návod pro majitele (sloupce tabulky, žolíci, otázky, automatika). Při změně chování aktualizuj. |
 | `testy/` | Testy (Node + Playwright), viz `testy/README.md`. |
@@ -35,9 +35,16 @@ Majitel pracuje často jen z iPadu, proto má vše jít nasadit bez PC (PR → m
   Indexy sloupců (0-based) jsou v `SLOUPCE`: pořadí E–R (4–17), bonusy 18–29 a 42–49, žolíci 36–41,
   body týmů na 1.–14. místě AY–BL (50–63, jen v Přehled HOTOVO).
 - **Pořadí a body týmů** bere web i Apps Script z `2627_extraliga_stav.json` (automatika); řádek 2 listu
-  je záloha. **Odpovědi na bonusové otázky** se vyplňují ručně v řádku 2 (sloupce S–AX).
-- **Body se ukazují až od `KONFIG.BODOVANI_OD`** (30. 9. 2026) a jen když jsou známé týmy ve výsledcích.
-  Do té doby se z řádku výsledků neukazuje nic (ani správné odpovědi v kartách).
+  je záloha pořadí. **Odpovědi na bonusové otázky** se vyplňují ručně v řádku 2 (sloupce S–AX) – platí až ve finále.
+- **Dva režimy bodování** (`EXTRALIGA.sestavVysledky(vysledkyRow, stav)` skládá řádek výsledků):
+  *průběžně* (`KONFIG.FINALE: false`, od startu sezóny `BODOVANI_OD` 16. 9. 2026) se bodují jen pořadí (žolíci 2×)
+  a otázky z `KONFIG.PRUBEZNE_BONUSY` (nejvíc gólů, nejvíc gólů v přesilovkách, nejvíc / nejméně trestných minut)
+  podle `stav.statistiky` (`prubezneOdpovedi`); body týmů se do řádku nedávají (tipy na body žolíků = 0) a ruční
+  odpovědi z listu se ignorují. *Finále* (`FINALE: true`, přepnout po konci základní části) = řádek 2 listu +
+  snímek jako dřív; ruční odpověď má přednost, prázdnou průběžnou otázku doplní statistika. Web podle režimu skrývá
+  sloupec a záložku žolíků a u nevyhodnocených položek ukazuje „po sezóně“.
+- **Graf vývoje** (`vykresliGraf` v přehledu): z každého snímku historie spočítá průběžné body všech tipujících,
+  kreslí inline SVG (body / pořadí) pro Mistry + 3 nejlepší fanoušky + ručně přidané. Bez historie je sekce skrytá.
 - **Bodování**: umístění 10 − |rozdíl míst| (min 0), násobek 1,1/1,2/1,3/1,4 za 7/9/11/13 přesných;
   žolíci: umístění 2×, tip na body žolíka = číselná škála 2× (20/16/12/8/4); číselné otázky 10/8/6/4/2;
   týmové a hráčské 20 b.; finále play-off a Ano/Ne 10 b. Text pravidel ve formuláři musí sedět s kódem.
@@ -66,8 +73,9 @@ Majitel pracuje často jen z iPadu, proto má vše jít nasadit bez PC (PR → m
 
 ## Na co myslet (stav k 12. 9. 2026)
 
-- V řádku 2 listu `Přehled HOTOVO` jsou zatím **loňské výsledky** – před 30. 9. 2026 je majitel smaže
-  (jinak by se po uzávěrce počítaly jako letošní odpovědi).
-- Sezóna Extraligy startuje 16. 9. 2026; do té doby automatika hlásí „sezóna ještě nezačala“.
+- V řádku 2 listu `Přehled HOTOVO` jsou zatím **loňské výsledky** – průběžně se pro bonusy ignorují, ale pořadí
+  E2–R2 by se použilo, kdyby selhal snímek tabulky; majitel má řádek vyčistit a před přepnutím `FINALE` vyplnit
+  letošní odpovědi.
+- Sezóna Extraligy běží od 16. 9. 2026, bodování pořadí je průběžné; tipování je otevřené do 30. 9. 2026.
 - `KONFIG.REKORDY.goly_zakladni_cast` je prázdné (rekordní počet gólů základní části se doplní do otázky).
 - GitHub vypne plánované workflow po 60 dnech bez aktivity v repu – stačí ho znovu povolit.
