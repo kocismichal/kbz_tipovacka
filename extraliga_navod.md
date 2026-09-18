@@ -160,8 +160,9 @@ zdrží (ranní běh startuje běžně až kolem deváté). Jeden běh, který s
 večer zvládne, i když ho GitHub pustí později.
 
 - **Ručně kdykoli:** GitHub → záložka *Actions* → „Tabulka Extraligy“ → *Run workflow* (jde i z mobilu/iPadu
-  v prohlížeči). Ruční spuštění stahuje vždy, bez ohledu na program zápasů. Volba `sonda` jen vypíše, co
-  zdroje vracejí (včetně programu zápasů a rozhodnutí, jestli stahovat), nic neukládá.
+  v prohlížeči). Volba `aktualizace` stahuje vždy, bez ohledu na program zápasů, `sonda` jen vypíše, co
+  zdroje vracejí (včetně programu a rozhodnutí, jestli stahovat), a `hlidani` spustí hlídání hracího dne
+  rovnou teď – hodí se, když GitHub odpolední start zdrží a chceš mít tabulku živou hned.
 - **Kontrola:** v přehledu 26/27 je u aktuálního pořadí napsáno „Tabulka aktualizována <datum> automaticky
   (hokej.cz)“. Když tam stojí „podle ručního zápisu“, automatika nedoběhla – v *Actions* je vidět proč.
 - **Pozor:** GitHub plánované spouštění vypne, když se v repu 60 dní nic neděje (přijde e-mail, stačí

@@ -7,16 +7,19 @@
 #   - odpoledne: spustí hlídání hracího dne – skript si podle programu zápasů z hokej.cz sám řekne,
 #     jestli se dnes hraje a kdy má smysl další kontrola, a job ho po pěti minutách pouští znovu,
 #     dokud nejsou všechny dnešní zápasy v tabulce. Každá změna se hned commitne do main.
-# Ručně: záložka Actions → "Tabulka Extraligy" → Run workflow (stáhne vždy, bez ohledu na program).
+# Ručně: záložka Actions → "Tabulka Extraligy" → Run workflow: aktualizace stáhne tabulku vždy (bez ohledu
+# na program), sonda jen vypíše, co zdroje vracejí, hlidani spustí hlídání hracího dne rovnou teď.
 name: Tabulka Extraligy
 
 on:
   workflow_dispatch:
     inputs:
       rezim:
-        description: "aktualizace = stáhnout a uložit tabulku, sonda = jen vypsat, co zdroje vracejí"
+        description: "aktualizace = stáhnout a uložit tabulku, sonda = jen vypsat, co zdroje vracejí, hlidani = spustit hlídání hracího dne"
         required: false
         default: "aktualizace"
+        type: choice
+        options: ["aktualizace", "sonda", "hlidani"]
   schedule:
     # Ranní jistota (6:30 letního času / 5:30 zimního)
     - cron: "30 4 * * *"
@@ -30,7 +33,7 @@ permissions:
 jobs:
   tabulka:
     # ranní běh a ruční spuštění
-    if: ${{ github.event_name != 'schedule' || github.event.schedule == '30 4 * * *' }}
+    if: ${{ (github.event_name != 'schedule' && (github.event.inputs.rezim || 'aktualizace') != 'hlidani') || github.event.schedule == '30 4 * * *' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -54,7 +57,7 @@ jobs:
 
   hlidani:
     # odpolední hlídání hracího dne
-    if: ${{ github.event_name == 'schedule' && github.event.schedule == '0 15 * * *' }}
+    if: ${{ github.event.schedule == '0 15 * * *' || github.event.inputs.rezim == 'hlidani' }}
     runs-on: ubuntu-latest
     timeout-minutes: 350
     concurrency:
