@@ -190,8 +190,9 @@ zůstane poslední uložená soupiska – nic se nerozbije.
   v `extraliga_spolecne.js` `FINALE: false` na `FINALE: true` (jde i z iPadu v GitHubu → tužka → commit do větve → PR)
   a spusť `node skripty/sestav_apps_script.js` (nebo nech test bundlu, ať tě upozorní). Od té chvíle se bodují
   i žolíci (body týmů ze snímku) a všechny bonusy.
-- **Graf vývoje**: automatika ukládá každý nový stav tabulky do `2627_extraliga_historie.json` (jen když se tabulka
-  změnila, takže po hracím dni přibude jeden snímek). Přehled z něj kreslí vývoj bodů a pořadí. V legendě jsou
+- **Graf vývoje**: automatika ukládá stav tabulky do `2627_extraliga_historie.json` **jen po odehraných zápasech**
+  (pozná se podle součtu odehraných zápasů a bodů). Ve dnech, kdy se nehraje – volný den v programu, reprezentační
+  přestávka – nový bod v grafu nepřibude a v ose jsou tak jen hrací dny. Přehled z něj kreslí vývoj bodů a pořadí. V legendě jsou
   dva řádky – **Mistři** a **Tipující** – a u každého jména zaškrtávátko, kterým ho z grafu vypneš a zase zapneš;
   zaškrtnutím **Zobrazit jen Mistry** schováš všechny fanoušky najednou. Do grafu jsou vždy nachystaní Mistři
   a tři nejlepší fanoušci, kohokoli dalšího přidáš do pole „Přidat tipujícího“ – jde psát jméno (stačí začátek,
