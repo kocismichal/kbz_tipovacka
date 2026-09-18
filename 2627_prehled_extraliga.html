@@ -271,6 +271,24 @@
             </div>
         </div>
 
+        <!-- Vývoj tipovačky: body a pořadí tipujících v denních snímcích tabulky (2627_extraliga_historie.json) -->
+        <div id="sekce-graf" style="display: none;">
+            <h2 class="section-title" style="margin-top: 40px;">Vývoj tipovačky</h2>
+            <div class="graf-box">
+                <div class="graf-ovladani">
+                    <div class="tabs" style="margin: 0;">
+                        <button class="tab-btn active" style="font-size: 0.85rem; padding: 8px 16px;" id="btn-graf-body" onclick="vykresliGraf('body')">Body</button>
+                        <button class="tab-btn" style="font-size: 0.85rem; padding: 8px 16px;" id="btn-graf-poradi" onclick="vykresliGraf('poradi')">Pořadí</button>
+                    </div>
+                    <label for="graf-hrac">Přidat do grafu:</label>
+                    <select id="graf-hrac" onchange="pridejDoGrafu(this.value)"><option value="">– vyber tipujícího –</option></select>
+                </div>
+                <div id="graf-legenda" class="graf-legenda"></div>
+                <div id="graf-platno" class="graf-platno"></div>
+                <div id="graf-popis" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px; text-align: center;"></div>
+            </div>
+        </div>
+
         <h2 class="section-title" style="margin-top: 40px;">JAK VIDÍTE TABULKU VY?</h2>
         <div class="tabs" style="margin-bottom: 20px;">
             <button class="tab-btn active" style="font-size: 0.85rem; padding: 8px 16px;" id="btn-prehled-cisla" onclick="vykresliPrehledMatrix('cisla')">Absolutní počty</button>
@@ -357,6 +375,8 @@
         // Automaticky stažená tabulka Extraligy (GitHub Actions → 2627_extraliga_stav.json); když chybí nebo je neplatná,
         // pořadí a body týmů se berou z řádku 2 listu Přehled HOTOVO (ruční zápis).
         const STAV_URL = '2627_extraliga_stav.json';
+        // Denní snímky tabulky (GitHub Actions → 2627_extraliga_historie.json) pro graf vývoje tipovačky
+        const HISTORIE_URL = '2627_extraliga_historie.json';
 
         const KONFIG = EXTRALIGA.KONFIG;
         const SL = EXTRALIGA.SLOUPCE;
@@ -370,7 +390,12 @@
         // Sloupec C (index 2, e-mail) API vrací vždy prázdný a stránka ho nikde nečte.
         let vsichniHraci = [];      // { originalIndex, radek, jmeno, klub, jeMistr, vysledek, poradi }
         let vysledky = [];          // řádek 2 listu Přehled HOTOVO (nebo prázdné pole), pořadí a body případně ze snímku tabulky
-        let stavTabulky = null;     // platný snímek 2627_extraliga_stav.json (aktualizovano, zdroj, poradi[]) nebo null
+        let stavTabulky = null;     // platný snímek 2627_extraliga_stav.json (aktualizovano, zdroj, poradi[], statistiky) nebo null
+        let historieTabulky = [];   // platné snímky z 2627_extraliga_historie.json (datum, poradi[], statistiky) pro graf
+        let grafRezim = 'body';     // 'body' | 'poradi'
+        let grafVybrani = [];       // originalIndex tipujících přidaných do grafu ručně
+        let grafCache = null;       // předpočítané body a pořadí všech tipujících ve snímcích
+        const GRAF_BARVY = ['#c8102e', '#1f5fbf', '#0b2a4a', '#d99a00', '#2a9d8f', '#8338ec', '#ff7f0e', '#e63995', '#4d7c0f', '#7f8c8d'];
         let bodovaniAktivni = false;
         let aktivniZalozka = 'celkem';
         let matrixRezim = 'cisla';
@@ -394,6 +419,20 @@
         function seznamOficialni() { return EXTRALIGA.seznamOficialni(vysledky); }
         // Skutečné body týmu na daném místě oficiálního pořadí (sloupce Body 1.–14. místa listu Přehled HOTOVO), nebo ''.
         function skutecneBodyMista(pozice) { return pozice >= 0 ? norm(vysledky[SL.BODY_MISTO_OD + pozice]) : ''; }
+        // Aktuální body týmu na daném místě oficiálního pořadí: ze snímku tabulky (průběžně i ve finále), jinak z řádku listu
+        function bodyTymuNaMiste(pozice) {
+            if (pozice >= 0 && stavTabulky && stavTabulky.poradi[pozice] && stavTabulky.poradi[pozice].body !== undefined) return String(stavTabulky.poradi[pozice].body);
+            return skutecneBodyMista(pozice);
+        }
+        // Popis hodnoty průběžné týmové otázky ze statistik snímku, např. "8 gólů" nebo "21 trestných minut"
+        function popisStatistiky(klic, tym) {
+            const st = stavTabulky && stavTabulky.statistiky ? stavTabulky.statistiky[tym] : null;
+            if (!st) return '';
+            if (klic === 'tymgoly') return `${st.goly} gólů`;
+            if (klic === 'tympresilovky') return `${st.presilovky} gólů v přesilovce`;
+            if (klic === 'tymfauly' || klic === 'tym_nejmene_trestany') return `${st.tresty} trestných minut`;
+            return '';
+        }
 
         function ziskejLogoKlubuHTML(klub) {
             const src = getLogoSrc(klub);
@@ -423,25 +462,30 @@
         async function nactiData() {
             if (!SCRIPT_URL || SCRIPT_URL.indexOf("__") === 0) { zobrazNedostupne(); return; }
             try {
-                const [resTipy, resHotovo, stav] = await Promise.all([
+                const [resTipy, resHotovo, stav, historie] = await Promise.all([
                     fetch(SCRIPT_URL + "?action=data&sheet=Tipy"),
                     fetch(SCRIPT_URL + "?action=data&sheet=" + encodeURIComponent("Přehled HOTOVO")),
-                    fetch(STAV_URL + "?v=" + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null)
+                    fetch(STAV_URL + "?v=" + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null),
+                    fetch(HISTORIE_URL + "?v=" + Date.now()).then(r => r.ok ? r.json() : null).catch(() => null)
                 ]);
                 const dataTipy = await resTipy.json();
                 const dataHotovo = await resHotovo.json();
                 if (!Array.isArray(dataTipy) || !Array.isArray(dataHotovo)) throw new Error("Neplatná odpověď API");
-                zpracujData(dataTipy, dataHotovo, stav);
+                zpracujData(dataTipy, dataHotovo, stav, historie);
             } catch (e) {
                 console.warn("Data tipovačky se nepodařilo načíst:", e);
                 zobrazNedostupne();
             }
         }
 
-        function zpracujData(dataTipy, dataHotovo, stav) {
+        function zpracujData(dataTipy, dataHotovo, stav, historie) {
             vysledky = (dataHotovo.length > 1 && Array.isArray(dataHotovo[1])) ? dataHotovo[1] : [];
             stavTabulky = EXTRALIGA.platnyStavTabulky(stav) ? stav : null;
-            if (stavTabulky) vysledky = EXTRALIGA.slucStavTabulky(vysledky, stavTabulky);
+            // Průběžně (KONFIG.FINALE false): jen pořadí ze snímku a týmové otázky ze statistik hokej.cz;
+            // ve finále navíc řádek 2 listu (ruční odpovědi) a body týmů pro tipy žolíků.
+            vysledky = EXTRALIGA.sestavVysledky(vysledky, stavTabulky);
+            historieTabulky = (historie && Array.isArray(historie.snimky)) ? historie.snimky.filter(sn => EXTRALIGA.platnyStavTabulky(sn)) : [];
+            grafCache = null;
             bodovaniAktivni = EXTRALIGA.bodovaniZapnuto(vysledky);
             // Do spuštění bodování web z řádku výsledků nic neukazuje (ani správné odpovědi v kartách) – jen tipy.
             if (!bodovaniAktivni) vysledky = [];
@@ -487,6 +531,9 @@
             vykresliAktualniStav();
             vykresliMistry();
             document.getElementById('sekce-zebricek').style.display = bodovaniAktivni ? 'block' : 'none';
+            // Průběžně se tipy na body žolíků nebodují – záložka žolíků má smysl až ve finále
+            document.getElementById('tab-zolici').style.display = KONFIG.FINALE ? '' : 'none';
+            document.getElementById('tab-bonusy').textContent = KONFIG.FINALE ? 'Body za bonusové otázky' : 'Body za týmové otázky (průběžně)';
             document.getElementById('sekce-prehled-vsech').style.display = bodovaniAktivni ? 'none' : 'block';
             if (bodovaniAktivni) zmenZalozku('celkem'); else vykresliPrehledVsech();
             naplnMatrixFiltr();
@@ -494,6 +541,7 @@
             vykresliZolici();
             vykresliBonusy();
             vykresliMistriStatistiky();
+            vykresliGraf(grafRezim);
         }
 
         // ---------- AKTUÁLNÍ STAV EXTRALIGY ----------
@@ -504,7 +552,7 @@
                     <div class="hlasovani-info" style="margin-bottom: 10px;">
                         <p class="note" style="font-size: 1rem; color: var(--text-main); margin: 0;">
                             <i class="fa-solid fa-hockey-puck" style="color: var(--accent-primary); margin-right: 8px;"></i>
-                            Zatím vidíš jen tipy. Body se objeví po uzávěrce tipování (${esc(datumBodovaniText())}), jakmile bude v tabulce první odehrané kolo.
+                            Zatím vidíš jen tipy. Body se objeví ${new Date() < new Date(KONFIG.BODOVANI_OD) ? 'od ' + esc(datumBodovaniText()) + ', ' : ''}jakmile bude v tabulce první odehrané kolo.
                         </p>
                         <p class="note" style="font-size: 0.95rem; color: var(--text-muted); margin: 8px 0 0 0;">
                             Tabulku Extraligy se budeme snažit průběžně aktualizovat, takže tady po celou sezónu uvidíš průběžné pořadí svého tipu i tipů ostatních.
@@ -522,24 +570,29 @@
                 <div class="teams-grid-8x2 grid-14">`;
             oficialni.forEach((tym, j) => {
                 const nazev = tym || 'Zatím neznámé';
-                const body = skutecneBodyMista(j);
+                const body = bodyTymuNaMiste(j);
                 const zap = stavTabulky && stavTabulky.poradi[j] && stavTabulky.poradi[j].zapasy !== undefined ? stavTabulky.poradi[j].zapasy : '';
                 const bodyHtml = body !== '' ? `<span class="t-pts" title="${zap !== '' ? esc(zap) + ' zápasů' : ''}">${esc(body)} b.${zap !== '' ? `<small style="color: var(--text-muted); font-weight: normal;"> / ${esc(zap)} z.</small>` : ''}</span>` : '';
                 html += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j + 1}.</span><img src="${logoNeboFallback(tym)}" ${ONERR} class="t-logo" title="${esc(nazev)}" alt="${esc(nazev)}">${bodyHtml}</div>`;
             });
             html += `</div>`;
 
+            if (!KONFIG.FINALE) {
+                html += `<div class="prubezne-info"><i class="fa-solid fa-circle-info"></i><strong>Průběžné bodování:</strong> počítají se body za pořadí týmů (žolíci ${KONFIG.ZOLIK_NASOBEK_UMISTENI}×) a čtyři týmové otázky podle statistik hokej.cz (góly, góly v přesilovkách, trestné minuty). Tipy na body žolíků a ostatní bonusové otázky se vyhodnotí po konci základní části.</div>`;
+            }
+
             const vyhodnocene = EXTRALIGA.bodyBonusy(PRAZDNY_RADEK, vysledky).polozky.filter(p => p.spravne !== '');
-            html += `<div class="modal-subtitle">Už vyhodnocené bonusové otázky</div>`;
+            html += `<div class="modal-subtitle">${KONFIG.FINALE ? 'Už vyhodnocené bonusové otázky' : 'Průběžně vedou (týmové otázky ze statistik hokej.cz)'}</div>`;
             if (vyhodnocene.length === 0) {
-                html += `<div style="color: var(--text-muted); font-style: italic; padding: 5px 0 15px 0;">Zatím není vyhodnocená žádná bonusová otázka.</div>`;
+                html += `<div style="color: var(--text-muted); font-style: italic; padding: 5px 0 15px 0;">${KONFIG.FINALE ? 'Zatím není vyhodnocená žádná bonusová otázka.' : 'Statistiky týmů zatím nejsou k dispozici.'}</div>`;
             } else {
                 html += `<div class="bonus-list">`;
                 vyhodnocene.forEach(p => {
+                    const detail = EXTRALIGA.jeBonusPrubezny(p.klic) ? p.spravne.split(',').map(t => popisStatistiky(p.klic, t.trim())).filter(Boolean).join(' · ') : '';
                     html += `<div class="bonus-item vyhodnoceno">
                         <div class="bonus-text">
                             <div class="b-question">${esc(p.otazka)}</div>
-                            <div class="b-answer" style="color: var(--accent-primary);">${esc(p.spravne)}</div>
+                            <div class="b-answer" style="color: var(--accent-primary);">${esc(p.spravne)}${detail ? ` <span style="color: var(--text-muted); font-weight: normal; font-size: 0.85rem;">(${esc(detail)})</span>` : ''}</div>
                         </div>
                         <div class="b-pts" style="display:flex; align-items:center; justify-content:flex-end;">${logoTymuHTML(p.spravne, 32)}</div>
                     </div>`;
@@ -594,13 +647,13 @@
             if (tabName === 'umisteni') hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za umístění</th>';
             else if (tabName === 'zolici') hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za žolíky</th>';
             else if (tabName === 'bonusy') hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za bonusové otázky</th>';
-            else hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za pořadí</th><th style="text-align:right;">Body za žolíky</th><th style="text-align:right;">Body za bonusy</th><th style="text-align:right;">Celkem bodů</th>';
+            else hlavicka.innerHTML = '<th style="text-align:center;">Pořadí</th><th>Jméno tipujícího</th><th style="text-align:right;">Body za pořadí</th>' + (KONFIG.FINALE ? '<th style="text-align:right;">Body za žolíky</th>' : '') + '<th style="text-align:right;">Body za bonusy</th><th style="text-align:right;">Celkem bodů</th>';
             vykresliTabulku();
         }
 
         function vykresliTabulku() {
             const tbody = document.getElementById('tabulka-telo'); tbody.innerHTML = '';
-            const pocetSloupcu = aktivniZalozka === 'celkem' ? 6 : 3;
+            const pocetSloupcu = aktivniZalozka === 'celkem' ? (KONFIG.FINALE ? 6 : 5) : 3;
             if (vsichniHraci.length === 0) { tbody.innerHTML = `<tr><td colspan="${pocetSloupcu}" class="loader">${TEXT_PRAZDNE}</td></tr>`; return; }
 
             const data = vsichniHraci.slice();
@@ -617,7 +670,7 @@
                 const tr = document.createElement('tr'); tr.onclick = () => otevriModalJeden(hrac);
                 const colorClass = poradi === 1 ? 'color: var(--accent-primary); font-weight: bold;' : '';
                 const bodySloupceHtml = (aktivniZalozka === 'celkem')
-                    ? `<td class="sub-points-col">${formatBody(v.umisteni.celkem)}</td><td class="sub-points-col">${formatBody(v.zolici.celkem)}</td><td class="sub-points-col">${formatBody(v.bonusy.celkem)}</td><td class="points-col">${formatBody(v.celkem)}</td>`
+                    ? `<td class="sub-points-col">${formatBody(v.umisteni.celkem)}</td>${KONFIG.FINALE ? `<td class="sub-points-col">${formatBody(v.zolici.celkem)}</td>` : ''}<td class="sub-points-col">${formatBody(v.bonusy.celkem)}</td><td class="points-col">${formatBody(v.celkem)}</td>`
                     : `<td class="points-col">${formatBody(bodyZobrazeni)}</td>`;
                 tr.innerHTML = `<td class="rank-col" style="${colorClass}">${poradi}.</td><td style="font-weight: 600;">${esc(hrac.jmeno)} ${ziskejLogoKlubuHTML(hrac.klub)}</td>${bodySloupceHtml}`;
                 tbody.appendChild(tr);
@@ -1014,17 +1067,17 @@
                             <span class="modal-stat-val val-total">${hrac.poradi.celkem}. místo</span>
                         </div>
                     </div>
-                    <div class="modal-stats modal-stats-3" style="margin-top: -18px;">
+                    <div class="modal-stats${KONFIG.FINALE ? ' modal-stats-3' : ''}" style="margin-top: -18px;">
                         <div class="modal-stat-box">
                             <span class="modal-stat-label">Body za umístění / Pořadí</span>
                             <span class="modal-stat-val">${formatBody(v.umisteni.celkem)} b. <span style="color:var(--text-muted);">/</span> ${hrac.poradi.umisteni}.</span>
                         </div>
-                        <div class="modal-stat-box">
+                        ${KONFIG.FINALE ? `<div class="modal-stat-box">
                             <span class="modal-stat-label">Body za žolíky / Pořadí</span>
                             <span class="modal-stat-val">${formatBody(v.zolici.celkem)} b. <span style="color:var(--text-muted);">/</span> ${hrac.poradi.zolici}.</span>
-                        </div>
+                        </div>` : ''}
                         <div class="modal-stat-box">
-                            <span class="modal-stat-label">Body za bonusy / Pořadí</span>
+                            <span class="modal-stat-label">${KONFIG.FINALE ? 'Body za bonusy / Pořadí' : 'Body za týmové otázky / Pořadí'}</span>
                             <span class="modal-stat-val">${formatBody(v.bonusy.celkem)} b. <span style="color:var(--text-muted);">/</span> ${hrac.poradi.bonusy}.</span>
                         </div>
                     </div>
@@ -1077,9 +1130,13 @@
                     const tipMisto = tipPoziceTymu(hrac, p.tym);
                     let popis = `${p.k + 1}. žolík` + (tipMisto ? ` · tip na ${tipMisto}. místo` : '');
                     if (bodovaniAktivni && p.pozice !== -1) popis += ` · aktuálně ${p.pozice + 1}. místo`;
-                    const skutecneHtml = (bodovaniAktivni && p.skutecne !== '') ? ` <span style="color: var(--accent-primary); font-style: italic; font-weight: 600; margin-left: 3px;">(skutečně ${esc(p.skutecne)} b.)</span>` : '';
+                    const aktualniBody = bodovaniAktivni ? bodyTymuNaMiste(p.pozice) : '';
+                    const skutecneHtml = (bodovaniAktivni && (KONFIG.FINALE ? p.skutecne : aktualniBody) !== '')
+                        ? ` <span style="color: var(--accent-primary); font-style: italic; font-weight: 600; margin-left: 3px;">(${KONFIG.FINALE ? 'skutečně ' + esc(p.skutecne) : 'aktuálně ' + esc(aktualniBody)} b.)</span>` : '';
                     const tipHtml = p.tipBody !== '' ? `tip ${esc(p.tipBody)} b. v základní části` : '<span style="color: var(--text-muted); font-weight: normal;">bez tipu bodů</span>';
-                    const ptsHtml = bodovaniAktivni ? `<span style="color: ${p.body > 0 ? 'var(--accent-primary)' : 'var(--text-muted)'};">${p.body}</span>` : '';
+                    const ptsHtml = !bodovaniAktivni ? '' : (KONFIG.FINALE
+                        ? `<span style="color: ${p.body > 0 ? 'var(--accent-primary)' : 'var(--text-muted)'};">${p.body}</span>`
+                        : '<span class="po-sezone" title="Tip na body žolíka se vyhodnotí po konci základní části">po sezóně</span>');
                     html += `
                         <div class="bonus-item" style="min-height: 68px; box-sizing: border-box; padding: 6px 12px; border-color: rgba(255, 215, 0, 0.35);">
                             <div class="bonus-text" style="flex: 1; padding-right: 10px;">
@@ -1100,7 +1157,9 @@
                 if (!p.aktivni && p.tip === '' && p.spravne === '') return;   // finále play-off se letos netipuje
                 const spravneHtml = (bodovaniAktivni && p.spravne !== '') ? ` <span style="color: var(--accent-primary); font-style: italic; font-weight: 600; margin-left: 3px;">(${esc(p.spravne)})</span>` : '';
                 const tipHtml = p.tip !== '' ? esc(p.tip) : '<span style="color: var(--text-muted); font-weight: normal;">Nevyplněno</span>';
-                const ptsHtml = bodovaniAktivni ? `<span style="color: ${p.body > 0 ? 'var(--accent-primary)' : 'var(--text-muted)'};">${p.body}</span>` : '';
+                const ptsHtml = !bodovaniAktivni ? '' : ((KONFIG.FINALE || EXTRALIGA.jeBonusPrubezny(p.klic))
+                    ? `<span style="color: ${p.body > 0 ? 'var(--accent-primary)' : 'var(--text-muted)'};">${p.body}</span>`
+                    : '<span class="po-sezone" title="Otázka se vyhodnotí po konci základní části">po sezóně</span>');
                 html += `
                     <div class="bonus-item" style="min-height: 68px; box-sizing: border-box; padding: 6px 12px;">
                         <div class="bonus-text" style="flex: 1; padding-right: 10px;">
@@ -1115,6 +1174,127 @@
             });
             html += `</div>`;
             return html;
+        }
+
+        // ---------- VÝVOJ TIPOVAČKY (graf z denních snímků tabulky) ----------
+        // Body každého tipujícího v každém snímku = průběžné vyhodnocení podle snímku (pořadí + týmové otázky ze statistik)
+        function grafData() {
+            if (grafCache) return grafCache;
+            const radky = historieTabulky.map(sn => EXTRALIGA.sestavVysledky(null, sn, 'prubezne'));
+            const vsechny = vsichniHraci.map(h => ({ h, body: radky.map(r => EXTRALIGA.vyhodnot(h.radek, r).celkem) }));
+            const poradiVeSnimcich = radky.map((_, i) => pridelPoradi(vsechny.map(x => x.body[i])));
+            vsechny.forEach((x, k) => { x.poradi = poradiVeSnimcich.map(p => p[k]); });
+            grafCache = vsechny;
+            return vsechny;
+        }
+        function formatDatumKratce(iso) { const d = new Date(iso); return isNaN(d) ? String(iso || '') : `${d.getDate()}. ${d.getMonth() + 1}.`; }
+        // Výchozí série: Mistři (vč. společného tipu) + 3 nejlepší fanoušci podle aktuálních bodů + ručně přidaní
+        function grafSerie() {
+            const data = grafData();
+            const podleIndexu = {};
+            data.forEach(x => { podleIndexu[x.h.originalIndex] = x; });
+            const mistri = data.filter(x => x.h.jeMistr);
+            const topFanousci = data.filter(x => !x.h.jeMistr).sort((a, b) => a.h.poradi.celkem - b.h.poradi.celkem || a.h.originalIndex - b.h.originalIndex).slice(0, 3);
+            const serie = mistri.concat(topFanousci);
+            grafVybrani.forEach(i => { if (podleIndexu[i] && !serie.includes(podleIndexu[i])) serie.push(podleIndexu[i]); });
+            return serie;
+        }
+        function pridejDoGrafu(hodnota) {
+            const i = Number(hodnota);
+            if (!hodnota || isNaN(i)) return;
+            if (!grafVybrani.includes(i)) grafVybrani.push(i);
+            document.getElementById('graf-hrac').value = '';
+            vykresliGraf(grafRezim);
+        }
+        function odeberZGrafu(i) {
+            grafVybrani = grafVybrani.filter(x => x !== i);
+            vykresliGraf(grafRezim);
+        }
+        function naplnGrafVyber() {
+            const sel = document.getElementById('graf-hrac');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">– vyber tipujícího –</option>';
+            vsichniHraci.slice().sort((a, b) => a.jmeno.localeCompare(b.jmeno, 'cs')).forEach(h => {
+                const o = document.createElement('option');
+                o.value = h.originalIndex; o.textContent = h.jmeno + (h.klub ? ` (${h.klub})` : '');
+                sel.appendChild(o);
+            });
+        }
+        function vykresliGraf(rezim) {
+            grafRezim = rezim || 'body';
+            const sekce = document.getElementById('sekce-graf');
+            if (!sekce) return;
+            const zobrazit = bodovaniAktivni && historieTabulky.length > 0 && vsichniHraci.length > 0;
+            sekce.style.display = zobrazit ? 'block' : 'none';
+            if (!zobrazit) return;
+            document.getElementById('btn-graf-body').classList.toggle('active', grafRezim === 'body');
+            document.getElementById('btn-graf-poradi').classList.toggle('active', grafRezim === 'poradi');
+            if (document.getElementById('graf-hrac').options.length <= 1) naplnGrafVyber();
+
+            const serie = grafSerie();
+            const n = historieTabulky.length;
+            const jePoradi = grafRezim === 'poradi';
+            const hodnoty = x => jePoradi ? x.poradi : x.body;
+            let max = 0;
+            serie.forEach(x => hodnoty(x).forEach(v => { if (v > max) max = v; }));
+            if (jePoradi) max = Math.max(max, 2); else max = Math.max(max, 10);
+
+            // Rozměry v souřadnicích SVG (viewBox), vlevo místo na osu, vpravo na jména
+            const W = 900, H = 360, L = 48, R = 150, T = 18, B = 40;
+            const sirka = W - L - R, vyska = H - T - B;
+            const x = i => n === 1 ? L + sirka / 2 : L + sirka * i / (n - 1);
+            const y = v => jePoradi ? T + vyska * (v - 1) / (max - 1) : T + vyska * (1 - v / max);
+            let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vývoj ${jePoradi ? 'pořadí' : 'bodů'} tipujících">`;
+            // Mřížka a osa Y (5 čar)
+            const kroku = 5;
+            for (let k = 0; k <= kroku; k++) {
+                const v = jePoradi ? 1 + (max - 1) * k / kroku : max * k / kroku;
+                const yy = y(v);
+                svg += `<line class="mrizka" x1="${L}" x2="${L + sirka}" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}"/>`;
+                svg += `<text class="popisek" x="${L - 6}" y="${(yy + 4).toFixed(1)}" text-anchor="end">${jePoradi ? Math.round(v) + '.' : Math.round(v)}</text>`;
+            }
+            svg += `<line class="osa" x1="${L}" x2="${L}" y1="${T}" y2="${T + vyska}"/><line class="osa" x1="${L}" x2="${L + sirka}" y1="${T + vyska}" y2="${T + vyska}"/>`;
+            // Osa X: data snímků (při mnoha snímcích jen každý k-tý popisek)
+            const krokPopisku = Math.max(1, Math.ceil(n / 12));
+            historieTabulky.forEach((sn, i) => {
+                if (i % krokPopisku !== 0 && i !== n - 1) return;
+                svg += `<text class="popisek" x="${x(i).toFixed(1)}" y="${H - 14}" text-anchor="middle">${esc(formatDatumKratce(sn.datum || sn.aktualizovano))}</text>`;
+            });
+            // Popisky u konců čar: rozhrnout, ať se nepřekrývají (min. rozestup 14, cluster se drží v ploše grafu)
+            const popisky = serie.map((sr, si) => { const hod = hodnoty(sr); return { si, y: y(hod[hod.length - 1]) }; }).sort((a, b) => a.y - b.y);
+            const ROZESTUP = 14;
+            for (let k = 1; k < popisky.length; k++) if (popisky[k].y < popisky[k - 1].y + ROZESTUP) popisky[k].y = popisky[k - 1].y + ROZESTUP;
+            const presah = popisky.length ? popisky[popisky.length - 1].y - (T + vyska) : 0;
+            if (presah > 0) popisky.forEach(pp => { pp.y -= presah; });
+            for (let k = popisky.length - 2; k >= 0; k--) if (popisky[k].y > popisky[k + 1].y - ROZESTUP) popisky[k].y = popisky[k + 1].y - ROZESTUP;
+            const yPopisku = {};
+            popisky.forEach(pp => { yPopisku[pp.si] = pp.y; });
+
+            // Čáry a body
+            serie.forEach((sr, si) => {
+                const barva = GRAF_BARVY[si % GRAF_BARVY.length];
+                const hod = hodnoty(sr);
+                const body = hod.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`);
+                if (n > 1) svg += `<polyline fill="none" stroke="${barva}" stroke-width="${sr.h.jeMistr ? 3 : 2}" stroke-linejoin="round" points="${body.join(' ')}"/>`;
+                hod.forEach((v, i) => { svg += `<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="4" fill="${barva}"><title>${esc(sr.h.jmeno)} · ${esc(formatDatumKratce(historieTabulky[i].datum || historieTabulky[i].aktualizovano))} · ${jePoradi ? v + '. místo' : formatBody(v) + ' b.'}</title></circle>`; });
+                const posledni = hod[hod.length - 1];
+                const yText = yPopisku[si];
+                if (Math.abs(yText - y(posledni)) > 6) svg += `<line stroke="${barva}" stroke-width="1" stroke-dasharray="2 2" x1="${(x(n - 1) + 4).toFixed(1)}" y1="${y(posledni).toFixed(1)}" x2="${(x(n - 1) + 8).toFixed(1)}" y2="${yText.toFixed(1)}"/>`;
+                svg += `<text class="jmeno" fill="${barva}" x="${(x(n - 1) + 10).toFixed(1)}" y="${(yText + 4).toFixed(1)}">${esc(sr.h.jmeno.length > 18 ? sr.h.jmeno.slice(0, 17) + '…' : sr.h.jmeno)} (${jePoradi ? posledni + '.' : formatBody(posledni)})</text>`;
+            });
+            svg += '</svg>';
+            document.getElementById('graf-platno').innerHTML = svg;
+
+            // Legenda: barva, jméno, aktuální hodnota, u ručně přidaných křížek
+            document.getElementById('graf-legenda').innerHTML = serie.map((sr, si) => {
+                const hod = hodnoty(sr); const posledni = hod[hod.length - 1];
+                const rucne = grafVybrani.includes(sr.h.originalIndex) && !sr.h.jeMistr;
+                return `<span><i class="tecka" style="background:${GRAF_BARVY[si % GRAF_BARVY.length]}"></i>${esc(sr.h.jmeno)}: <strong>${jePoradi ? posledni + '. místo' : formatBody(posledni) + ' b.'}</strong>${rucne ? `<button type="button" title="Odebrat z grafu" onclick="odeberZGrafu(${sr.h.originalIndex})">✕</button>` : ''}</span>`;
+            }).join('');
+            const prvni = historieTabulky[0], posl = historieTabulky[n - 1];
+            document.getElementById('graf-popis').textContent = n === 1
+                ? `Zatím jeden snímek tabulky (${formatDatumKratce(prvni.datum || prvni.aktualizovano)}). Další body v grafu přibudou s každou změnou tabulky – stahuje se každé ráno z hokej.cz.`
+                : `${n} snímků tabulky od ${formatDatumKratce(prvni.datum || prvni.aktualizovano)} do ${formatDatumKratce(posl.datum || posl.aktualizovano)} (každé ráno z hokej.cz, jen když se tabulka změnila). Mistři jsou v grafu vždy, k nim 3 nejlepší fanoušci – další si můžeš přidat.`;
         }
 
         // ---------- VYHLEDÁVÁNÍ ----------

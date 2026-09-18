@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 /*
  * Stáhne aktuální tabulku Tipsport extraligy a uloží ji do 2627_extraliga_stav.json
- * (pořadí, odehrané zápasy a body každého týmu). Spouští ho GitHub Actions
+ * (pořadí, odehrané zápasy a body každého týmu; z hokej.cz i statistiky týmů: vstřelené góly,
+ * góly v přesilovkách a trestné minuty – z nich web průběžně vyhodnocuje čtyři týmové otázky).
+ * Každý nový stav tabulky se navíc přidá do 2627_extraliga_historie.json (graf vývoje na webu). Spouští ho GitHub Actions
  * (.github/workflows/extraliga_tabulka.yml) každé ráno – web i Apps Script pak berou pořadí a body
  * týmů z tohoto souboru, bonusové odpovědi zůstávají v listu "Přehled HOTOVO".
  *
@@ -20,6 +22,7 @@ const vm = require("vm");
 
 const KOREN = path.join(__dirname, "..");
 const VYSTUP = path.join(KOREN, "2627_extraliga_stav.json");
+const HISTORIE = path.join(KOREN, "2627_extraliga_historie.json");
 const rezim = (process.argv.indexOf("--rezim") !== -1) ? process.argv[process.argv.indexOf("--rezim") + 1] : "aktualizace";
 
 // Společná konfigurace (seznam týmů) – stejný soubor jako web
@@ -85,11 +88,15 @@ const jeCislo = (x) => /^-?\d+$/.test(String(x).replace(/\s/g, ""));
 // je zápasy = první číslo za názvem týmu a body = poslední číslo řádku.
 function poradiZTabulky(radky) {
   const hlavicka = radky.find((r) => r.some((c) => /^(z|záp\.?|zápasy)$/i.test(c)) && r.some((c) => /^(b|body)$/i.test(c)));
-  let iZ = -1, iB = -1, iKlub = -1, posun = 0;
+  let iZ = -1, iB = -1, iKlub = -1, iSkore = -1, iPresilovky = -1, iTresty = -1, posun = 0;
   if (hlavicka) {
     iZ = hlavicka.findIndex((c) => /^(z|záp\.?|zápasy)$/i.test(c));
     iB = hlavicka.findIndex((c) => /^(b|body)$/i.test(c));
     iKlub = hlavicka.findIndex((c) => /^(klub|tým|team)$/i.test(c));
+    // Široká tabulka na hokej.cz: Skóre (VG:OG), GPř (góly v přesilovkách), T (trestné minuty)
+    iSkore = hlavicka.findIndex((c) => /^sk[oó]re$/i.test(c));
+    iPresilovky = hlavicka.findIndex((c) => /^gp[řr]$/i.test(c));
+    iTresty = hlavicka.findIndex((c) => /^t$/i.test(c));
   }
   const out = [];
   for (const bunky of radky) {
@@ -97,19 +104,35 @@ function poradiZTabulky(radky) {
     let iTym = -1, tym = "";
     for (let i = 0; i < bunky.length; i++) { const t = poznejTym(bunky[i]); if (t && !jeCislo(bunky[i])) { iTym = i; tym = t; break; } }
     if (iTym === -1 || out.some((o) => o.tym === tym)) continue;
-    let zapasy, body;
+    let zapasy, body, statistiky;
     if (hlavicka && iZ !== -1 && iB !== -1) {
       // Datové řádky mívají o buňku víc než hlavička (např. logo) – posun podle pozice názvu klubu
       posun = iKlub !== -1 ? iTym - iKlub : bunky.length - hlavicka.length;
       const z = bunky[iZ + posun], b = bunky[iB + posun];
       if (!jeCislo(z) || !jeCislo(b)) continue;
       zapasy = Number(z); body = Number(b);
+      // Statistiky týmu (jen když tabulka sloupce má a hodnoty jsou čísla)
+      const skore = iSkore !== -1 ? String(bunky[iSkore + posun] || "").match(/^(\d+)\s*:\s*(\d+)$/) : null;
+      const gp = iPresilovky !== -1 ? bunky[iPresilovky + posun] : undefined;
+      const tr = iTresty !== -1 ? bunky[iTresty + posun] : undefined;
+      if (skore && jeCislo(gp) && jeCislo(tr)) {
+        statistiky = { goly: Number(skore[1]), obdrzene: Number(skore[2]), presilovky: Number(gp), tresty: Number(tr) };
+      }
     } else {
       const cisla = bunky.slice(iTym + 1).map((x) => x.replace(/\s/g, "")).filter(jeCislo).map(Number);
       if (cisla.length < 2) continue;
       zapasy = cisla[0]; body = cisla[cisla.length - 1];
     }
-    out.push({ tym, zapasy, body, _bunky: bunky });
+    out.push({ tym, zapasy, body, statistiky, _bunky: bunky });
+  }
+  return out;
+}
+// Statistiky všech 14 týmů (goly, obdrzene, presilovky, tresty), nebo null, když je některý tým bez nich
+function statistikyZPoradi(poradi) {
+  const out = {};
+  for (const p of poradi) {
+    if (!p.statistiky) return null;
+    out[p.tym] = p.statistiky;
   }
   return out;
 }
@@ -184,12 +207,44 @@ async function sonda() {
       }
       const poradi = z.parser(r.text);
       const chyba = overPoradi(poradi);
-      console.log("--- parser: " + poradi.length + " týmů | kontrola: " + (chyba || "OK") + " ---");
-      poradi.forEach((p, i) => console.log(`${i + 1}. ${p.tym} | zápasy ${p.zapasy} | body ${p.body} | ${JSON.stringify(p._bunky).slice(0, 160)}`));
+      console.log("--- parser: " + poradi.length + " týmů | kontrola: " + (chyba || "OK") + " | statistiky: " + (statistikyZPoradi(poradi) ? "ano" : "ne") + " ---");
+      poradi.forEach((p, i) => console.log(`${i + 1}. ${p.tym} | zápasy ${p.zapasy} | body ${p.body}` + (p.statistiky ? ` | góly ${p.statistiky.goly}:${p.statistiky.obdrzene}, přesilovky ${p.statistiky.presilovky}, tresty ${p.statistiky.tresty} min` : "") + ` | ${JSON.stringify(p._bunky).slice(0, 120)}`));
     } catch (e) {
       console.log("CHYBA: " + e.message + (e.cause ? " | příčina: " + (e.cause.code || e.cause.message) : ""));
     }
   }
+}
+
+// Historie snímků pro graf vývoje: nový stav tabulky (jiné pořadí nebo body) = nový snímek s datem stažení.
+// Stejné pořadí i body jako poslední snímek → jen se doplní statistiky (datum snímku zůstává).
+// Víc běhů v jeden den se stejným datem → poslední stav dne přepíše ten předchozí.
+function aktualizujHistorii(stav) {
+  let historie = { sezona: EXTRALIGA.KONFIG.SEZONA, snimky: [] };
+  try {
+    const h = JSON.parse(fs.readFileSync(HISTORIE, "utf8"));
+    if (h && Array.isArray(h.snimky)) historie = h;
+  } catch (e) {}
+  const datum = String(stav.aktualizovano || new Date().toISOString()).slice(0, 10);
+  const novy = { datum, aktualizovano: stav.aktualizovano, poradi: stav.poradi };
+  if (stav.statistiky) novy.statistiky = stav.statistiky;
+  const posledni = historie.snimky[historie.snimky.length - 1];
+  let zmena = "nový snímek";
+  if (posledni && JSON.stringify(posledni.poradi) === JSON.stringify(novy.poradi)) {
+    if (novy.statistiky && JSON.stringify(posledni.statistiky || null) !== JSON.stringify(novy.statistiky)) {
+      posledni.statistiky = novy.statistiky;
+      zmena = "doplněny statistiky k poslednímu snímku";
+    } else {
+      zmena = "";
+    }
+  } else if (posledni && posledni.datum === datum) {
+    historie.snimky[historie.snimky.length - 1] = novy;
+    zmena = "snímek dne přepsán";
+  } else {
+    historie.snimky.push(novy);
+  }
+  if (!zmena) { console.log("Historie: beze změny (" + historie.snimky.length + " snímků)."); return; }
+  fs.writeFileSync(HISTORIE, JSON.stringify(historie, null, 1) + "\n");
+  console.log("Historie: " + zmena + " (" + historie.snimky.length + " snímků, poslední " + historie.snimky[historie.snimky.length - 1].datum + ").");
 }
 
 async function aktualizace() {
@@ -205,6 +260,7 @@ async function aktualizace() {
         console.log("Sezóna ještě nezačala (všechny týmy 0 zápasů) – zdroj " + z.nazev + ", JSON se neukládá.");
         return;
       }
+      const statistiky = statistikyZPoradi(poradi);
       const vysledek = {
         sezona: EXTRALIGA.KONFIG.SEZONA,
         aktualizovano: new Date().toISOString(),
@@ -212,15 +268,20 @@ async function aktualizace() {
         zdroj_url: z.url,
         poradi: poradi.map((p) => ({ tym: p.tym, zapasy: p.zapasy, body: p.body }))
       };
+      if (statistiky) vysledek.statistiky = statistiky;
       let stary = null;
       try { stary = JSON.parse(fs.readFileSync(VYSTUP, "utf8")); } catch (e) {}
-      if (stary && JSON.stringify(stary.poradi) === JSON.stringify(vysledek.poradi)) {
+      const stejne = stary && JSON.stringify(stary.poradi) === JSON.stringify(vysledek.poradi)
+        && JSON.stringify(stary.statistiky || null) === JSON.stringify(vysledek.statistiky || null);
+      if (stejne) {
         console.log("Tabulka se od minula nezměnila (" + z.nazev + ") – JSON zůstává.");
+        aktualizujHistorii(stary);
         return;
       }
       fs.writeFileSync(VYSTUP, JSON.stringify(vysledek, null, 2) + "\n");
-      console.log("Uloženo " + path.basename(VYSTUP) + " ze zdroje " + z.nazev + ":");
+      console.log("Uloženo " + path.basename(VYSTUP) + " ze zdroje " + z.nazev + (statistiky ? " (včetně statistik týmů)" : " (bez statistik týmů)") + ":");
       vysledek.poradi.forEach((p, i) => console.log(`${String(i + 1).padStart(2)}. ${p.tym.padEnd(18)} ${String(p.zapasy).padStart(2)} z.  ${String(p.body).padStart(3)} b.`));
+      aktualizujHistorii(vysledek);
       return;
     } catch (e) {
       chyby.push(z.nazev + " (" + z.url + "): " + e.message);

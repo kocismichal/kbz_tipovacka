@@ -175,7 +175,26 @@ zůstane poslední uložená soupiska – nic se nerozbije.
   který lidé zadali ve formuláři, s počtem tipujících). Po výběru se matice i procenta počítají jen z fanoušků
   daného klubu; „Všichni tipující“ vrátí celkový pohled.
 
-## 9. Na co myslet
+## 9. Průběžné bodování během sezóny a přepnutí na finále
+
+- **Od startu sezóny web boduje průběžně**: body za pořadí týmů (žolíci 2×, bonusové násobky za přesné trefy)
+  podle automatické tabulky a čtyři týmové otázky podle statistik hokej.cz – nejvíc gólů, nejvíc gólů v přesilovkách,
+  nejvíc trestných minut, nejméně trestných minut (sloupce Skóre, GPř a T v tabulce na hokej.cz). Průběžné vítěze
+  vidíš v panelu „Aktuální stav Extraligy“; při shodě více týmů dostanou body všichni, kdo tipli kteréhokoli z nich.
+- **Co se průběžně neboduje**: tipy na body žolíků, ostatní bonusové otázky (hráči, čísla, play-off, Ano/Ne).
+  V kartách je u nich „po sezóně“. Ruční odpovědi v řádku 2 listu Přehled HOTOVO se do finále ignorují, takže
+  loňské zbytky v řádku 2 ničemu nevadí – ale pořadí E2–R2 se použije jako záloha, kdyby snímek tabulky selhal,
+  proto řádek 2 vyčisti.
+- **Po konci základní části**: 1) vyplň do řádku 2 listu Přehled HOTOVO správné odpovědi (S–AX; u týmových otázek
+  můžeš nechat prázdné, doplní se ze statistik, nebo je přepiš ručně – ruční odpověď má přednost), 2) v repu změň
+  v `extraliga_spolecne.js` `FINALE: false` na `FINALE: true` (jde i z iPadu v GitHubu → tužka → commit do větve → PR)
+  a spusť `node skripty/sestav_apps_script.js` (nebo nech test bundlu, ať tě upozorní). Od té chvíle se bodují
+  i žolíci (body týmů ze snímku) a všechny bonusy.
+- **Graf vývoje**: automatika ukládá každý nový stav tabulky do `2627_extraliga_historie.json` (jen když se tabulka
+  změnila, takže po hracím dni přibude jeden snímek). Přehled z něj kreslí vývoj bodů a pořadí – Mistři a tři nejlepší
+  fanoušci jsou v grafu vždy, kohokoli dalšího jde přidat výběrem. Historie začíná 16. 9. 2026.
+
+## 10. Na co myslet
 
 - Testy a pomocné skripty jsou v repu: `testy/README.md` (jak je spustit na PC) a `skripty/sestav_apps_script.js`
   (sestaví bundle pro Apps Script po změně `extraliga_spolecne.js` nebo `extraliga_apps_script.gs`).

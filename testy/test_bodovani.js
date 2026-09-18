@@ -107,4 +107,44 @@ console.log('✔ nové bonusové otázky');
 assert.strictEqual(E.bodyZaCislo(10, 10, 2), 20); assert.strictEqual(E.bodyZaCislo(10, 14, 2), 4); assert.strictEqual(E.bodyZaCislo(10, 15, 2), 0);
 assert.strictEqual(E.bodyZaCislo('99', '99'), 10);
 console.log('✔ bodyZaCislo');
+
+// 10) průběžné odpovědi ze statistik snímku a složení řádku výsledků v obou režimech
+const stav = { sezona: K.SEZONA, aktualizovano: '2026-09-18T04:30:00Z', zdroj: 'hokej.cz',
+  poradi: T.map((t, i) => ({ tym: t, zapasy: 2, body: 6 - Math.min(i, 6) })), statistiky: {} };
+T.forEach((t, i) => { stav.statistiky[t] = { goly: 10 - Math.min(i, 9), obdrzene: 3, presilovky: i === 3 ? 4 : 1, tresty: 8 + i }; });
+stav.statistiky[T[0]].tresty = 8; stav.statistiky[T[1]].tresty = 8;   // shoda u nejméně trestaných
+let po = E.prubezneOdpovedi(stav);
+assert.strictEqual(po.tymgoly, T[0]); assert.strictEqual(po.tympresilovky, T[3]);
+assert.strictEqual(po.tymfauly, T[13]); assert.strictEqual(po.tym_nejmene_trestany, T[0] + ', ' + T[1]);
+assert.deepStrictEqual(E.prubezneOdpovedi({ poradi: stav.poradi }), {}, 'bez statistik prázdné');
+assert.deepStrictEqual(E.prubezneOdpovedi({ statistiky: { [T[0]]: { goly: 1, presilovky: 1, tresty: 1 } } }), {}, 'neúplné statistiky = prázdné');
+assert.ok(E.jeBonusPrubezny('tymgoly') && !E.jeBonusPrubezny('strelec'));
+// průběžně: řádek 2 listu se ignoruje (pořadí i odpovědi), body týmů se nevyplňují → žolíci a ostatní bonusy 0 b.
+const list2 = vysledky(T.slice().reverse(), body, { tymgoly: 'Kladno', rekord_goly: 'Ano', strelec: 'Jan Novák' });
+E.KONFIG.FINALE = false;
+let rad = E.sestavVysledky(list2, stav);
+assert.deepStrictEqual(E.seznamOficialni(rad), T, 'průběžně pořadí ze snímku');
+assert.strictEqual(rad[E.bonusPodleKlice('tymgoly').idx], T[0], 'průběžně odpověď ze statistik, ne z listu');
+assert.strictEqual(rad[E.bonusPodleKlice('rekord_goly').idx], '', 'průběžně se ruční odpovědi ignorují');
+assert.strictEqual(rad[SL.BODY_MISTO_OD], '', 'průběžně bez bodů týmů (tipy žolíků se nebodují)');
+const rp = tip(T, [['Třinec', 95], ['Pardubice', 90], ['Sparta Praha', 88]], { tymgoly: T[0], rekord_goly: 'Ano', strelec: 'Jan Novák' });
+let vp = E.vyhodnot(rp, rad);
+assert.strictEqual(vp.zolici.celkem, 0, 'průběžně žolíci 0 b.');
+assert.strictEqual(vp.bonusy.celkem, 20, 'průběžně jen týmová otázka 20 b.');
+assert.ok(vp.umisteni.celkem > 0, 'průběžně body za pořadí');
+// bez platného snímku průběžně pořadí z listu, odpovědi žádné
+rad = E.sestavVysledky(list2, null);
+assert.deepStrictEqual(E.seznamOficialni(rad), T.slice().reverse(), 'bez snímku pořadí z listu');
+assert.strictEqual(rad[E.bonusPodleKlice('tymgoly').idx], '', 'bez snímku žádné průběžné odpovědi');
+// finále: řádek listu + snímek, ruční odpověď má přednost, prázdnou doplní statistika, body týmů pro žolíky
+E.KONFIG.FINALE = true;
+rad = E.sestavVysledky(list2, stav);
+assert.deepStrictEqual(E.seznamOficialni(rad), T, 'finále pořadí ze snímku');
+assert.strictEqual(rad[E.bonusPodleKlice('tymgoly').idx], 'Kladno', 'finále ruční odpověď má přednost');
+assert.strictEqual(rad[E.bonusPodleKlice('tympresilovky').idx], T[3], 'finále prázdnou doplní statistika');
+assert.strictEqual(rad[E.bonusPodleKlice('rekord_goly').idx], 'Ano', 'finále ruční odpovědi platí');
+assert.strictEqual(rad[SL.BODY_MISTO_OD], '6', 'finále body týmů ze snímku');
+assert.strictEqual(E.sestavVysledky(list2, stav, 'prubezne')[E.bonusPodleKlice('rekord_goly').idx], '', 'explicitní režim průběžně');
+E.KONFIG.FINALE = false;
+console.log('✔ průběžný a finálový režim');
 console.log('VŠECHNY TESTY BODOVÁNÍ PROŠLY');
