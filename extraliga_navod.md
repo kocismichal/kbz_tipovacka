@@ -129,8 +129,8 @@ nový export a snímek přegenerovat.
 ## 6. Automatická tabulka Extraligy (GitHub Actions)
 
 Pořadí a body týmů se nemusí přepisovat ručně. V repu je workflow **„Tabulka Extraligy“**
-(`.github/workflows/extraliga_tabulka.yml`), které každý den ráno (6:30 letního času) spustí skript
-`skripty/stahni_tabulku_extraligy.js`:
+(`.github/workflows/extraliga_tabulka.yml`), který spouští skript `skripty/stahni_tabulku_extraligy.js`.
+Ten pokaždé:
 
 1. stáhne tabulku z hokej.cz (stránka tabulky Tipsport extraligy, záložně stránka soutěže; poslední
    záloha je šablona tabulky na české Wikipedii),
@@ -144,8 +144,20 @@ týmů z tohoto souboru**; z řádku 2 listu Přehled HOTOVO zůstávají **jen 
 ručním zápisu pořadí v listu (E2–R2, body AY2–BL2) jako dřív. Body se na webu ukazují až od
 `KONFIG.BODOVANI_OD` (30. 9. 2026), do té doby jen tipy.
 
+**Kdy to běží:** jednou ráno (6:30 letního času) a pak každých pět minut od odpoledne do noci. Odpolední
+běhy se nejdřív podívají do programu zápasů na hokej.cz a podle něj se rozhodnou, jestli má stahování smysl:
+
+- **Dnes se nehraje** – běh hned skončí a tabulka se vůbec nestahuje (v protokolu v *Actions* je napsáno,
+  kdy se hraje příště). Ve dnech bez hokeje se tak nic nemění ani v grafu vývoje.
+- **Hraje se** – kontroluje se od deseti minut před prvním zápasem, a to tak dlouho, dokud počet odehraných
+  zápasů v tabulce nesedí s programem. Nový výsledek je proto na webu do pěti minut po tom, co ho hokej.cz
+  zapíše – nečeká se do druhého dne.
+- **Vše zapsané** – jakmile jsou všechny dnešní zápasy v tabulce, další běhy toho dne hned skončí. Kdyby
+  hokej.cz čísla nedopočítal, dvě hodiny po posledním zápase se přestane zkoušet a zbytek dorovná ranní běh.
+
 - **Ručně kdykoli:** GitHub → záložka *Actions* → „Tabulka Extraligy“ → *Run workflow* (jde i z mobilu/iPadu
-  v prohlížeči). Volba `sonda` jen vypíše, co zdroje vracejí, nic neukládá.
+  v prohlížeči). Ruční spuštění stahuje vždy, bez ohledu na program zápasů. Volba `sonda` jen vypíše, co
+  zdroje vracejí (včetně programu zápasů a rozhodnutí, jestli stahovat), nic neukládá.
 - **Kontrola:** v přehledu 26/27 je u aktuálního pořadí napsáno „Tabulka aktualizována <datum> automaticky
   (hokej.cz)“. Když tam stojí „podle ručního zápisu“, automatika nedoběhla – v *Actions* je vidět proč.
 - **Pozor:** GitHub plánované spouštění vypne, když se v repu 60 dní nic neděje (přijde e-mail, stačí

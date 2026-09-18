@@ -1,6 +1,8 @@
-# Automatická tabulka Extraligy pro tipovačku Mistrů světa: každé ráno stáhne aktuální pořadí, body
-# a statistiky týmů do 2627_extraliga_stav.json (web i Apps Script z něj berou pořadí a průběžné odpovědi)
-# a nový stav tabulky přidá do 2627_extraliga_historie.json (graf vývoje tipovačky).
+# Automatická tabulka Extraligy pro tipovačku Mistrů světa: stáhne aktuální pořadí, body a statistiky
+# týmů do 2627_extraliga_stav.json (web i Apps Script z něj berou pořadí a průběžné odpovědi) a nový stav
+# tabulky přidá do 2627_extraliga_historie.json (graf vývoje tipovačky).
+# Běhá ráno (jistota) a pak každých 5 minut v hracím okně – skript si podle programu zápasů sám určí,
+# jestli se má stahovat, takže ve dnech bez hokeje a po zapsání všech zápasů běh hned skončí.
 # Ručně: záložka Actions → "Tabulka Extraligy" → Run workflow.
 name: Tabulka Extraligy
 
@@ -12,7 +14,11 @@ on:
         required: false
         default: "aktualizace"
   schedule:
-    - cron: "30 4 * * *"   # každý den 6:30 (letní čas) / 5:30 (zimní čas); ručně kdykoli přes Run workflow
+    # Ranní jistota: stáhne tabulku vždy, i kdyby večerní kontroly něco minuly
+    - cron: "30 4 * * *"
+    # Hrací okno: každých 5 minut od 15:00 do 23:55 českého letního času (14:00–22:55 v zimě).
+    # Skript si sám stáhne program a když se nehraje nebo je už vše zapsané, hned skončí.
+    - cron: "*/5 13-21 * * *"
 
 permissions:
   contents: write
@@ -26,7 +32,8 @@ jobs:
         with:
           node-version: 22
       - name: Stáhnout tabulku
-        run: node skripty/stahni_tabulku_extraligy.js --rezim "${{ github.event.inputs.rezim || 'aktualizace' }}"
+        # Ranní běh a ruční spuštění stahují vždy (--vzdy), kontroly v hracím okně se řídí programem zápasů
+        run: node skripty/stahni_tabulku_extraligy.js --rezim "${{ github.event.inputs.rezim || 'aktualizace' }}" ${{ (github.event_name != 'schedule' || github.event.schedule == '30 4 * * *') && '--vzdy' || '' }}
       - name: Uložit změnu do repa
         if: ${{ (github.event.inputs.rezim || 'aktualizace') == 'aktualizace' }}
         run: |
@@ -38,4 +45,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add 2627_extraliga_stav.json 2627_extraliga_historie.json
           git commit -m "Tabulka Extraligy: automatická aktualizace $(date -u +%Y-%m-%d)"
+          git pull --rebase origin main
           git push

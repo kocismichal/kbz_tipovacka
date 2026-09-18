@@ -24,7 +24,7 @@ mergne do `main` a ověří nasazení (viz Pracovní postup).
 | `extraliga_apps_script.gs` | Kód Google Apps Scriptu (doPost ukládá tip, doGet vrací data listů, `doplnHlavicky`, `vypisBodovaniDoProtokolu`). |
 | `extraliga_apps_script_komplet.gs` | **Generovaný** bundle = `skripty/apps_script_hlavicka.gs` + `extraliga_spolecne.js` + `extraliga_apps_script.gs`. Po změně zdrojů spusť `node skripty/sestav_apps_script.js` (test `test_bundle.js` to hlídá). |
 | `extraliga_zavadec.gs` | Jediný soubor v projektu Apps Scriptu u majitele: stahuje bundle z `main` (cache 5 min, záloha v PropertiesService). Změna v repu se v tabulce projeví sama, nic se nekopíruje. |
-| `skripty/stahni_tabulku_extraligy.js` + `.github/workflows/extraliga_tabulka.yml` | Automatická tabulka: denně 4:30 UTC (i ručně) stáhne pořadí, body a statistiky týmů (góly, góly v přesilovkách, trestné minuty ze sloupců Skóre/GPř/T široké tabulky) z hokej.cz (záloha cs.wikipedia bez statistik), zkontroluje a uloží `2627_extraliga_stav.json`; po odehraných zápasech přidá snímek do `2627_extraliga_historie.json` (graf) – ve dnech bez zápasů se bod nepřidává, jen se případně aktualizuje poslední snímek. Funkce jdou načíst i přes `require` (test `test_historie.js`). |
+| `skripty/stahni_tabulku_extraligy.js` + `.github/workflows/extraliga_tabulka.yml` | Automatická tabulka: stáhne pořadí, body a statistiky týmů (góly, góly v přesilovkách, trestné minuty ze sloupců Skóre/GPř/T široké tabulky) z hokej.cz (záloha cs.wikipedia bez statistik), zkontroluje a uloží `2627_extraliga_stav.json`; po odehraných zápasech přidá snímek do `2627_extraliga_historie.json` (graf) – ve dnech bez zápasů se bod nepřidává, jen se případně aktualizuje poslední snímek. Běhá ráno 4:30 UTC s `--vzdy` (a ručně) a pak každých 5 minut 13–21 UTC podle programu zápasů. Funkce jdou načíst i přes `require` (testy `test_historie.js`, `test_program.js`). |
 | `extraliga_soupisky.js` | **Generovaný** seznam hráčů 14 klubů (jméno, tým, pozice) pro našeptávač u otázek na hráče ve formuláři. Vytváří ho `skripty/stahni_soupisky.js` z hokej.cz (stránky klubů → Soupiska); workflow `.github/workflows/extraliga_soupisky.yml` ho obnovuje každé pondělí (i ručně). Neupravovat ručně. |
 | `extraliga_navod.md` | Návod pro majitele (sloupce tabulky, žolíci, otázky, automatika). Při změně chování aktualizuj. |
 | `testy/` | Testy (Node + Playwright), viz `testy/README.md`. |
@@ -53,6 +53,12 @@ mergne do `main` a ověří nasazení (viz Pracovní postup).
 - **Bodování**: umístění 10 − |rozdíl míst| (min 0), násobek 1,1/1,2/1,3/1,4 za 7/9/11/13 přesných;
   žolíci: umístění 2×, tip na body žolíka = číselná škála 2× (20/16/12/8/4); číselné otázky 10/8/6/4/2;
   týmové a hráčské 20 b.; finále play-off a Ano/Ne 10 b. Text pravidel ve formuláři musí sedět s kódem.
+- **Kdy se stahuje tabulka** (`programZapasu`, `rozhodniStahovani`): běh bez `--vzdy` si nejdřív stáhne rozpis
+  (`/tipsport-extraliga/zapasy`) – v řádcích `<tr data-href="/zapas/ID">` je buď čas začátku, nebo výsledek po
+  třetinách (pak je zápas odehraný a čas začátku už web neuvádí). Den bez zápasů i doba před prvním zápasem
+  skončí bez stahování; jinak se kontroluje každých 5 minut, dokud počet odehraných zápasů v tabulce
+  (součet `zapasy` / 2) nedosáhne základu z historie plus počtu dnešních zápasů. Pak se hlásí „vše zapsané“
+  a zbytek dne se nestahuje; 2 h po očekávaném konci posledního zápasu se kontroly ukončí (dorovná ranní běh).
 - **Loga týmů** jsou z imgur (`KONFIG.LOGA`), při chybě náhradní `logo_neznamy.svg` (`onerror`).
 - **Lišta** (`navbar.js`): dlaždice nesou ročník, obsah se musí vejít do 1200 px (test `test_lista.js`).
   Na ledových stránkách je tmavě modrá (kontrast k ledu), nikdy se neořezává (co se nevejde, zalomí se pod
