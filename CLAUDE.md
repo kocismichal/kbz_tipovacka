@@ -3,7 +3,8 @@
 Statický web (GitHub Pages z větve `main`, https://kocismichal.github.io/kbz_tipovacka/) se dvěma
 tipovačkami: **KBZ** (Chance liga, ChNL – podcast Kudy běží zajíc) a **Mistři světa · Extraliga**
 (podcast Mistři světa). Čisté HTML/CSS/JS bez build kroku, UI, komentáře i commity **česky**.
-Majitel pracuje často jen z iPadu, proto má vše jít nasadit bez PC (PR → merge do `main`).
+Majitel pracuje často jen z iPadu, proto má vše jít nasadit bez zásahu z jeho strany: Claude si větev sám
+mergne do `main` a ověří nasazení (viz Pracovní postup).
 
 ## Zlaté pravidlo
 
@@ -72,7 +73,9 @@ Majitel pracuje často jen z iPadu, proto má vše jít nasadit bez PC (PR → m
 
 1. Větev → změny → `cd testy && npm test` (poprvé `npm install` a `npx playwright install chromium`).
 2. Po změně `extraliga_spolecne.js` / `extraliga_apps_script.gs`: `node skripty/sestav_apps_script.js`.
-3. Commit česky, PR do `main`, po merge se web sám přegeneruje (GitHub Pages).
+3. Commit česky a **merge do `main` provádí Claude sám** (z PC: `git checkout main && git merge --no-ff <větev>
+   && git push origin main`, pak větev smazat) – majitel merge neprovádí. Po pushi se web sám přegeneruje
+   (GitHub Pages, obvykle do minuty) a Claude výsledek ověří na živé adrese. PR zakládej jen na výslovné přání.
 4. Screenshoty z testů jsou v `testy/vystup/` – při vzhledových změnách je zkontroluj (desktop, iPad, mobil).
 
 ## Na co myslet (stav k 12. 9. 2026)
