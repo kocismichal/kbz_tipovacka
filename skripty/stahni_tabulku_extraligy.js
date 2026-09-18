@@ -12,9 +12,11 @@
  *   node skripty/stahni_tabulku_extraligy.js --rezim sonda   jen vypíše, co zdroje vracejí (ladění)
  *
  * Kdy se stahuje: skript si nejdřív stáhne program zápasů z hokej.cz. Když se dnes nehraje nebo první zápas
- * ještě nezačal, hned skončí a nic nestahuje. Během zápasů a zhruba tři hodiny po začátku posledního z nich
- * se kontroluje po pěti minutách (workflow), dokud počet odehraných zápasů v tabulce nesedí s programem –
- * pak skript oznámí, že je vše zapsané, a další běhy toho dne zase hned skončí.
+ * ještě nezačal, hned skončí a nic nestahuje. Během zápasů a ještě dvě hodiny po očekávaném konci posledního
+ * z nich se stahuje, dokud počet odehraných zápasů v tabulce nesedí s programem.
+ * Poslední řádek výpisu je určený hlídači ve workflow: "KONTROLA: hotovo" = dnes už není na co čekat,
+ * "KONTROLA: ceka <sekundy>" = za tolik sekund má smysl zkusit to znovu (během zápasů 5 minut,
+ * před prvním zápasem rovnou až k jeho začátku). S --vzdy se řádek nevypisuje.
  *
  * Zdroje v pořadí: hokej.cz (stránka tabulky), hokej.cz (stránka soutěže s malou tabulkou),
  * česká Wikipedie (šablona {{Hokejová tabulka}} – aktualizují ji dobrovolníci, jen záloha).
@@ -33,6 +35,7 @@ const PROGRAM_URL = "https://www.hokej.cz/tipsport-extraliga/zapasy";
 const DELKA_ZAPASU_MIN = 165;          // zápas i s přestávkami (a případným prodloužením) bývá hotový do 2:45
 const KONTROLA_PO_ZAPASE_MIN = 120;    // po očekávaném konci posledního zápasu se kontroluje ještě dvě hodiny
 const NABEH_PRED_ZAPASEM_MIN = 10;     // těsně před prvním zápasem už má smysl stahovat
+const PAUZA_MEZI_KONTROLAMI_S = 300;   // během zápasů se kontroluje po pěti minutách
 const rezim = (process.argv.indexOf("--rezim") !== -1) ? process.argv[process.argv.indexOf("--rezim") + 1] : "aktualizace";
 const vzdy = process.argv.indexOf("--vzdy") !== -1;
 
@@ -302,28 +305,31 @@ function rozhodniStahovani(zapasy, ted, stav, zaklad) {
   const dnesni = zapasy.filter((z) => z.datum === dnes);
   if (dnesni.length === 0) {
     const pristi = zapasy.filter((z) => z.zacatek && z.zacatek > ted)[0];
-    return { stahovat: false, dnesni, duvod: "dnes se nehraje" + (pristi ? " (další zápasy " + pristi.datum + " v " + pristi.cas + ")" : "") };
+    return { stahovat: false, konec: true, dnesni, duvod: "dnes se nehraje" + (pristi ? " (další zápasy " + pristi.datum + " v " + pristi.cas + ")" : "") };
   }
   const melo = melySkoncit(dnesni, ted);
   const odehrano = stav ? odehranoZTabulky(stav.poradi) : null;
 
   // Hotovo: všechny dnešní zápasy už jsou v uložené tabulce – další kontroly dnes nic nepřinesou
   if (zaklad !== null && odehrano !== null && odehrano >= zaklad + dnesni.length) {
-    return { stahovat: false, dnesni, duvod: "vše zapsané – všech " + dnesni.length + " dnešních zápasů už je v tabulce" };
+    return { stahovat: false, konec: true, dnesni, duvod: "vše zapsané – všech " + dnesni.length + " dnešních zápasů už je v tabulce" };
   }
 
   const jesteNezacaly = dnesni.filter((z) => z.zacatek);
   const prvni = jesteNezacaly[0];
   if (prvni && ted.getTime() < prvni.zacatek.getTime() - NABEH_PRED_ZAPASEM_MIN * 60000 && melo === 0) {
-    return { stahovat: false, dnesni, duvod: "dnes se hraje, ale první zápas začíná až v " + prvni.cas };
+    // Hlídač nemusí do začátku zápasu kontrolovat po pěti minutách – dostane čas, kdy se má ozvat
+    const doZacatku = Math.ceil((prvni.zacatek.getTime() - NABEH_PRED_ZAPASEM_MIN * 60000 - ted.getTime()) / 1000);
+    return { stahovat: false, konec: false, cekat: Math.max(PAUZA_MEZI_KONTROLAMI_S, doZacatku), dnesni,
+      duvod: "dnes se hraje, ale první zápas začíná až v " + prvni.cas };
   }
   // Dlouho po posledním zápase (a web pořád nic) se přestává kontrolovat, dorovná to ranní běh
   const posledniZacatek = jesteNezacaly.length ? jesteNezacaly[jesteNezacaly.length - 1].zacatek : null;
   if (posledniZacatek && ted.getTime() > posledniZacatek.getTime() + (DELKA_ZAPASU_MIN + KONTROLA_PO_ZAPASE_MIN) * 60000) {
-    return { stahovat: false, dnesni, duvod: "dnešní zápasy skončily a víc už web nedopsal – zbytek dorovná ranní běh" };
+    return { stahovat: false, konec: true, dnesni, duvod: "dnešní zápasy skončily a víc už web nedopsal – zbytek dorovná ranní běh" };
   }
   // Jinak se kontroluje každých 5 minut: zápas může skončit dřív, než je obvyklé, a tabulka se hned mění
-  return { stahovat: true, dnesni, duvod: dnesni.length + " zápasů dnes, dohraných " + melo
+  return { stahovat: true, konec: false, cekat: PAUZA_MEZI_KONTROLAMI_S, dnesni, duvod: dnesni.length + " zápasů dnes, dohraných " + melo
     + (odehrano !== null && zaklad !== null ? ", v tabulce " + (odehrano - zaklad) : "") + " – kontroluje se zápis do tabulky" };
 }
 // Počet odehraných zápasů podle tabulky (každý zápas mají v tabulce oba týmy)
@@ -390,6 +396,13 @@ function aktualizujHistorii(stav, souborHistorie) {
   console.log("Historie: " + zmena + " (" + historie.snimky.length + " snímků, poslední " + historie.snimky[historie.snimky.length - 1].datum + ").");
 }
 
+// Poslední řádek výpisu pro hlídače v workflow: "hotovo" = dnes už není na co čekat,
+// "ceka <sekundy>" = za tolik sekund má smysl zkusit to znovu.
+function oznamKontrolu(hotovo, cekat) {
+  if (vzdy) return;
+  console.log(hotovo ? "KONTROLA: hotovo" : "KONTROLA: ceka " + Math.max(60, Math.round(cekat || PAUZA_MEZI_KONTROLAMI_S)));
+}
+
 async function aktualizace() {
   const ted = new Date();
   let dnesni = [];
@@ -402,7 +415,7 @@ async function aktualizace() {
       const rozhodnuti = rozhodniStahovani(zapasy, ted, ulozeny, odehranoPredDneskem(ted));
       dnesni = rozhodnuti.dnesni;
       console.log("Program (" + zapasy.length + " zápasů v rozpisu): " + rozhodnuti.duvod + ".");
-      if (!rozhodnuti.stahovat) return;
+      if (!rozhodnuti.stahovat) { oznamKontrolu(rozhodnuti.konec, rozhodnuti.cekat); return; }
     } catch (e) {
       console.log("Program se nepodařilo stáhnout (" + e.message + ") – pro jistotu stahuji tabulku.");
     }
@@ -418,6 +431,7 @@ async function aktualizace() {
       if (chyba) { chyby.push(z.nazev + " (" + z.url + "): " + chyba); continue; }
       if (poradi.every((p) => p.zapasy === 0)) {
         console.log("Sezóna ještě nezačala (všechny týmy 0 zápasů) – zdroj " + z.nazev + ", JSON se neukládá.");
+        oznamKontrolu(true);
         return;
       }
       const statistiky = statistikyZPoradi(poradi);
@@ -436,14 +450,14 @@ async function aktualizace() {
       if (stejne) {
         console.log("Tabulka se od minula nezměnila (" + z.nazev + ") – JSON zůstává.");
         aktualizujHistorii(stary);
-        hlasStavZapisu(dnesni, ted, vysledek.poradi);
+        oznamKontrolu(hlasStavZapisu(dnesni, ted, vysledek.poradi));
         return;
       }
       fs.writeFileSync(VYSTUP, JSON.stringify(vysledek, null, 2) + "\n");
       console.log("Uloženo " + path.basename(VYSTUP) + " ze zdroje " + z.nazev + (statistiky ? " (včetně statistik týmů)" : " (bez statistik týmů)") + ":");
       vysledek.poradi.forEach((p, i) => console.log(`${String(i + 1).padStart(2)}. ${p.tym.padEnd(18)} ${String(p.zapasy).padStart(2)} z.  ${String(p.body).padStart(3)} b.`));
       aktualizujHistorii(vysledek);
-      hlasStavZapisu(dnesni, ted, vysledek.poradi);
+      oznamKontrolu(hlasStavZapisu(dnesni, ted, vysledek.poradi));
       return;
     } catch (e) {
       chyby.push(z.nazev + " (" + z.url + "): " + e.message);
@@ -456,13 +470,14 @@ async function aktualizace() {
 if (require.main === module) {
   // Po uložení tabulky: sedí počet odehraných zápasů s programem? Když ano, další kontroly dnes nejsou potřeba.
 function hlasStavZapisu(dnesni, ted, poradi) {
-  if (!dnesni || dnesni.length === 0) return;
+  if (!dnesni || dnesni.length === 0) return false;
   const zaklad = odehranoPredDneskem(ted);
   const odehrano = odehranoZTabulky(poradi);
-  if (zaklad === null) { console.log("Zápis: v tabulce je " + odehrano + " odehraných zápasů (bez historie nelze porovnat s programem)."); return; }
+  if (zaklad === null) { console.log("Zápis: v tabulce je " + odehrano + " odehraných zápasů (bez historie nelze porovnat s programem)."); return false; }
   const dnesZapsano = odehrano - zaklad;
-  if (dnesZapsano >= dnesni.length) console.log("Zápis: hotovo – všech " + dnesni.length + " dnešních zápasů je v tabulce, dnes už se kontrolovat nemusí.");
-  else console.log("Zápis: čeká se – z dnešních " + dnesni.length + " zápasů je v tabulce " + dnesZapsano + " (dohráno " + melySkoncit(dnesni, ted) + "), další kontrola za 5 minut.");
+  if (dnesZapsano >= dnesni.length) { console.log("Zápis: hotovo – všech " + dnesni.length + " dnešních zápasů je v tabulce, dnes už se kontrolovat nemusí."); return true; }
+  console.log("Zápis: čeká se – z dnešních " + dnesni.length + " zápasů je v tabulce " + dnesZapsano + " (dohráno " + melySkoncit(dnesni, ted) + "), další kontrola za 5 minut.");
+  return false;
 }
 
 (rezim === "sonda" ? sonda() : aktualizace()).catch((e) => { console.error(e); process.exit(1); });

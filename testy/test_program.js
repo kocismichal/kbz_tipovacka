@@ -38,6 +38,10 @@ over(sobota.zacatek.toISOString() === '2026-09-19T16:00:00.000Z', 'čas se bere 
 const leden = program.find(z => z.cas === '18:00' && z.datum.startsWith('2027'));
 over(leden && leden.datum === '2027-01-13', 'lednový zápas dostane příští rok (sezóna přes Nový rok)', leden && leden.datum);
 
+// ---------- hlášení pro hlídač ve workflow ----------
+// Skript vypisuje poslední řádek "KONTROLA: hotovo" / "KONTROLA: ceka <sekundy>", podle kterého
+// workflow pozná, jestli má za pět minut zkusit znovu. Kontroluje se níže u jednotlivých situací.
+
 // ---------- rozhodování ----------
 const dnesniProgram = html('PÁ 18. 09. 17:00', 'PÁ 18. 09. 17:30', 'SO 19. 09. 18:00');
 const zapasy = (ted) => S.programZapasu(dnesniProgram, ted);
@@ -46,10 +50,13 @@ const rozhodni = (ted, stav, zaklad) => S.rozhodniStahovani(zapasy(ted), ted, st
 // den bez zápasů (20. 9. v tomto rozpisu nic není)
 let r = rozhodni(cas(20, 18), tabulkaPresne(9));
 over(!r.stahovat && /dnes se nehraje/.test(r.duvod), 'den bez zápasů: nestahovat', r.duvod);
+over(r.konec === true, 'den bez zápasů: hlídač může skončit', r.konec);
 
 // ráno hracího dne
 r = rozhodni(cas(18, 9), tabulkaPresne(7));
 over(!r.stahovat && /začíná až v 17:00/.test(r.duvod), 'ráno před zápasy: nestahovat', r.duvod);
+// hlídač nemá kontrolovat po pěti minutách, ale počkat rovnou k výkopu (v 9:00 zbývá do 16:50 sedm hodin padesát minut)
+over(r.konec === false && r.cekat === (7 * 60 + 50) * 60, 'ráno před zápasy: hlídač počká až k výkopu', r.cekat);
 
 // deset minut před prvním zápasem
 r = rozhodni(cas(18, 16, 55), tabulkaPresne(7));
@@ -58,6 +65,7 @@ over(r.stahovat, 'těsně před prvním zápasem: stahovat', r.duvod);
 // během zápasů
 r = rozhodni(cas(18, 18, 30), tabulkaPresne(7));
 over(r.stahovat && /dohraných 0/.test(r.duvod), 'během zápasů: stahovat', r.duvod);
+over(r.konec === false && r.cekat === 300, 'během zápasů: další kontrola za pět minut', r.cekat);
 
 // po prvním zápase, v tabulce zatím nic navíc
 r = rozhodni(cas(18, 20, 0), tabulkaPresne(7));
@@ -74,12 +82,14 @@ over(r.stahovat && /dohraných 2/.test(r.duvod), 'druhý zápas ještě chybí: 
 // oba zápasy zapsané – i během večera se přestane kontrolovat
 r = rozhodni(cas(18, 21, 30), tabulkaPresne(9));
 over(!r.stahovat && /vše zapsané/.test(r.duvod), 'oba zápasy zapsané: nestahovat', r.duvod);
+over(r.konec === true, 'oba zápasy zapsané: hlídač končí', r.konec);
 r = rozhodni(cas(18, 18, 30), tabulkaPresne(9));
 over(!r.stahovat && /vše zapsané/.test(r.duvod), 'zapsané dřív, než se čekalo: taky nestahovat', r.duvod);
 
 // dlouho po zápasech bez zápisu se přestane zkoušet (dorovná ranní běh)
 r = rozhodni(cas(18, 23, 30), tabulkaPresne(7));
 over(!r.stahovat && /ranní běh/.test(r.duvod), 'pozdě v noci bez zápisu: nechat na ráno', r.duvod);
+over(r.konec === true, 'pozdě v noci: hlídač končí', r.konec);
 
 // bez historie (na začátku sezóny) se raději stahuje
 r = rozhodni(cas(18, 21, 30), tabulkaPresne(9), null);
