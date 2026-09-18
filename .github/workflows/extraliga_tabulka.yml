@@ -1,9 +1,13 @@
 # Automatická tabulka Extraligy pro tipovačku Mistrů světa: stáhne aktuální pořadí, body a statistiky
 # týmů do 2627_extraliga_stav.json (web i Apps Script z něj berou pořadí a průběžné odpovědi) a nový stav
 # tabulky přidá do 2627_extraliga_historie.json (graf vývoje tipovačky).
-# Běhá ráno (jistota) a pak každých 5 minut v hracím okně – skript si podle programu zápasů sám určí,
-# jestli se má stahovat, takže ve dnech bez hokeje a po zapsání všech zápasů běh hned skončí.
-# Ručně: záložka Actions → "Tabulka Extraligy" → Run workflow.
+#
+# Dvě spuštění:
+#   - ráno: stáhne tabulku vždy (jistota, kdyby večerní hlídání něco minulo),
+#   - odpoledne: spustí hlídání hracího dne – skript si podle programu zápasů z hokej.cz sám řekne,
+#     jestli se dnes hraje a kdy má smysl další kontrola, a job ho po pěti minutách pouští znovu,
+#     dokud nejsou všechny dnešní zápasy v tabulce. Každá změna se hned commitne do main.
+# Ručně: záložka Actions → "Tabulka Extraligy" → Run workflow (stáhne vždy, bez ohledu na program).
 name: Tabulka Extraligy
 
 on:
@@ -14,17 +18,19 @@ on:
         required: false
         default: "aktualizace"
   schedule:
-    # Ranní jistota: stáhne tabulku vždy, i kdyby večerní kontroly něco minuly
+    # Ranní jistota (6:30 letního času / 5:30 zimního)
     - cron: "30 4 * * *"
-    # Hrací okno: každých 5 minut od 15:00 do 23:55 českého letního času (14:00–22:55 v zimě).
-    # Skript si sám stáhne program a když se nehraje nebo je už vše zapsané, hned skončí.
-    - cron: "*/5 13-21 * * *"
+    # Začátek hlídání hracího dne (17:00 letního času / 16:00 zimního); GitHub start často o dost zdrží,
+    # hlídání si proto samo pohlídá, co už je zapsané, a případně hned skončí.
+    - cron: "0 15 * * *"
 
 permissions:
   contents: write
 
 jobs:
   tabulka:
+    # ranní běh a ruční spuštění
+    if: ${{ github.event_name != 'schedule' || github.event.schedule == '30 4 * * *' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -32,8 +38,7 @@ jobs:
         with:
           node-version: 22
       - name: Stáhnout tabulku
-        # Ranní běh a ruční spuštění stahují vždy (--vzdy), kontroly v hracím okně se řídí programem zápasů
-        run: node skripty/stahni_tabulku_extraligy.js --rezim "${{ github.event.inputs.rezim || 'aktualizace' }}" ${{ (github.event_name != 'schedule' || github.event.schedule == '30 4 * * *') && '--vzdy' || '' }}
+        run: node skripty/stahni_tabulku_extraligy.js --rezim "${{ github.event.inputs.rezim || 'aktualizace' }}" --vzdy
       - name: Uložit změnu do repa
         if: ${{ (github.event.inputs.rezim || 'aktualizace') == 'aktualizace' }}
         run: |
@@ -47,3 +52,66 @@ jobs:
           git commit -m "Tabulka Extraligy: automatická aktualizace $(date -u +%Y-%m-%d)"
           git pull --rebase origin main
           git push
+
+  hlidani:
+    # odpolední hlídání hracího dne
+    if: ${{ github.event_name == 'schedule' && github.event.schedule == '0 15 * * *' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    concurrency:
+      group: hlidani-extraligy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Hlídat zápasy a průběžně ukládat tabulku
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          LOG="$RUNNER_TEMP/kontrola.txt"
+          konec=$(( $(date +%s) + 19800 ))   # hlídá se nejdéle 5,5 hodiny
+          chyb=0
+          while : ; do
+            if node skripty/stahni_tabulku_extraligy.js > "$LOG" 2>&1; then
+              chyb=0
+            else
+              chyb=$(( chyb + 1 ))
+              echo "Tabulku se nepodařilo stáhnout ($chyb. pokus v řadě):"
+              cat "$LOG"
+              if [ "$chyb" -ge 3 ]; then
+                echo "Třikrát po sobě chyba – hlídání končí, zbytek dorovná ranní běh."
+                exit 1
+              fi
+              sleep 300
+              continue
+            fi
+            cat "$LOG"
+            if [ -n "$(git status --porcelain -- 2627_extraliga_stav.json 2627_extraliga_historie.json)" ]; then
+              git add 2627_extraliga_stav.json 2627_extraliga_historie.json
+              git commit -m "Tabulka Extraligy: automatická aktualizace $(TZ=Europe/Prague date '+%-d. %-m. %Y %H:%M')"
+              if git pull --rebase origin main && git push; then
+                echo "Změna tabulky uložena do main."
+              else
+                echo "Uložení se nepovedlo (nejspíš souběh s jiným během) – srovnám se s main a zkusím to za chvíli znovu."
+                git rebase --abort || true
+                git reset --hard origin/main || true
+              fi
+            fi
+            if grep -q "KONTROLA: hotovo" "$LOG"; then
+              echo "Dnešní zápasy jsou v tabulce – hlídání končí."
+              break
+            fi
+            cekat=$(sed -n 's/^KONTROLA: ceka \([0-9][0-9]*\).*$/\1/p' "$LOG" | tail -1)
+            if [ -z "$cekat" ]; then cekat=300; fi
+            ted=$(date +%s)
+            if [ "$ted" -ge "$konec" ]; then
+              echo "Hlídání běží 5,5 hodiny – končí, zbytek dorovná ranní běh."
+              break
+            fi
+            zbyva=$(( konec - ted ))
+            if [ "$cekat" -gt "$zbyva" ]; then cekat=$zbyva; fi
+            echo "Další kontrola za $cekat s."
+            sleep "$cekat"
+          done

@@ -144,16 +144,20 @@ týmů z tohoto souboru**; z řádku 2 listu Přehled HOTOVO zůstávají **jen 
 ručním zápisu pořadí v listu (E2–R2, body AY2–BL2) jako dřív. Body se na webu ukazují až od
 `KONFIG.BODOVANI_OD` (30. 9. 2026), do té doby jen tipy.
 
-**Kdy to běží:** jednou ráno (6:30 letního času) a pak každých pět minut od odpoledne do noci. Odpolední
-běhy se nejdřív podívají do programu zápasů na hokej.cz a podle něj se rozhodnou, jestli má stahování smysl:
+**Kdy to běží:** ráno jednou (6:30 letního času, stahuje vždy) a odpoledne se spustí **hlídání hracího dne**
+(v 17:00 letního času, v zimě v 16:00). Hlídání si stáhne program zápasů na hokej.cz a dál se řídí jím:
 
-- **Dnes se nehraje** – běh hned skončí a tabulka se vůbec nestahuje (v protokolu v *Actions* je napsáno,
-  kdy se hraje příště). Ve dnech bez hokeje se tak nic nemění ani v grafu vývoje.
-- **Hraje se** – kontroluje se od deseti minut před prvním zápasem, a to tak dlouho, dokud počet odehraných
-  zápasů v tabulce nesedí s programem. Nový výsledek je proto na webu do pěti minut po tom, co ho hokej.cz
-  zapíše – nečeká se do druhého dne.
-- **Vše zapsané** – jakmile jsou všechny dnešní zápasy v tabulce, další běhy toho dne hned skončí. Kdyby
-  hokej.cz čísla nedopočítal, dvě hodiny po posledním zápase se přestane zkoušet a zbytek dorovná ranní běh.
+- **Dnes se nehraje** – hlídání hned skončí a tabulka se vůbec nestahuje (v protokolu v *Actions* je napsáno,
+  kdy se hraje příště). Ve dnech bez hokeje se tak nemění ani graf vývoje.
+- **Zápasy ještě nezačaly** – počká si až k prvnímu vhazování, nekontroluje zbytečně.
+- **Hraje se** – zkouší to po pěti minutách, dokud počet odehraných zápasů v tabulce nesedí s programem.
+  Každou změnu rovnou uloží, takže nový výsledek je na webu pár minut po tom, co ho hokej.cz zapíše.
+- **Vše zapsané** – hlídání skončí. Kdyby hokej.cz čísla nedopočítal, dvě hodiny po očekávaném konci
+  posledního zápasu to nechá na ranním běhu.
+
+Proč hlídání v jednom běhu a ne spouštění po pěti minutách: GitHub plánované spouštění často o hodiny
+zdrží (ranní běh startuje běžně až kolem deváté). Jeden běh, který si kontroly řídí sám, proto hrací
+večer zvládne, i když ho GitHub pustí později.
 
 - **Ručně kdykoli:** GitHub → záložka *Actions* → „Tabulka Extraligy“ → *Run workflow* (jde i z mobilu/iPadu
   v prohlížeči). Ruční spuštění stahuje vždy, bez ohledu na program zápasů. Volba `sonda` jen vypíše, co
