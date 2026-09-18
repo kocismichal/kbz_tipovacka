@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-09-18T18:31:08.332Z",
+  "aktualizovano": "2026-09-18T18:58:59.845Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
@@ -10,19 +10,19 @@
       "body": 6
     },
     {
-      "tym": "České Budějovice",
+      "tym": "Kladno",
+      "zapasy": 2,
+      "body": 5
+    },
+    {
+      "tym": "Sparta Praha",
       "zapasy": 2,
       "body": 4
     },
     {
-      "tym": "Sparta Praha",
-      "zapasy": 1,
-      "body": 3
-    },
-    {
-      "tym": "Kladno",
-      "zapasy": 1,
-      "body": 3
+      "tym": "České Budějovice",
+      "zapasy": 2,
+      "body": 4
     },
     {
       "tym": "Karlovy Vary",
@@ -82,23 +82,23 @@
       "presilovky": 2,
       "tresty": 12
     },
+    "Kladno": {
+      "goly": 7,
+      "obdrzene": 5,
+      "presilovky": 2,
+      "tresty": 12
+    },
+    "Sparta Praha": {
+      "goly": 7,
+      "obdrzene": 5,
+      "presilovky": 2,
+      "tresty": 18
+    },
     "České Budějovice": {
       "goly": 4,
       "obdrzene": 3,
       "presilovky": 2,
       "tresty": 16
-    },
-    "Sparta Praha": {
-      "goly": 5,
-      "obdrzene": 2,
-      "presilovky": 2,
-      "tresty": 10
-    },
-    "Kladno": {
-      "goly": 4,
-      "obdrzene": 3,
-      "presilovky": 1,
-      "tresty": 10
     },
     "Karlovy Vary": {
       "goly": 4,

@@ -31,7 +31,7 @@ Screenshoty se ukládají do `testy/vystup/` (složka je v .gitignore).
 | Test | Co kontroluje |
 |------|---------------|
 | `test_bodovani.js` | čisté bodování v `extraliga_spolecne.js`: umístění, násobky, žolíci, bonusové otázky, průběžný a finálový režim (`sestavVysledky`, `prubezneOdpovedi`) |
-| `test_graf.js` | graf vývoje tipovačky z denních snímků: série Mistrů a nejlepších fanoušků, přepínač body/pořadí, přidání tipujícího, bez historie skrytý |
+| `test_graf.js` | graf vývoje tipovačky z denních snímků: legenda ve dvou řádcích se zaškrtávátky, přepínač „jen Mistři“, osa podle rozsahu hodnot, přidání tipujícího psaním i výběrem, bez historie skrytý |
 | `test_bundle.js` | že `extraliga_apps_script_komplet.gs` odpovídá zdrojům (po změně spusť `node skripty/sestav_apps_script.js`) |
 | `test_form.js` | formulář: výběr týmů, žolíci, generované otázky, kontrola před odesláním, odeslaná pole |
 | `test_prehled.js` | přehled 26/27 před uzávěrkou (jen tipy) i po ní (body, záložky, karta hráče) |

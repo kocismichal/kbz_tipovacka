@@ -191,8 +191,12 @@ zůstane poslední uložená soupiska – nic se nerozbije.
   a spusť `node skripty/sestav_apps_script.js` (nebo nech test bundlu, ať tě upozorní). Od té chvíle se bodují
   i žolíci (body týmů ze snímku) a všechny bonusy.
 - **Graf vývoje**: automatika ukládá každý nový stav tabulky do `2627_extraliga_historie.json` (jen když se tabulka
-  změnila, takže po hracím dni přibude jeden snímek). Přehled z něj kreslí vývoj bodů a pořadí – Mistři a tři nejlepší
-  fanoušci jsou v grafu vždy, kohokoli dalšího jde přidat výběrem. Historie začíná 16. 9. 2026.
+  změnila, takže po hracím dni přibude jeden snímek). Přehled z něj kreslí vývoj bodů a pořadí. V legendě jsou
+  dva řádky – **Mistři** a **Tipující** – a u každého jména zaškrtávátko, kterým ho z grafu vypneš a zase zapneš;
+  zaškrtnutím **Zobrazit jen Mistry** schováš všechny fanoušky najednou. Do grafu jsou vždy nachystaní Mistři
+  a tři nejlepší fanoušci, kohokoli dalšího přidáš do pole „Přidat tipujícího“ – jde psát jméno (stačí začátek,
+  diakritika nevadí) i vybrat ze seznamu; křížkem u jména ho zase odebereš. Svislá osa se přizpůsobuje hodnotám
+  v grafu (nezačíná nulou), takže rozdíly jsou vidět. Historie začíná 16. 9. 2026.
 
 ## 10. Na co myslet
 
