@@ -280,8 +280,11 @@
                         <button class="tab-btn active" style="font-size: 0.85rem; padding: 8px 16px;" id="btn-graf-body" onclick="vykresliGraf('body')">Body</button>
                         <button class="tab-btn" style="font-size: 0.85rem; padding: 8px 16px;" id="btn-graf-poradi" onclick="vykresliGraf('poradi')">Pořadí</button>
                     </div>
-                    <label for="graf-hrac">Přidat do grafu:</label>
-                    <select id="graf-hrac" onchange="pridejDoGrafu(this.value)"><option value="">– vyber tipujícího –</option></select>
+                    <label class="graf-prepinac"><input type="checkbox" id="graf-jen-mistri" onchange="vykresliGraf(grafRezim)"> Zobrazit jen Mistry</label>
+                    <label for="graf-hrac">Přidat tipujícího:</label>
+                    <input type="text" id="graf-hrac" list="graf-hraci" autocomplete="off" spellcheck="false" placeholder="napiš jméno…"
+                           onchange="pridejDoGrafu(this.value)" onkeydown="if (event.key === 'Enter') { event.preventDefault(); pridejDoGrafu(this.value); }">
+                    <datalist id="graf-hraci"></datalist>
                 </div>
                 <div id="graf-legenda" class="graf-legenda"></div>
                 <div id="graf-platno" class="graf-platno"></div>
@@ -394,6 +397,7 @@
         let historieTabulky = [];   // platné snímky z 2627_extraliga_historie.json (datum, poradi[], statistiky) pro graf
         let grafRezim = 'body';     // 'body' | 'poradi'
         let grafVybrani = [];       // originalIndex tipujících přidaných do grafu ručně
+        let grafSkryte = [];        // originalIndex sérií odškrtnutých v legendě
         let grafCache = null;       // předpočítané body a pořadí všech tipujících ve snímcích
         const GRAF_BARVY = ['#c8102e', '#1f5fbf', '#0b2a4a', '#d99a00', '#2a9d8f', '#8338ec', '#ff7f0e', '#e63995', '#4d7c0f', '#7f8c8d'];
         let bodovaniAktivni = false;
@@ -1188,38 +1192,76 @@
             return vsechny;
         }
         function formatDatumKratce(iso) { const d = new Date(iso); return isNaN(d) ? String(iso || '') : `${d.getDate()}. ${d.getMonth() + 1}.`; }
-        // Výchozí série: Mistři (vč. společného tipu) + 3 nejlepší fanoušci podle aktuálních bodů + ručně přidaní
+
+        // Kandidáti do grafu: Mistři (vč. společného tipu), 3 nejlepší fanoušci a ručně přidaní.
+        // Barva se přiřazuje podle pořadí v tomto seznamu, takže odškrtnutím série se ostatním barvy nemění.
         function grafSerie() {
             const data = grafData();
             const podleIndexu = {};
             data.forEach(x => { podleIndexu[x.h.originalIndex] = x; });
             const mistri = data.filter(x => x.h.jeMistr);
-            const topFanousci = data.filter(x => !x.h.jeMistr).sort((a, b) => a.h.poradi.celkem - b.h.poradi.celkem || a.h.originalIndex - b.h.originalIndex).slice(0, 3);
+            const topFanousci = data.filter(x => !x.h.jeMistr)
+                .sort((a, b) => a.h.poradi.celkem - b.h.poradi.celkem || a.h.originalIndex - b.h.originalIndex).slice(0, 3);
             const serie = mistri.concat(topFanousci);
-            grafVybrani.forEach(i => { if (podleIndexu[i] && !serie.includes(podleIndexu[i])) serie.push(podleIndexu[i]); });
-            return serie;
+            grafVybrani.forEach(i => { if (podleIndexu[i] && !serie.some(x => x.h.originalIndex === i)) serie.push(podleIndexu[i]); });
+            return serie.map((x, poradiBarvy) => ({
+                x,
+                barva: GRAF_BARVY[poradiBarvy % GRAF_BARVY.length],
+                rucne: grafVybrani.includes(x.h.originalIndex) && !x.h.jeMistr,
+                zaskrtnuta: !grafSkryte.includes(x.h.originalIndex)
+            }));
         }
         function pridejDoGrafu(hodnota) {
-            const i = Number(hodnota);
-            if (!hodnota || isNaN(i)) return;
-            if (!grafVybrani.includes(i)) grafVybrani.push(i);
-            document.getElementById('graf-hrac').value = '';
+            const text = String(hodnota || '').trim();
+            const pole = document.getElementById('graf-hrac');
+            if (text === '') return;
+            // Hledá se přesná shoda jména, pak "Jméno (klub)" ze seznamu, nakonec jediná shoda na začátek jména
+            const klic = EXTRALIGA.bezDiakritiky(text.replace(/\s*\([^)]*\)\s*$/, ''));
+            let h = vsichniHraci.find(x => EXTRALIGA.bezDiakritiky(x.jmeno) === klic);
+            if (!h) {
+                const shody = vsichniHraci.filter(x => EXTRALIGA.bezDiakritiky(x.jmeno).startsWith(klic));
+                if (shody.length === 1) h = shody[0];
+            }
+            if (!h) { pole.classList.add('nenalezeno'); pole.title = 'Takového tipujícího jsem nenašel'; return; }
+            pole.classList.remove('nenalezeno'); pole.title = '';
+            if (!grafVybrani.includes(h.originalIndex)) grafVybrani.push(h.originalIndex);
+            grafSkryte = grafSkryte.filter(i => i !== h.originalIndex);   // přidaný se rovnou zobrazí
+            if (!h.jeMistr) document.getElementById('graf-jen-mistri').checked = false;
+            pole.value = '';
             vykresliGraf(grafRezim);
         }
         function odeberZGrafu(i) {
             grafVybrani = grafVybrani.filter(x => x !== i);
+            grafSkryte = grafSkryte.filter(x => x !== i);
+            vykresliGraf(grafRezim);
+        }
+        function prepniSerii(i) {
+            grafSkryte = grafSkryte.includes(i) ? grafSkryte.filter(x => x !== i) : grafSkryte.concat([i]);
             vykresliGraf(grafRezim);
         }
         function naplnGrafVyber() {
-            const sel = document.getElementById('graf-hrac');
-            if (!sel) return;
-            sel.innerHTML = '<option value="">– vyber tipujícího –</option>';
+            const dl = document.getElementById('graf-hraci');
+            if (!dl) return;
+            dl.innerHTML = '';
             vsichniHraci.slice().sort((a, b) => a.jmeno.localeCompare(b.jmeno, 'cs')).forEach(h => {
                 const o = document.createElement('option');
-                o.value = h.originalIndex; o.textContent = h.jmeno + (h.klub ? ` (${h.klub})` : '');
-                sel.appendChild(o);
+                o.value = h.jmeno + (h.klub ? ` (${h.klub})` : '');
+                dl.appendChild(o);
             });
         }
+
+        // Rozsah osy Y podle vykreslených hodnot (ne od nuly) s malým okrajem; stejné hodnoty se rozevřou o 1
+        function grafRozsah(hodnoty, jePoradi) {
+            let lo = Math.min.apply(null, hodnoty), hi = Math.max.apply(null, hodnoty);
+            if (lo === hi) { lo -= 1; hi += 1; }
+            const okraj = (hi - lo) * 0.08;
+            lo -= okraj; hi += okraj;
+            if (jePoradi) { lo = Math.max(1, lo); hi = Math.min(Math.max(vsichniHraci.length, 2), hi); }
+            else lo = Math.max(0, lo);
+            if (lo === hi) hi = lo + 1;
+            return { lo, hi };
+        }
+
         function vykresliGraf(rezim) {
             grafRezim = rezim || 'body';
             const sekce = document.getElementById('sekce-graf');
@@ -1229,29 +1271,75 @@
             if (!zobrazit) return;
             document.getElementById('btn-graf-body').classList.toggle('active', grafRezim === 'body');
             document.getElementById('btn-graf-poradi').classList.toggle('active', grafRezim === 'poradi');
-            if (document.getElementById('graf-hrac').options.length <= 1) naplnGrafVyber();
+            if (document.getElementById('graf-hraci').options.length === 0) naplnGrafVyber();
 
-            const serie = grafSerie();
+            const jenMistri = document.getElementById('graf-jen-mistri').checked;
+            const vsechnySerie = grafSerie();
+            const viditelne = vsechnySerie.filter(sr => sr.zaskrtnuta && (!jenMistri || sr.x.h.jeMistr));
             const n = historieTabulky.length;
             const jePoradi = grafRezim === 'poradi';
-            const hodnoty = x => jePoradi ? x.poradi : x.body;
-            let max = 0;
-            serie.forEach(x => hodnoty(x).forEach(v => { if (v > max) max = v; }));
-            if (jePoradi) max = Math.max(max, 2); else max = Math.max(max, 10);
+            const hodnoty = sr => jePoradi ? sr.x.poradi : sr.x.body;
 
-            // Rozměry v souřadnicích SVG (viewBox), vlevo místo na osu, vpravo na jména
-            const W = 900, H = 360, L = 48, R = 150, T = 18, B = 40;
+            vykresliGrafLegendu(vsechnySerie, jenMistri, jePoradi);
+
+            const platno = document.getElementById('graf-platno');
+            if (viditelne.length === 0) {
+                platno.innerHTML = `<div class="loader">Zaškrtni aspoň jednoho tipujícího, ať je co kreslit.</div>`;
+            } else {
+                platno.innerHTML = grafSvg(viditelne, hodnoty, jePoradi, n);
+            }
+
+            const prvni = historieTabulky[0], posl = historieTabulky[n - 1];
+            document.getElementById('graf-popis').textContent = n === 1
+                ? `Zatím jeden snímek tabulky (${formatDatumKratce(prvni.datum || prvni.aktualizovano)}). Další body v grafu přibudou s každou změnou tabulky – stahuje se každé ráno z hokej.cz.`
+                : `${n} snímků tabulky od ${formatDatumKratce(prvni.datum || prvni.aktualizovano)} do ${formatDatumKratce(posl.datum || posl.aktualizovano)} (každé ráno z hokej.cz, jen když se tabulka změnila). Zaškrtávátky si vyber, koho chceš v grafu vidět.`;
+        }
+
+        // Legenda ve dvou řádcích: Mistři a tipující, každý se zaškrtávátkem (u ručně přidaných i křížek)
+        function vykresliGrafLegendu(vsechnySerie, jenMistri, jePoradi) {
+            const polozka = (sr) => {
+                const hod = jePoradi ? sr.x.poradi : sr.x.body;
+                const posledni = hod[hod.length - 1];
+                const vypnuta = jenMistri && !sr.x.h.jeMistr;
+                const id = 'graf-serie-' + sr.x.h.originalIndex;
+                return `<label class="graf-polozka${sr.zaskrtnuta && !vypnuta ? '' : ' vypnuta'}" for="${id}">
+                    <input type="checkbox" id="${id}" ${sr.zaskrtnuta ? 'checked' : ''} ${vypnuta ? 'disabled' : ''} onchange="prepniSerii(${sr.x.h.originalIndex})">
+                    <i class="tecka" style="background:${sr.barva}"></i>${esc(sr.x.h.jmeno)}: <strong>${jePoradi ? posledni + '. místo' : formatBody(posledni) + ' b.'}</strong>
+                    ${sr.rucne ? `<button type="button" title="Odebrat z grafu" onclick="event.preventDefault(); odeberZGrafu(${sr.x.h.originalIndex})">✕</button>` : ''}
+                </label>`;
+            };
+            const mistri = vsechnySerie.filter(sr => sr.x.h.jeMistr);
+            const tipujici = vsechnySerie.filter(sr => !sr.x.h.jeMistr);
+            let html = `<div class="graf-legenda-radek"><span class="graf-legenda-nadpis">Mistři:</span>${mistri.map(polozka).join('')}</div>`;
+            html += `<div class="graf-legenda-radek${jenMistri ? ' vypnuty' : ''}"><span class="graf-legenda-nadpis">Tipující:</span>`;
+            html += tipujici.length ? tipujici.map(polozka).join('') : `<span class="graf-legenda-prazdno">nikdo zatím není v grafu</span>`;
+            html += `</div>`;
+            document.getElementById('graf-legenda').innerHTML = html;
+        }
+
+        // Vlastní SVG graf: osa Y podle rozsahu hodnot, popisky u konců čar se rozhrnou, ať se nepřekrývají
+        function grafSvg(viditelne, hodnoty, jePoradi, n) {
+            const vsechnyHodnoty = [];
+            viditelne.forEach(sr => hodnoty(sr).forEach(v => vsechnyHodnoty.push(v)));
+            const { lo, hi } = grafRozsah(vsechnyHodnoty, jePoradi);
+
+            const W = 900, H = 360, L = 52, R = 150, T = 18, B = 40;
             const sirka = W - L - R, vyska = H - T - B;
             const x = i => n === 1 ? L + sirka / 2 : L + sirka * i / (n - 1);
-            const y = v => jePoradi ? T + vyska * (v - 1) / (max - 1) : T + vyska * (1 - v / max);
+            const y = v => jePoradi ? T + vyska * (v - lo) / (hi - lo) : T + vyska * (hi - v) / (hi - lo);
+
             let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vývoj ${jePoradi ? 'pořadí' : 'bodů'} tipujících">`;
-            // Mřížka a osa Y (5 čar)
+            // Mřížka a osa Y: celočíselné popisky v rozsahu (bez duplicit)
             const kroku = 5;
+            const videne = {};
             for (let k = 0; k <= kroku; k++) {
-                const v = jePoradi ? 1 + (max - 1) * k / kroku : max * k / kroku;
+                const v = lo + (hi - lo) * k / kroku;
+                const popis = Math.round(v);
+                if (videne[popis]) continue;
+                videne[popis] = true;
                 const yy = y(v);
                 svg += `<line class="mrizka" x1="${L}" x2="${L + sirka}" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}"/>`;
-                svg += `<text class="popisek" x="${L - 6}" y="${(yy + 4).toFixed(1)}" text-anchor="end">${jePoradi ? Math.round(v) + '.' : Math.round(v)}</text>`;
+                svg += `<text class="popisek" x="${L - 6}" y="${(yy + 4).toFixed(1)}" text-anchor="end">${jePoradi ? popis + '.' : popis}</text>`;
             }
             svg += `<line class="osa" x1="${L}" x2="${L}" y1="${T}" y2="${T + vyska}"/><line class="osa" x1="${L}" x2="${L + sirka}" y1="${T + vyska}" y2="${T + vyska}"/>`;
             // Osa X: data snímků (při mnoha snímcích jen každý k-tý popisek)
@@ -1261,7 +1349,7 @@
                 svg += `<text class="popisek" x="${x(i).toFixed(1)}" y="${H - 14}" text-anchor="middle">${esc(formatDatumKratce(sn.datum || sn.aktualizovano))}</text>`;
             });
             // Popisky u konců čar: rozhrnout, ať se nepřekrývají (min. rozestup 14, cluster se drží v ploše grafu)
-            const popisky = serie.map((sr, si) => { const hod = hodnoty(sr); return { si, y: y(hod[hod.length - 1]) }; }).sort((a, b) => a.y - b.y);
+            const popisky = viditelne.map((sr, si) => ({ si, y: y(hodnoty(sr)[n - 1]) })).sort((a, b) => a.y - b.y);
             const ROZESTUP = 14;
             for (let k = 1; k < popisky.length; k++) if (popisky[k].y < popisky[k - 1].y + ROZESTUP) popisky[k].y = popisky[k - 1].y + ROZESTUP;
             const presah = popisky.length ? popisky[popisky.length - 1].y - (T + vyska) : 0;
@@ -1270,31 +1358,18 @@
             const yPopisku = {};
             popisky.forEach(pp => { yPopisku[pp.si] = pp.y; });
 
-            // Čáry a body
-            serie.forEach((sr, si) => {
-                const barva = GRAF_BARVY[si % GRAF_BARVY.length];
+            viditelne.forEach((sr, si) => {
+                const barva = sr.barva;
                 const hod = hodnoty(sr);
                 const body = hod.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`);
-                if (n > 1) svg += `<polyline fill="none" stroke="${barva}" stroke-width="${sr.h.jeMistr ? 3 : 2}" stroke-linejoin="round" points="${body.join(' ')}"/>`;
-                hod.forEach((v, i) => { svg += `<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="4" fill="${barva}"><title>${esc(sr.h.jmeno)} · ${esc(formatDatumKratce(historieTabulky[i].datum || historieTabulky[i].aktualizovano))} · ${jePoradi ? v + '. místo' : formatBody(v) + ' b.'}</title></circle>`; });
+                if (n > 1) svg += `<polyline fill="none" stroke="${barva}" stroke-width="${sr.x.h.jeMistr ? 3 : 2}" stroke-linejoin="round" points="${body.join(' ')}"/>`;
+                hod.forEach((v, i) => { svg += `<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="4" fill="${barva}"><title>${esc(sr.x.h.jmeno)} · ${esc(formatDatumKratce(historieTabulky[i].datum || historieTabulky[i].aktualizovano))} · ${jePoradi ? v + '. místo' : formatBody(v) + ' b.'}</title></circle>`; });
                 const posledni = hod[hod.length - 1];
                 const yText = yPopisku[si];
                 if (Math.abs(yText - y(posledni)) > 6) svg += `<line stroke="${barva}" stroke-width="1" stroke-dasharray="2 2" x1="${(x(n - 1) + 4).toFixed(1)}" y1="${y(posledni).toFixed(1)}" x2="${(x(n - 1) + 8).toFixed(1)}" y2="${yText.toFixed(1)}"/>`;
-                svg += `<text class="jmeno" fill="${barva}" x="${(x(n - 1) + 10).toFixed(1)}" y="${(yText + 4).toFixed(1)}">${esc(sr.h.jmeno.length > 18 ? sr.h.jmeno.slice(0, 17) + '…' : sr.h.jmeno)} (${jePoradi ? posledni + '.' : formatBody(posledni)})</text>`;
+                svg += `<text class="jmeno" fill="${barva}" x="${(x(n - 1) + 10).toFixed(1)}" y="${(yText + 4).toFixed(1)}">${esc(sr.x.h.jmeno.length > 18 ? sr.x.h.jmeno.slice(0, 17) + '…' : sr.x.h.jmeno)} (${jePoradi ? posledni + '.' : formatBody(posledni)})</text>`;
             });
-            svg += '</svg>';
-            document.getElementById('graf-platno').innerHTML = svg;
-
-            // Legenda: barva, jméno, aktuální hodnota, u ručně přidaných křížek
-            document.getElementById('graf-legenda').innerHTML = serie.map((sr, si) => {
-                const hod = hodnoty(sr); const posledni = hod[hod.length - 1];
-                const rucne = grafVybrani.includes(sr.h.originalIndex) && !sr.h.jeMistr;
-                return `<span><i class="tecka" style="background:${GRAF_BARVY[si % GRAF_BARVY.length]}"></i>${esc(sr.h.jmeno)}: <strong>${jePoradi ? posledni + '. místo' : formatBody(posledni) + ' b.'}</strong>${rucne ? `<button type="button" title="Odebrat z grafu" onclick="odeberZGrafu(${sr.h.originalIndex})">✕</button>` : ''}</span>`;
-            }).join('');
-            const prvni = historieTabulky[0], posl = historieTabulky[n - 1];
-            document.getElementById('graf-popis').textContent = n === 1
-                ? `Zatím jeden snímek tabulky (${formatDatumKratce(prvni.datum || prvni.aktualizovano)}). Další body v grafu přibudou s každou změnou tabulky – stahuje se každé ráno z hokej.cz.`
-                : `${n} snímků tabulky od ${formatDatumKratce(prvni.datum || prvni.aktualizovano)} do ${formatDatumKratce(posl.datum || posl.aktualizovano)} (každé ráno z hokej.cz, jen když se tabulka změnila). Mistři jsou v grafu vždy, k nim 3 nejlepší fanoušci – další si můžeš přidat.`;
+            return svg + '</svg>';
         }
 
         // ---------- VYHLEDÁVÁNÍ ----------

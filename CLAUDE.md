@@ -44,7 +44,11 @@ Majitel pracuje často jen z iPadu, proto má vše jít nasadit bez PC (PR → m
   snímek jako dřív; ruční odpověď má přednost, prázdnou průběžnou otázku doplní statistika. Web podle režimu skrývá
   sloupec a záložku žolíků a u nevyhodnocených položek ukazuje „po sezóně“.
 - **Graf vývoje** (`vykresliGraf` v přehledu): z každého snímku historie spočítá průběžné body všech tipujících,
-  kreslí inline SVG (body / pořadí) pro Mistry + 3 nejlepší fanoušky + ručně přidané. Bez historie je sekce skrytá.
+  kreslí inline SVG (body / pořadí) pro Mistry + 3 nejlepší fanoušky + ručně přidané. Legenda má dva řádky
+  (Mistři, Tipující), každá série má zaškrtávátko (`grafSkryte`), navíc je přepínač „jen Mistry“; barva série
+  je daná pořadím v `grafSerie()`, takže odškrtnutím se ostatním nemění. Osa Y jde podle rozsahu hodnot
+  (`grafRozsah`, ne od nuly). Tipujícího lze přidat psaním i výběrem z `<datalist>` (`pridejDoGrafu` hledá podle
+  jména bez diakritiky, snese i tvar „Jméno (klub)“). Bez historie je sekce skrytá.
 - **Bodování**: umístění 10 − |rozdíl míst| (min 0), násobek 1,1/1,2/1,3/1,4 za 7/9/11/13 přesných;
   žolíci: umístění 2×, tip na body žolíka = číselná škála 2× (20/16/12/8/4); číselné otázky 10/8/6/4/2;
   týmové a hráčské 20 b.; finále play-off a Ano/Ne 10 b. Text pravidel ve formuláři musí sedět s kódem.

@@ -1,5 +1,6 @@
-// Graf vývoje tipovačky z denních snímků tabulky (2627_extraliga_historie.json): série Mistrů + nejlepších
-// fanoušků, přepínač body/pořadí, ruční přidání tipujícího, bez historie je sekce skrytá.
+// Graf vývoje tipovačky z denních snímků tabulky (2627_extraliga_historie.json): legenda ve dvou řádcích
+// se zaškrtávátky, osa podle rozsahu hodnot (ne od nuly), přepínač „jen Mistři“, přidání tipujícího psaním
+// i výběrem ze seznamu, bez historie je sekce skrytá.
 const { chromium } = require('playwright');
 const E = require('../extraliga_spolecne.js');
 const K = E.KONFIG, SL = E.SLOUPCE, T = K.TYMY;
@@ -62,9 +63,13 @@ const hotovoPrazdne = [E.HLAVICKA, new Array(SL.POCET).fill('')];
       kruhu: document.querySelectorAll('#graf-platno circle').length,
       jmena: Array.from(document.querySelectorAll('#graf-platno text.jmeno')).map(t => t.textContent),
       osaX: Array.from(document.querySelectorAll('#graf-platno text.popisek')).map(t => t.textContent).filter(t => /\d+\. \d+\./.test(t)),
-      legenda: document.getElementById('graf-legenda').innerText.replace(/\s+/g, ' ').trim(),
+      osaY: Array.from(document.querySelectorAll('#graf-platno text.popisek')).map(t => t.textContent).filter(t => !/\d+\. \d+\./.test(t)),
+      radky: Array.from(document.querySelectorAll('#graf-legenda .graf-legenda-radek')).map(r => r.innerText.replace(/\s+/g, ' ').trim()),
+      polozek: document.querySelectorAll('#graf-legenda .graf-polozka').length,
+      zaskrtnutych: document.querySelectorAll('#graf-legenda input[type=checkbox]:checked').length,
       popis: document.getElementById('graf-popis').innerText,
-      moznosti: document.getElementById('graf-hrac').options.length,
+      moznosti: document.getElementById('graf-hraci').options.length,
+      hlaska: document.getElementById('graf-platno').innerText.trim(),
     }));
 
     if (!sHistorii) {
@@ -79,34 +84,87 @@ const hotovoPrazdne = [E.HLAVICKA, new Array(SL.POCET).fill('')];
     over(g.viditelny === 'block' && g.snimku === 3, 'sekce grafu se 3 snímky je vidět', g);
     over(g.polyline === 8, 'výchozí série: 5 Mistrů + 3 nejlepší fanoušci = 8 čar', g.polyline);
     over(g.kruhu === 24, '3 body na každou z 8 sérií', g.kruhu);
-    over(g.jmena.length === 8 && g.jmena.some(j => j.startsWith('Vilém Franěk')) && g.jmena.some(j => j.startsWith('Mistři Světa')), 'jména u konců čar včetně společného tipu', g.jmena);
     over(g.osaX.join(' ') === '16. 9. 17. 9. 18. 9.', 'osa X = data snímků', g.osaX);
-    over(/b\./.test(g.legenda) && /3 snímků/.test(g.popis), 'legenda s body a popis počtu snímků', { legenda: g.legenda.slice(0, 80), popis: g.popis.slice(0, 60) });
-    over(g.moznosti === 11, 'výběr obsahuje všech 10 tipujících', g.moznosti);
+    over(g.moznosti === 10, 'seznam pro psaní obsahuje všech 10 tipujících', g.moznosti);
+
+    // Legenda: dva řádky (Mistři, Tipující), vše zaškrtnuté
+    over(g.radky.length === 2 && /^mistři:/i.test(g.radky[0]) && /^tipující:/i.test(g.radky[1]), 'legenda má řádek Mistři a řádek Tipující', g.radky.map(r => r.slice(0, 40)));
+    over(g.radky[0].includes('Vilém Franěk') && g.radky[0].includes('Mistři Světa') && !g.radky[0].includes('Fanda'), 'první řádek jen Mistři vč. společného tipu', g.radky[0].slice(0, 120));
+    over(g.radky[1].includes('Fanda') && !g.radky[1].includes('Vilém'), 'druhý řádek jen fanoušci', g.radky[1].slice(0, 120));
+    over(g.polozek === 8 && g.zaskrtnutych === 8, 'osm položek, všechny zaškrtnuté', g);
+
+    // Osa Y nezačíná od nuly (nejnižší hodnota v datech je hodně nad 0)
+    const nuly = g.osaY.filter(t => t === '0');
+    over(nuly.length === 0, 'osa Y nezačíná nulou (rozsah podle hodnot)', g.osaY);
+    const minY = Math.min.apply(null, g.osaY.map(Number).filter(n => !isNaN(n)));
+    over(minY >= 30, 'nejnižší popisek osy odpovídá nejmenší hodnotě v grafu', { osaY: g.osaY, minY });
 
     // Body odpovídají průběžnému vyhodnocení podle snímku (Fanda Třetí trefil poslední snímek přesně: 14×10×1,4 = 196)
     const body = await page.evaluate(() => { const x = grafData().find(x => x.h.jmeno === 'Fanda Třetí'); return { body: x.body, poradi: x.poradi }; });
     over(body.body[2] === 196 && body.poradi[2] === 1, 'Fanda Třetí má v posledním snímku 196 b. a 1. místo', body);
 
-    // Přepínač pořadí: osa Y v místech, jméno končí ".)"
+    // Odškrtnutí série v legendě
+    await page.uncheck('#graf-serie-' + (await page.evaluate(() => vsichniHraci.find(h => h.jmeno === 'Bonifác').originalIndex)));
+    await page.waitForTimeout(100);
+    g = await stavGrafu();
+    over(g.polyline === 7 && !g.jmena.some(j => j.startsWith('Bonifác')), 'odškrtnutá série se nekreslí', { polyline: g.polyline, jmena: g.jmena });
+    over(g.polozek === 8 && g.zaskrtnutych === 7, 'odškrtnutá položka v legendě zůstává', g);
+    // Barvy ostatních se odškrtnutím nezmění (Vilém Franěk = první barva)
+    const barvaVildy = await page.evaluate(() => { const t = [...document.querySelectorAll('#graf-platno text.jmeno')].find(t => t.textContent.startsWith('Vilém')); return t.getAttribute('fill'); });
+    over(barvaVildy === '#c8102e', 'barvy sérií se odškrtnutím nemění', barvaVildy);
+    await page.check('#graf-serie-' + (await page.evaluate(() => vsichniHraci.find(h => h.jmeno === 'Bonifác').originalIndex)));
+
+    // Přepínač „jen Mistři“
+    await page.check('#graf-jen-mistri');
+    await page.waitForTimeout(100);
+    g = await stavGrafu();
+    over(g.polyline === 5 && g.jmena.every(j => !j.startsWith('Fanda')), 'jen Mistři: 5 čar bez fanoušků', { polyline: g.polyline, jmena: g.jmena });
+    over(/^tipující:/i.test(g.radky[1]), 'řádek tipujících v legendě zůstává (jen ztlumený)', g.radky[1].slice(0, 40));
+    await page.screenshot({ path: SCR + 'graf_jen_mistri.png', clip: await page.evaluate(() => { const r = document.getElementById('sekce-graf').getBoundingClientRect(); window.scrollTo(0, r.top + window.scrollY - 20); return { x: 0, y: 0, width: 1300, height: Math.min(700, r.height + 40) }; }) });
+    await page.uncheck('#graf-jen-mistri');
+
+    // Přidání tipujícího psaním jména (Enter) – i s diakritikou napsanou jinak
+    await page.fill('#graf-hrac', 'fanda paty');
+    await page.press('#graf-hrac', 'Enter');
+    await page.waitForTimeout(100);
+    g = await stavGrafu();
+    over(g.polyline === 9 && g.jmena.some(j => j.startsWith('Fanda Pátý')), 'psané jméno přidá čáru', g.jmena);
+    over((await page.inputValue('#graf-hrac')) === '', 'pole se po přidání vyprázdní');
+
+    // Přidání výběrem ze seznamu (hodnota „Jméno (klub)“ jako z datalistu)
+    await page.evaluate(() => { const i = document.getElementById('graf-hrac'); i.value = 'Fanda První (Pardubice)'; i.dispatchEvent(new Event('change')); });
+    await page.waitForTimeout(100);
+    g = await stavGrafu();
+    over(g.polyline === 10 && g.jmena.some(j => j.startsWith('Fanda První')), 'výběr ze seznamu („Jméno (klub)“) přidá čáru', g.jmena);
+    await page.screenshot({ path: SCR + 'graf.png', clip: await page.evaluate(() => { const r = document.getElementById('sekce-graf').getBoundingClientRect(); window.scrollTo(0, r.top + window.scrollY - 20); return { x: 0, y: 0, width: 1300, height: Math.min(760, r.height + 40) }; }) });
+
+    // Neznámé jméno: nic se nepřidá, pole se označí
+    await page.fill('#graf-hrac', 'Nikdo Neznámý');
+    await page.press('#graf-hrac', 'Enter');
+    await page.waitForTimeout(100);
+    g = await stavGrafu();
+    over(g.polyline === 10 && (await page.getAttribute('#graf-hrac', 'class') || '').includes('nenalezeno'), 'neznámé jméno nic nepřidá a pole se označí', g.polyline);
+    await page.fill('#graf-hrac', '');
+
+    // Odebrání ručně přidaného křížkem
+    await page.click('#graf-legenda .graf-polozka button');
+    await page.waitForTimeout(100);
+    g = await stavGrafu();
+    over(g.polyline === 9, 'křížek odebere ručně přidaného', g.polyline);
+
+    // Režim pořadí: hodnoty jako místa, osa od nejlepšího místa
     await page.click('#btn-graf-poradi');
     await page.waitForTimeout(100);
     g = await stavGrafu();
-    over(g.jmena.every(j => /\(\d+\.\)$/.test(j)) && /místo/.test(g.legenda), 'režim pořadí: hodnoty jako místa', { jmena: g.jmena.slice(0, 3), legenda: g.legenda.slice(0, 60) });
+    over(g.jmena.every(j => /\(\d+\.\)$/.test(j)), 'režim pořadí: hodnoty jako místa', g.jmena.slice(0, 3));
+    over(g.osaY.every(t => /^\d+\.$/.test(t)), 'osa Y v režimu pořadí má místa', g.osaY);
     await page.click('#btn-graf-body');
 
-    // Přidání tipujícího výběrem a odebrání křížkem
-    const idxPaty = await page.evaluate(() => vsichniHraci.find(h => h.jmeno === 'Fanda Pátý').originalIndex);
-    await page.selectOption('#graf-hrac', String(idxPaty));
+    // Odškrtnutí všeho → hláška místo grafu
+    await page.evaluate(() => { grafSkryte = vsichniHraci.map(h => h.originalIndex); vykresliGraf(grafRezim); });
     await page.waitForTimeout(100);
     g = await stavGrafu();
-    over(g.polyline === 9 && g.jmena.some(j => j.startsWith('Fanda Pátý')), 'přidaný tipující má vlastní čáru', g.jmena);
-    over((await page.evaluate(() => document.getElementById('graf-hrac').value)) === '', 'výběr se po přidání vyprázdní');
-    await page.screenshot({ path: SCR + 'graf.png', fullPage: false, clip: await page.evaluate(() => { const r = document.getElementById('sekce-graf').getBoundingClientRect(); window.scrollTo(0, r.top + window.scrollY - 20); return { x: 0, y: 0, width: 1300, height: Math.min(720, r.height + 40) }; }) });
-    await page.click('#graf-legenda button');
-    await page.waitForTimeout(100);
-    g = await stavGrafu();
-    over(g.polyline === 8, 'křížek v legendě čáru odebere', g.polyline);
+    over(g.polyline === 0 && /Zaškrtni aspoň jednoho/.test(g.hlaska), 'bez zaškrtnuté série je místo grafu hláška', g.hlaska.slice(0, 60));
 
     over(errors.length === 0, 'bez chyb v konzoli', errors);
     await page.close();
