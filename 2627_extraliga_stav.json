@@ -1,13 +1,13 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-09-18T18:58:59.845Z",
+  "aktualizovano": "2026-09-19T18:29:06.258Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
     {
       "tym": "Třinec",
-      "zapasy": 2,
-      "body": 6
+      "zapasy": 3,
+      "body": 9
     },
     {
       "tym": "Kladno",
@@ -41,7 +41,7 @@
     },
     {
       "tym": "Plzeň",
-      "zapasy": 2,
+      "zapasy": 3,
       "body": 3
     },
     {
@@ -77,10 +77,10 @@
   ],
   "statistiky": {
     "Třinec": {
-      "goly": 8,
-      "obdrzene": 5,
-      "presilovky": 2,
-      "tresty": 12
+      "goly": 11,
+      "obdrzene": 7,
+      "presilovky": 3,
+      "tresty": 18
     },
     "Kladno": {
       "goly": 7,
@@ -119,10 +119,10 @@
       "tresty": 14
     },
     "Plzeň": {
-      "goly": 4,
-      "obdrzene": 4,
+      "goly": 6,
+      "obdrzene": 7,
       "presilovky": 2,
-      "tresty": 12
+      "tresty": 20
     },
     "Litvínov": {
       "goly": 3,
