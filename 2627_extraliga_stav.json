@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-09-19T18:29:06.258Z",
+  "aktualizovano": "2026-09-20T18:09:16.662Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
@@ -11,8 +11,23 @@
     },
     {
       "tym": "Kladno",
-      "zapasy": 2,
-      "body": 5
+      "zapasy": 3,
+      "body": 8
+    },
+    {
+      "tym": "České Budějovice",
+      "zapasy": 3,
+      "body": 7
+    },
+    {
+      "tym": "Pardubice",
+      "zapasy": 3,
+      "body": 6
+    },
+    {
+      "tym": "Litvínov",
+      "zapasy": 3,
+      "body": 6
     },
     {
       "tym": "Sparta Praha",
@@ -20,23 +35,8 @@
       "body": 4
     },
     {
-      "tym": "České Budějovice",
-      "zapasy": 2,
-      "body": 4
-    },
-    {
-      "tym": "Karlovy Vary",
-      "zapasy": 2,
-      "body": 3
-    },
-    {
-      "tym": "Pardubice",
-      "zapasy": 2,
-      "body": 3
-    },
-    {
-      "tym": "Mountfield HK",
-      "zapasy": 2,
+      "tym": "Kometa Brno",
+      "zapasy": 3,
       "body": 3
     },
     {
@@ -45,14 +45,14 @@
       "body": 3
     },
     {
-      "tym": "Litvínov",
-      "zapasy": 2,
+      "tym": "Karlovy Vary",
+      "zapasy": 3,
       "body": 3
     },
     {
-      "tym": "Olomouc",
-      "zapasy": 2,
-      "body": 2
+      "tym": "Mountfield HK",
+      "zapasy": 3,
+      "body": 3
     },
     {
       "tym": "Mladá Boleslav",
@@ -60,17 +60,17 @@
       "body": 2
     },
     {
+      "tym": "Olomouc",
+      "zapasy": 3,
+      "body": 2
+    },
+    {
       "tym": "Liberec",
-      "zapasy": 1,
+      "zapasy": 2,
       "body": 1
     },
     {
       "tym": "Vítkovice",
-      "zapasy": 1,
-      "body": 0
-    },
-    {
-      "tym": "Kometa Brno",
       "zapasy": 2,
       "body": 0
     }
@@ -83,10 +83,28 @@
       "tresty": 18
     },
     "Kladno": {
+      "goly": 10,
+      "obdrzene": 6,
+      "presilovky": 3,
+      "tresty": 16
+    },
+    "České Budějovice": {
       "goly": 7,
       "obdrzene": 5,
+      "presilovky": 3,
+      "tresty": 26
+    },
+    "Pardubice": {
+      "goly": 11,
+      "obdrzene": 8,
+      "presilovky": 5,
+      "tresty": 20
+    },
+    "Litvínov": {
+      "goly": 6,
+      "obdrzene": 6,
       "presilovky": 2,
-      "tresty": 12
+      "tresty": 28
     },
     "Sparta Praha": {
       "goly": 7,
@@ -94,29 +112,11 @@
       "presilovky": 2,
       "tresty": 18
     },
-    "České Budějovice": {
-      "goly": 4,
-      "obdrzene": 3,
-      "presilovky": 2,
-      "tresty": 16
-    },
-    "Karlovy Vary": {
-      "goly": 4,
-      "obdrzene": 3,
-      "presilovky": 0,
-      "tresty": 17
-    },
-    "Pardubice": {
-      "goly": 6,
-      "obdrzene": 6,
-      "presilovky": 4,
-      "tresty": 14
-    },
-    "Mountfield HK": {
-      "goly": 5,
-      "obdrzene": 5,
-      "presilovky": 0,
-      "tresty": 14
+    "Kometa Brno": {
+      "goly": 9,
+      "obdrzene": 9,
+      "presilovky": 1,
+      "tresty": 20
     },
     "Plzeň": {
       "goly": 6,
@@ -124,17 +124,17 @@
       "presilovky": 2,
       "tresty": 20
     },
-    "Litvínov": {
-      "goly": 3,
-      "obdrzene": 4,
-      "presilovky": 1,
-      "tresty": 18
-    },
-    "Olomouc": {
-      "goly": 5,
-      "obdrzene": 7,
+    "Karlovy Vary": {
+      "goly": 6,
+      "obdrzene": 8,
       "presilovky": 0,
-      "tresty": 18
+      "tresty": 25
+    },
+    "Mountfield HK": {
+      "goly": 6,
+      "obdrzene": 8,
+      "presilovky": 0,
+      "tresty": 16
     },
     "Mladá Boleslav": {
       "goly": 4,
@@ -142,22 +142,22 @@
       "presilovky": 2,
       "tresty": 21
     },
-    "Liberec": {
-      "goly": 1,
-      "obdrzene": 2,
+    "Olomouc": {
+      "goly": 7,
+      "obdrzene": 10,
       "presilovky": 0,
-      "tresty": 8
+      "tresty": 34
+    },
+    "Liberec": {
+      "goly": 2,
+      "obdrzene": 5,
+      "presilovky": 0,
+      "tresty": 10
     },
     "Vítkovice": {
-      "goly": 3,
-      "obdrzene": 4,
-      "presilovky": 2,
-      "tresty": 8
-    },
-    "Kometa Brno": {
-      "goly": 6,
-      "obdrzene": 8,
-      "presilovky": 1,
+      "goly": 5,
+      "obdrzene": 7,
+      "presilovky": 3,
       "tresty": 18
     }
   }
