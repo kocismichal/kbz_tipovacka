@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-09-20T18:09:16.662Z",
+  "aktualizovano": "2026-09-22T18:41:35.351Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
@@ -21,7 +21,7 @@
     },
     {
       "tym": "Pardubice",
-      "zapasy": 3,
+      "zapasy": 4,
       "body": 6
     },
     {
@@ -32,6 +32,11 @@
     {
       "tym": "Sparta Praha",
       "zapasy": 2,
+      "body": 4
+    },
+    {
+      "tym": "Liberec",
+      "zapasy": 3,
       "body": 4
     },
     {
@@ -65,11 +70,6 @@
       "body": 2
     },
     {
-      "tym": "Liberec",
-      "zapasy": 2,
-      "body": 1
-    },
-    {
       "tym": "Vítkovice",
       "zapasy": 2,
       "body": 0
@@ -95,10 +95,10 @@
       "tresty": 26
     },
     "Pardubice": {
-      "goly": 11,
-      "obdrzene": 8,
-      "presilovky": 5,
-      "tresty": 20
+      "goly": 15,
+      "obdrzene": 13,
+      "presilovky": 6,
+      "tresty": 34
     },
     "Litvínov": {
       "goly": 6,
@@ -111,6 +111,12 @@
       "obdrzene": 5,
       "presilovky": 2,
       "tresty": 18
+    },
+    "Liberec": {
+      "goly": 7,
+      "obdrzene": 9,
+      "presilovky": 0,
+      "tresty": 20
     },
     "Kometa Brno": {
       "goly": 9,
@@ -147,12 +153,6 @@
       "obdrzene": 10,
       "presilovky": 0,
       "tresty": 34
-    },
-    "Liberec": {
-      "goly": 2,
-      "obdrzene": 5,
-      "presilovky": 0,
-      "tresty": 10
     },
     "Vítkovice": {
       "goly": 5,
