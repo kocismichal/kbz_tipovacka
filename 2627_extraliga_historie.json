@@ -641,7 +641,7 @@
   },
   {
    "datum": "2026-09-22",
-   "aktualizovano": "2026-09-22T18:41:35.351Z",
+   "aktualizovano": "2026-09-22T19:06:43.806Z",
    "poradi": [
     {
      "tym": "Třinec",
@@ -669,8 +669,13 @@
      "body": 6
     },
     {
+     "tym": "Mladá Boleslav",
+     "zapasy": 3,
+     "body": 5
+    },
+    {
      "tym": "Sparta Praha",
-     "zapasy": 2,
+     "zapasy": 3,
      "body": 4
     },
     {
@@ -697,11 +702,6 @@
      "tym": "Mountfield HK",
      "zapasy": 3,
      "body": 3
-    },
-    {
-     "tym": "Mladá Boleslav",
-     "zapasy": 2,
-     "body": 2
     },
     {
      "tym": "Olomouc",
@@ -745,11 +745,17 @@
      "presilovky": 2,
      "tresty": 28
     },
-    "Sparta Praha": {
-     "goly": 7,
-     "obdrzene": 5,
+    "Mladá Boleslav": {
+     "goly": 9,
+     "obdrzene": 9,
      "presilovky": 2,
-     "tresty": 18
+     "tresty": 29
+    },
+    "Sparta Praha": {
+     "goly": 10,
+     "obdrzene": 10,
+     "presilovky": 4,
+     "tresty": 20
     },
     "Liberec": {
      "goly": 7,
@@ -780,12 +786,6 @@
      "obdrzene": 8,
      "presilovky": 0,
      "tresty": 16
-    },
-    "Mladá Boleslav": {
-     "goly": 4,
-     "obdrzene": 6,
-     "presilovky": 2,
-     "tresty": 21
     },
     "Olomouc": {
      "goly": 7,
