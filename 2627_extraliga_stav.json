@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-09-22T19:06:43.806Z",
+  "aktualizovano": "2026-09-24T18:57:36.615Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
@@ -25,6 +25,11 @@
       "body": 6
     },
     {
+      "tym": "Mountfield HK",
+      "zapasy": 4,
+      "body": 6
+    },
+    {
       "tym": "Litvínov",
       "zapasy": 3,
       "body": 6
@@ -41,7 +46,7 @@
     },
     {
       "tym": "Liberec",
-      "zapasy": 3,
+      "zapasy": 4,
       "body": 4
     },
     {
@@ -56,11 +61,6 @@
     },
     {
       "tym": "Karlovy Vary",
-      "zapasy": 3,
-      "body": 3
-    },
-    {
-      "tym": "Mountfield HK",
       "zapasy": 3,
       "body": 3
     },
@@ -100,6 +100,12 @@
       "presilovky": 6,
       "tresty": 34
     },
+    "Mountfield HK": {
+      "goly": 11,
+      "obdrzene": 10,
+      "presilovky": 1,
+      "tresty": 24
+    },
     "Litvínov": {
       "goly": 6,
       "obdrzene": 6,
@@ -119,10 +125,10 @@
       "tresty": 20
     },
     "Liberec": {
-      "goly": 7,
-      "obdrzene": 9,
-      "presilovky": 0,
-      "tresty": 20
+      "goly": 9,
+      "obdrzene": 14,
+      "presilovky": 1,
+      "tresty": 26
     },
     "Kometa Brno": {
       "goly": 9,
@@ -141,12 +147,6 @@
       "obdrzene": 8,
       "presilovky": 0,
       "tresty": 25
-    },
-    "Mountfield HK": {
-      "goly": 6,
-      "obdrzene": 8,
-      "presilovky": 0,
-      "tresty": 16
     },
     "Olomouc": {
       "goly": 7,
