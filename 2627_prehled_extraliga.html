@@ -380,6 +380,9 @@
         const STAV_URL = '2627_extraliga_stav.json';
         // Denní snímky tabulky (GitHub Actions → 2627_extraliga_historie.json) pro graf vývoje tipovačky
         const HISTORIE_URL = '2627_extraliga_historie.json';
+        // Odehrané zápasy s výsledky (GitHub Actions → 2627_extraliga_zapasy.json); stahují se až po rozkliknutí
+        const ZAPASY_URL = '2627_extraliga_zapasy.json';
+        let zapasyData = null, zapasyStav = '';
 
         const KONFIG = EXTRALIGA.KONFIG;
         const SL = EXTRALIGA.SLOUPCE;
@@ -581,6 +584,13 @@
             });
             html += `</div>`;
 
+            // Seznam odehraných zápasů: schovaný, rozklikne se a teprve pak se stahuje JSON se zápasy
+            const odehranoCelkem = stavTabulky ? stavTabulky.poradi.reduce((a, p) => a + (Number(p.zapasy) || 0), 0) / 2 : 0;
+            html += `<details class="zapasy-rozbal" id="zapasy-rozbal" ontoggle="nactiZapasy()">
+                <summary><i class="fa-solid fa-list-ul"></i> Odehrané zápasy a výsledky <span class="pocet">${odehranoCelkem ? '(' + esc(odehranoCelkem) + ')' : ''}</span></summary>
+                <div class="zapasy-obsah" id="zapasy-obsah"><div class="loader">Načítám zápasy...</div></div>
+            </details>`;
+
             if (!KONFIG.FINALE) {
                 html += `<div class="prubezne-info"><i class="fa-solid fa-circle-info"></i><strong>Průběžné bodování:</strong> počítají se body za pořadí týmů (žolíci ${KONFIG.ZOLIK_NASOBEK_UMISTENI}×) a čtyři týmové otázky podle statistik hokej.cz (góly, góly v přesilovkách, trestné minuty). Tipy na body žolíků a ostatní bonusové otázky se vyhodnotí po konci základní části.</div>`;
             }
@@ -604,6 +614,53 @@
                 html += `</div>`;
             }
             c.innerHTML = html + `</div>`;
+        }
+
+        // ---------- ODEHRANÉ ZÁPASY (rozbalovací seznam) ----------
+        // Soubor se zápasy stahujeme až při prvním rozkliknutí – kdo na něj neklikne, nic navíc nenačte.
+        function nactiZapasy() {
+            const det = document.getElementById('zapasy-rozbal');
+            if (!det || !det.open || zapasyStav === 'nacitam' || zapasyStav === 'hotovo') return;
+            zapasyStav = 'nacitam';
+            fetch(ZAPASY_URL + '?v=' + Date.now())
+                .then(r => r.ok ? r.json() : null)
+                .then(d => { zapasyData = d; zapasyStav = (d && Array.isArray(d.zapasy) && d.zapasy.length) ? 'hotovo' : 'chyba'; vykresliZapasy(); })
+                .catch(() => { zapasyStav = 'chyba'; vykresliZapasy(); });
+        }
+        function denKratce(datum) {
+            const d = new Date(String(datum) + 'T12:00:00');
+            if (isNaN(d)) return String(datum || '');
+            const den = d.toLocaleDateString('cs-CZ', { weekday: 'short' }).replace('.', '');
+            return den.charAt(0).toUpperCase() + den.slice(1) + ' ' + d.getDate() + '. ' + (d.getMonth() + 1) + '.';
+        }
+        function vykresliZapasy() {
+            const box = document.getElementById('zapasy-obsah');
+            if (!box) return;
+            if (zapasyStav !== 'hotovo') {
+                box.innerHTML = `<div class="zapasy-prazdno">Seznam zápasů se teď nepodařilo načíst. Zkus to prosím za chvíli znovu.</div>`;
+                return;
+            }
+            // Nejnovější hrací den nahoře, v rámci dne podle kola (dohrávky mají číslo svého původního kola)
+            const zapasy = zapasyData.zapasy.slice().sort((a, b) =>
+                (a.datum < b.datum ? 1 : a.datum > b.datum ? -1 : 0) || (a.kolo - b.kolo) || (Number(a.id) - Number(b.id)));
+            const pocet = document.querySelector('#zapasy-rozbal .pocet');
+            if (pocet) pocet.textContent = '(' + zapasy.length + ')';
+            let html = '', den = '';
+            zapasy.forEach(z => {
+                if (z.datum !== den) { den = z.datum; html += `<div class="zapasy-den">${esc(denKratce(den))}</div>`; }
+                const d = Number(z.domaci_goly), h = Number(z.hoste_goly);
+                const znacka = z.konec === 'pp' ? 'pp' : (z.konec === 'sn' ? 'sn' : '');
+                const titulek = z.konec === 'pp' ? 'po prodloužení' : (z.konec === 'sn' ? 'po samostatných nájezdech' : '');
+                html += `<div class="zapas-radek">
+                    <span class="zapas-kolo">${esc(z.kolo)}. kolo</span>
+                    <span class="zapas-tym domaci"><span class="${d > h ? 'zapas-vitez' : ''}">${esc(z.domaci)}</span><img src="${logoNeboFallback(z.domaci)}" ${ONERR} alt="${esc(z.domaci)}"></span>
+                    <span class="zapas-skore">${z.id ? `<a href="https://www.hokej.cz/zapas/${esc(z.id)}" target="_blank" rel="noopener" title="Detail zápasu na hokej.cz">${esc(d)}:${esc(h)}</a>` : `${esc(d)}:${esc(h)}`}${znacka ? `<span class="znacka" title="${esc(titulek)}">${esc(znacka)}</span>` : ''}</span>
+                    <span class="zapas-tym hoste"><img src="${logoNeboFallback(z.hoste)}" ${ONERR} alt="${esc(z.hoste)}"><span class="${h > d ? 'zapas-vitez' : ''}">${esc(z.hoste)}</span></span>
+                    <span class="zapas-tretiny">${esc(z.tretiny ? '(' + z.tretiny + ')' : '')}</span>
+                </div>`;
+            });
+            html += `<div class="zapasy-zdroj">Výsledky z hokej.cz${zapasyData.aktualizovano ? ', stav ' + esc(formatDatumCas(zapasyData.aktualizovano)) : ''}. <em>pp</em> = po prodloužení, <em>sn</em> = po samostatných nájezdech.</div>`;
+            box.innerHTML = html;
         }
 
         // ---------- TIPY MISTRŮ ----------

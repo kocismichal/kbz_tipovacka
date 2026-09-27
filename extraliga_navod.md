@@ -171,7 +171,18 @@ večer zvládne, i když ho GitHub pustí později.
 - Kdyby hokej.cz změnil vzhled stránky a parser přestal tabulku poznávat, workflow skončí chybou (přijde
   e-mail) a web zůstane na ručním zápisu – nic se nerozbije.
 
-## 7. Našeptávač jmen hráčů
+## 7. Odehrané zápasy s výsledky
+
+V přehledu 26/27 je pod tabulkou pořadí řádek **„Odehrané zápasy a výsledky“**. Je schovaný, takže stránku
+nezahltí; po kliknutí se rozbalí seznam všech odehraných zápasů sezóny – od posledního hracího dne nazpátek,
+u každého zápasu kolo, oba týmy s logem, skóre a výsledky třetin. Vítěz je tučně, `pp` znamená po prodloužení,
+`sn` po samostatných nájezdech. Kliknutím na skóre se otevře detail zápasu na hokej.cz.
+
+Seznam plní stejná automatika jako tabulku (soubor `2627_extraliga_zapasy.json`), takže se doplňuje sám
+během hracího večera. Data se stahují teprve ve chvíli, kdy někdo seznam rozklikne – kdo na něj neklikne,
+nic navíc nenačítá.
+
+## 8. Našeptávač jmen hráčů
 
 U otázek, kde se píše jméno hráče (nejlepší střelec, nejtrestanější hráč, největší icetime, procento gólů
 týmu), formulář napovídá jména ze soupisek všech 14 klubů (hokej.cz → stránka klubu → Soupiska). Stačí začít
@@ -183,7 +194,7 @@ Soupisky jsou v souboru `extraliga_soupisky.js` a obnovují se samy každé pond
 v záložce Actions, jde spustit i ručně). Když hokej.cz změní vzhled stránky, workflow skončí chybou a na webu
 zůstane poslední uložená soupiska – nic se nerozbije.
 
-## 8. Společný tip Mistrů a pohled fanoušků klubu
+## 9. Společný tip Mistrů a pohled fanoušků klubu
 
 - **Společný tip podcastu** se odesílá formulářem jako kdokoli jiný, jen pod jménem **„Mistři světa“** (na velikosti
   písmen a háčcích nezáleží). Přehled ho ukáže jako pátou kartu mezi Mistry s logem podcastu a štítkem „Společný tip“.
@@ -192,7 +203,7 @@ zůstane poslední uložená soupiska – nic se nerozbije.
   který lidé zadali ve formuláři, s počtem tipujících). Po výběru se matice i procenta počítají jen z fanoušků
   daného klubu; „Všichni tipující“ vrátí celkový pohled.
 
-## 9. Průběžné bodování během sezóny a přepnutí na finále
+## 10. Průběžné bodování během sezóny a přepnutí na finále
 
 - **Od startu sezóny web boduje průběžně**: body za pořadí týmů (žolíci 2×, bonusové násobky za přesné trefy)
   podle automatické tabulky a čtyři týmové otázky podle statistik hokej.cz – nejvíc gólů, nejvíc gólů v přesilovkách,
@@ -216,7 +227,7 @@ zůstane poslední uložená soupiska – nic se nerozbije.
   diakritika nevadí) i vybrat ze seznamu; křížkem u jména ho zase odebereš. Svislá osa se přizpůsobuje hodnotám
   v grafu (nezačíná nulou), takže rozdíly jsou vidět. Historie začíná 16. 9. 2026.
 
-## 10. Na co myslet
+## 11. Na co myslet
 
 - Testy a pomocné skripty jsou v repu: `testy/README.md` (jak je spustit na PC) a `skripty/sestav_apps_script.js`
   (sestaví bundle pro Apps Script po změně `extraliga_spolecne.js` nebo `extraliga_apps_script.gs`).
