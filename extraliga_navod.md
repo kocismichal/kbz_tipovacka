@@ -144,8 +144,9 @@ týmů z tohoto souboru**; z řádku 2 listu Přehled HOTOVO zůstávají **jen 
 ručním zápisu pořadí v listu (E2–R2, body AY2–BL2) jako dřív. Body se na webu ukazují až od
 `KONFIG.BODOVANI_OD` (30. 9. 2026), do té doby jen tipy.
 
-**Kdy to běží:** ráno jednou (6:30 letního času, stahuje vždy) a odpoledne se spustí **hlídání hracího dne**
-(v 17:00 letního času, v zimě v 16:00). Hlídání si stáhne program zápasů na hokej.cz a dál se řídí jím:
+**Kdy to běží:** ráno jednou (6:30 letního času, stahuje vždy) a odpoledne se spustí **hlídání hracího dne**.
+Pokusy o start jsou dva, ve 14:00 a v 17:00 letního času, protože GitHub plánované běhy zdržuje (měřeno o 3,5 až
+5 hodin); co stihne první, druhý už jen dorovná. Hlídání si stáhne program zápasů na hokej.cz a dál se řídí jím:
 
 - **Dnes se nehraje** – hlídání hned skončí a tabulka se vůbec nestahuje (v protokolu v *Actions* je napsáno,
   kdy se hraje příště). Ve dnech bez hokeje se tak nemění ani graf vývoje.
@@ -157,7 +158,8 @@ ručním zápisu pořadí v listu (E2–R2, body AY2–BL2) jako dřív. Body se
 
 Proč hlídání v jednom běhu a ne spouštění po pěti minutách: GitHub plánované spouštění často o hodiny
 zdrží (ranní běh startuje běžně až kolem deváté). Jeden běh, který si kontroly řídí sám, proto hrací
-večer zvládne, i když ho GitHub pustí později.
+večer zvládne, i když ho GitHub pustí později. Když se spustí naopak brzy, počká si do prvního vhazování
+a teprve pak začne kontrolovat po pěti minutách.
 
 - **Ručně kdykoli:** GitHub → záložka *Actions* → „Tabulka Extraligy“ → *Run workflow* (jde i z mobilu/iPadu
   v prohlížeči). Volba `aktualizace` stahuje vždy, bez ohledu na program zápasů, `sonda` jen vypíše, co

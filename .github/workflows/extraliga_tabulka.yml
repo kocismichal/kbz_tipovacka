@@ -24,8 +24,10 @@ on:
   schedule:
     # Ranní jistota (6:30 letního času / 5:30 zimního)
     - cron: "30 4 * * *"
-    # Začátek hlídání hracího dne (17:00 letního času / 16:00 zimního); GitHub start často o dost zdrží,
-    # hlídání si proto samo pohlídá, co už je zapsané, a případně hned skončí.
+    # Hlídání hracího dne. GitHub plánované běhy zdržuje (měřeno 3,5–5 hodin), proto jsou pokusy dva:
+    # první má po zdržení vyjít na začátek zápasů, druhý je záloha, kdyby první nevyšel nebo skončil dřív.
+    # Souběh hlídá concurrency, a když je už vše zapsané, běh stejně hned skončí.
+    - cron: "0 12 * * *"
     - cron: "0 15 * * *"
 
 permissions:
@@ -58,7 +60,7 @@ jobs:
 
   hlidani:
     # odpolední hlídání hracího dne
-    if: ${{ github.event.schedule == '0 15 * * *' || github.event.inputs.rezim == 'hlidani' }}
+    if: ${{ (github.event_name == 'schedule' && github.event.schedule != '30 4 * * *') || github.event.inputs.rezim == 'hlidani' }}
     runs-on: ubuntu-latest
     timeout-minutes: 350
     concurrency:
@@ -74,7 +76,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           LOG="$RUNNER_TEMP/kontrola.txt"
-          konec=$(( $(date +%s) + 19800 ))   # hlídá se nejdéle 5,5 hodiny
+          zacatek=$(date +%s)
+          konec=""                           # od začátku zápasů se hlídá nejdéle 5,5 hodiny
           chyb=0
           while : ; do
             if node skripty/stahni_tabulku_extraligy.js > "$LOG" 2>&1; then
@@ -110,12 +113,17 @@ jobs:
             cekat=$(sed -n 's/^KONTROLA: ceka \([0-9][0-9]*\).*$/\1/p' "$LOG" | tail -1)
             if [ -z "$cekat" ]; then cekat=300; fi
             ted=$(date +%s)
-            if [ "$ted" -ge "$konec" ]; then
-              echo "Hlídání běží 5,5 hodiny – končí, zbytek dorovná ranní běh."
+            # Dlouhé čekání znamená, že se čeká na výkop – rozpočet na hlídání začne až krátkými kontrolami
+            if [ -z "$konec" ] && [ "$cekat" -le 600 ]; then konec=$(( ted + 19800 )); fi
+            if [ -n "$konec" ] && [ "$ted" -ge "$konec" ]; then
+              echo "Hlídání běží 5,5 hodiny od začátku zápasů – končí, zbytek dorovná ranní běh."
               break
             fi
-            zbyva=$(( konec - ted ))
-            if [ "$cekat" -gt "$zbyva" ]; then cekat=$zbyva; fi
+            if [ $(( ted - zacatek )) -ge 19200 ]; then
+              echo "Job běží skoro šest hodin – končí, zbytek dorovná ranní běh."
+              break
+            fi
+            if [ -n "$konec" ] && [ "$cekat" -gt $(( konec - ted )) ]; then cekat=$(( konec - ted )); fi
             echo "Další kontrola za $cekat s."
             sleep "$cekat"
           done
