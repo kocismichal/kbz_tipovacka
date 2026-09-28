@@ -1,164 +1,78 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-09-27T18:36:21.665Z",
-  "zdroj": "hokej.cz",
-  "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
+  "aktualizovano": "2026-09-28T11:04:48.213Z",
+  "zdroj": "cs.wikipedia.org",
+  "zdroj_url": "https://cs.wikipedia.org/w/index.php?title=%C4%8Cesk%C3%A1_hokejov%C3%A1_extraliga_2026/2027&action=raw",
   "poradi": [
     {
       "tym": "Třinec",
-      "zapasy": 5,
-      "body": 15
-    },
-    {
-      "tym": "Pardubice",
-      "zapasy": 6,
-      "body": 12
-    },
-    {
-      "tym": "České Budějovice",
-      "zapasy": 5,
-      "body": 10
+      "zapasy": 2,
+      "body": 6
     },
     {
       "tym": "Kladno",
-      "zapasy": 5,
-      "body": 9
-    },
-    {
-      "tym": "Plzeň",
-      "zapasy": 5,
-      "body": 8
+      "zapasy": 2,
+      "body": 5
     },
     {
       "tym": "Sparta Praha",
-      "zapasy": 4,
-      "body": 7
-    },
-    {
-      "tym": "Karlovy Vary",
-      "zapasy": 4,
-      "body": 6
-    },
-    {
-      "tym": "Kometa Brno",
-      "zapasy": 5,
-      "body": 6
-    },
-    {
-      "tym": "Mountfield HK",
-      "zapasy": 5,
-      "body": 6
-    },
-    {
-      "tym": "Litvínov",
-      "zapasy": 5,
-      "body": 6
-    },
-    {
-      "tym": "Olomouc",
-      "zapasy": 5,
-      "body": 5
-    },
-    {
-      "tym": "Mladá Boleslav",
-      "zapasy": 5,
-      "body": 5
-    },
-    {
-      "tym": "Liberec",
-      "zapasy": 5,
+      "zapasy": 2,
       "body": 4
     },
     {
-      "tym": "Vítkovice",
-      "zapasy": 4,
+      "tym": "České Budějovice",
+      "zapasy": 2,
+      "body": 4
+    },
+    {
+      "tym": "Karlovy Vary",
+      "zapasy": 2,
       "body": 3
+    },
+    {
+      "tym": "Pardubice",
+      "zapasy": 2,
+      "body": 3
+    },
+    {
+      "tym": "Mountfield HK",
+      "zapasy": 2,
+      "body": 3
+    },
+    {
+      "tym": "Plzeň",
+      "zapasy": 2,
+      "body": 3
+    },
+    {
+      "tym": "Litvínov",
+      "zapasy": 2,
+      "body": 3
+    },
+    {
+      "tym": "Olomouc",
+      "zapasy": 2,
+      "body": 2
+    },
+    {
+      "tym": "Mladá Boleslav",
+      "zapasy": 2,
+      "body": 2
+    },
+    {
+      "tym": "Liberec",
+      "zapasy": 1,
+      "body": 1
+    },
+    {
+      "tym": "Vítkovice",
+      "zapasy": 1,
+      "body": 0
+    },
+    {
+      "tym": "Kometa Brno",
+      "zapasy": 2,
+      "body": 0
     }
-  ],
-  "statistiky": {
-    "Třinec": {
-      "goly": 22,
-      "obdrzene": 10,
-      "presilovky": 9,
-      "tresty": 40
-    },
-    "Pardubice": {
-      "goly": 24,
-      "obdrzene": 17,
-      "presilovky": 9,
-      "tresty": 46
-    },
-    "České Budějovice": {
-      "goly": 13,
-      "obdrzene": 14,
-      "presilovky": 7,
-      "tresty": 40
-    },
-    "Kladno": {
-      "goly": 14,
-      "obdrzene": 14,
-      "presilovky": 4,
-      "tresty": 28
-    },
-    "Plzeň": {
-      "goly": 12,
-      "obdrzene": 11,
-      "presilovky": 2,
-      "tresty": 42
-    },
-    "Sparta Praha": {
-      "goly": 14,
-      "obdrzene": 11,
-      "presilovky": 4,
-      "tresty": 30
-    },
-    "Karlovy Vary": {
-      "goly": 11,
-      "obdrzene": 9,
-      "presilovky": 2,
-      "tresty": 33
-    },
-    "Kometa Brno": {
-      "goly": 16,
-      "obdrzene": 16,
-      "presilovky": 1,
-      "tresty": 30
-    },
-    "Mountfield HK": {
-      "goly": 12,
-      "obdrzene": 12,
-      "presilovky": 1,
-      "tresty": 32
-    },
-    "Litvínov": {
-      "goly": 11,
-      "obdrzene": 15,
-      "presilovky": 5,
-      "tresty": 54
-    },
-    "Olomouc": {
-      "goly": 13,
-      "obdrzene": 15,
-      "presilovky": 1,
-      "tresty": 50
-    },
-    "Mladá Boleslav": {
-      "goly": 12,
-      "obdrzene": 19,
-      "presilovky": 2,
-      "tresty": 51
-    },
-    "Liberec": {
-      "goly": 10,
-      "obdrzene": 17,
-      "presilovky": 2,
-      "tresty": 38
-    },
-    "Vítkovice": {
-      "goly": 13,
-      "obdrzene": 17,
-      "presilovky": 6,
-      "tresty": 61
-    }
-  }
+  ]
 }

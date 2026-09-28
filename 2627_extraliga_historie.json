@@ -1286,6 +1286,82 @@
      "tresty": 61
     }
    }
+  },
+  {
+   "datum": "2026-09-28",
+   "aktualizovano": "2026-09-28T11:04:48.213Z",
+   "poradi": [
+    {
+     "tym": "Třinec",
+     "zapasy": 2,
+     "body": 6
+    },
+    {
+     "tym": "Kladno",
+     "zapasy": 2,
+     "body": 5
+    },
+    {
+     "tym": "Sparta Praha",
+     "zapasy": 2,
+     "body": 4
+    },
+    {
+     "tym": "České Budějovice",
+     "zapasy": 2,
+     "body": 4
+    },
+    {
+     "tym": "Karlovy Vary",
+     "zapasy": 2,
+     "body": 3
+    },
+    {
+     "tym": "Pardubice",
+     "zapasy": 2,
+     "body": 3
+    },
+    {
+     "tym": "Mountfield HK",
+     "zapasy": 2,
+     "body": 3
+    },
+    {
+     "tym": "Plzeň",
+     "zapasy": 2,
+     "body": 3
+    },
+    {
+     "tym": "Litvínov",
+     "zapasy": 2,
+     "body": 3
+    },
+    {
+     "tym": "Olomouc",
+     "zapasy": 2,
+     "body": 2
+    },
+    {
+     "tym": "Mladá Boleslav",
+     "zapasy": 2,
+     "body": 2
+    },
+    {
+     "tym": "Liberec",
+     "zapasy": 1,
+     "body": 1
+    },
+    {
+     "tym": "Vítkovice",
+     "zapasy": 1,
+     "body": 0
+    },
+    {
+     "tym": "Kometa Brno",
+     "zapasy": 2,
+     "body": 0
+    }
+   ]
   }
  ]
 }
