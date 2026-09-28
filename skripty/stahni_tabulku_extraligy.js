@@ -22,6 +22,9 @@
  *
  * Zdroje v pořadí: hokej.cz (stránka tabulky), hokej.cz (stránka soutěže s malou tabulkou),
  * česká Wikipedie (šablona {{Hokejová tabulka}} – aktualizují ji dobrovolníci, jen záloha).
+ * Každá adresa se zkouší třikrát (hokej.cz umí runnerům GitHubu vrátit HTTP 403). Zdroj, který je pozadu
+ * za uloženým snímkem (méně odehraných zápasů, nebo stejně a bez statistik), se zahodí – jinak by
+ * zpožděná Wikipedie přepsala čerstvou tabulku z hokej.cz staršími daty.
  * Uloží se jen tabulka, která projde kontrolou: přesně 14 týmů z konfigurace, každý jednou, body i zápasy
  * jsou čísla, body ≤ 3 × zápasy a pořadí jde podle bodů. Jinak skript skončí chybou a JSON se nemění
  * (web pak bere pořadí z ručního zápisu v listu Přehled HOTOVO).
@@ -78,13 +81,37 @@ function poznejTym(text) {
 }
 
 const HLAVICKY = {
-  "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
-  "Accept": "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8",
-  "Accept-Language": "cs-CZ,cs;q=0.9,en;q=0.7"
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+  "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+  "Accept-Language": "cs-CZ,cs;q=0.9,en;q=0.8",
+  "Upgrade-Insecure-Requests": "1",
+  "Sec-Fetch-Dest": "document",
+  "Sec-Fetch-Mode": "navigate",
+  "Sec-Fetch-Site": "same-origin",
+  "Sec-Fetch-User": "?1"
 };
-async function stahni(url) {
+const POKUSY = 3;                   // kolikrát se adresa zkusí, než se jde na další zdroj
+const PAUZA_PO_CHYBE_S = [3, 8];
+const pauza = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function stahniJednou(url) {
   const r = await fetch(url, { headers: HLAVICKY, redirect: "follow", signal: AbortSignal.timeout(25000) });
   return { status: r.status, typ: r.headers.get("content-type") || "", text: await r.text(), url: r.url };
+}
+// Opakování: HTTP 403 od hokej.cz bývá jen chvilkové odmítnutí robota
+async function stahni(url) {
+  let posledni = null;
+  for (let pokus = 0; pokus < POKUSY; pokus++) {
+    try {
+      const r = await stahniJednou(url);
+      if (r.status === 200 || pokus === POKUSY - 1) return r;
+      posledni = new Error("HTTP " + r.status);
+    } catch (e) { posledni = e; }
+    const cekat = PAUZA_PO_CHYBE_S[Math.min(pokus, PAUZA_PO_CHYBE_S.length - 1)];
+    console.log("   " + url + ": " + posledni.message + " – zkouším znovu za " + cekat + " s");
+    await pauza(cekat * 1000);
+  }
+  throw posledni;
 }
 
 // ---------- HTML tabulky (hokej.cz) ----------
@@ -445,6 +472,16 @@ function rozhodniStahovani(zapasy, ted, stav, zaklad) {
   return { stahovat: true, konec: false, cekat: PAUZA_MEZI_KONTROLAMI_S, dnesni, duvod: dnesni.length + " zápasů dnes, dohraných " + melo
     + (odehrano !== null && zaklad !== null ? ", v tabulce " + (odehrano - zaklad) : "") + " – kontroluje se zápis do tabulky" };
 }
+// Je nová tabulka horší než ta uložená? (vrací důvod, nebo null když je v pořádku)
+// Zpožděná záloha (Wikipedii píšou dobrovolníci) nesmí přepsat čerstvá data z hokej.cz.
+function zdrojJePozadu(novy, stary) {
+  if (!stary || !Array.isArray(stary.poradi) || !stary.poradi.length) return null;
+  const a = odehranoZTabulky(novy.poradi), b = odehranoZTabulky(stary.poradi);
+  if (a < b) return "má jen " + a + " odehraných zápasů proti uloženým " + b;
+  if (a === b && !novy.statistiky && stary.statistiky) return "nemá statistiky týmů, uložený snímek je má";
+  return null;
+}
+
 // Počet odehraných zápasů podle tabulky (každý zápas mají v tabulce oba týmy)
 function odehranoZTabulky(poradi) {
   return (poradi || []).reduce((s, p) => s + (Number(p.zapasy) || 0), 0) / 2;
@@ -474,6 +511,12 @@ function aktualizujHistorii(stav, souborHistorie) {
     if (h && Array.isArray(h.snimky)) historie = h;
   } catch (e) {}
   const datum = String(stav.aktualizovano || new Date().toISOString()).slice(0, 10);
+  const posledniSnimek = historie.snimky[historie.snimky.length - 1];
+  if (posledniSnimek && odehranoZTabulky(stav.poradi) < odehranoZTabulky(posledniSnimek.poradi)) {
+    console.log("Historie: snímek je pozadu za posledním (" + odehranoZTabulky(stav.poradi) + " < "
+      + odehranoZTabulky(posledniSnimek.poradi) + " odehraných zápasů) – nepřidává se.");
+    return;
+  }
   const novy = { datum, aktualizovano: stav.aktualizovano, poradi: stav.poradi };
   if (stav.statistiky) novy.statistiky = stav.statistiky;
   const posledni = historie.snimky[historie.snimky.length - 1];
@@ -558,6 +601,12 @@ async function aktualizace() {
       if (statistiky) vysledek.statistiky = statistiky;
       let stary = null;
       try { stary = JSON.parse(fs.readFileSync(VYSTUP, "utf8")); } catch (e) {}
+      const pozadu = zdrojJePozadu(vysledek, stary);
+      if (pozadu) {
+        console.log("Zdroj " + z.nazev + " je pozadu (" + pozadu + ") – přeskakuji, JSON zůstává.");
+        chyby.push(z.nazev + ": " + pozadu);
+        continue;
+      }
       const stejne = stary && JSON.stringify(stary.poradi) === JSON.stringify(vysledek.poradi)
         && JSON.stringify(stary.statistiky || null) === JSON.stringify(vysledek.statistiky || null);
       if (stejne) {
@@ -577,6 +626,12 @@ async function aktualizace() {
     } catch (e) {
       chyby.push(z.nazev + " (" + z.url + "): " + e.message);
     }
+  }
+  const jenPozadu = chyby.length && chyby.every((x) => /pozadu|jen \d+ odehraných|nemá statistiky/.test(x));
+  if (jenPozadu) {
+    console.log("Žádný zdroj nemá novější tabulku než uložený snímek – JSON zůstává:\n - " + chyby.join("\n - "));
+    oznamKontrolu(false);
+    return;
   }
   console.error("Tabulku se nepodařilo stáhnout z žádného zdroje:\n - " + chyby.join("\n - "));
   process.exit(1);
@@ -600,5 +655,5 @@ function hlasStavZapisu(dnesni, ted, poradi) {
   // Načtení přes require (testy): jen funkce, nic se nestahuje ani neukládá
   module.exports = { aktualizujHistorii, poradiZHtml, poradiZTabulky, statistikyZPoradi, overPoradi, poznejTym,
     programZapasu, rozhodniStahovani, melySkoncit, odehranoZTabulky, odehranoPredDneskem, dnesVPraze, prazskyCas,
-    zapasyZHtml };
+    zapasyZHtml, zdrojJePozadu };
 }
