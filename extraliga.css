@@ -483,30 +483,45 @@ body.extraliga .graf-platno .popisek { fill: var(--text-muted); font-size: 12px;
 body.extraliga .graf-platno .jmeno { font-size: 12px; font-weight: 600; }
 
 /* ---------- Odehrané zápasy (rozbalovací seznam pod pořadím) ---------- */
-body.extraliga .zapasy-rozbal {
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    background: var(--panel-soft);
-    margin: 2px 0 14px 0;
-}
+/* Pruh je hlavní vstup do zápasů, proto vypadá jako tlačítko a ne jako řádek textu */
+body.extraliga .zapasy-rozbal { margin: 10px 0 18px 0; }
 body.extraliga .zapasy-rozbal > summary {
     cursor: pointer;
-    padding: 9px 14px;
+    list-style: none;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 18px;
+    border-radius: 10px;
+    background: var(--accent-primary);
+    color: #fff;
     font-family: 'Oswald', sans-serif;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 0.85rem;
-    color: var(--navy);
+    letter-spacing: 1.2px;
+    font-size: 0.95rem;
+    box-shadow: 0 5px 16px rgba(200, 16, 46, 0.3);
+    transition: transform 0.15s ease, filter 0.15s ease;
 }
-body.extraliga .zapasy-rozbal > summary:hover { color: var(--accent-primary); }
-body.extraliga .zapasy-rozbal > summary i { color: var(--accent-primary); }
+body.extraliga .zapasy-rozbal > summary::-webkit-details-marker { display: none; }
+body.extraliga .zapasy-rozbal > summary::marker { content: ''; }
+body.extraliga .zapasy-rozbal > summary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+body.extraliga .zapasy-rozbal[open] > summary { border-radius: 10px 10px 0 0; box-shadow: none; }
+body.extraliga .zapasy-nadpis { display: inline-flex; align-items: center; gap: 9px; min-width: 0; }
 body.extraliga .zapasy-rozbal > summary .pocet {
-    font-family: 'Inter', sans-serif; text-transform: none; letter-spacing: 0; color: var(--text-muted);
+    font-family: 'Inter', sans-serif; text-transform: none; letter-spacing: 0; font-size: 0.85rem; color: rgba(255, 255, 255, 0.85);
 }
-body.extraliga .zapasy-obsah { padding: 0 14px 12px 14px; }
+body.extraliga .zapasy-sipka { display: inline-flex; align-items: center; gap: 8px; font-size: 0.78rem; flex-shrink: 0; }
+body.extraliga .zapasy-sipka i { transition: transform 0.2s ease; }
+body.extraliga .zapasy-rozbal[open] .zapasy-vyzva { display: none; }
+body.extraliga .zapasy-rozbal[open] .zapasy-sipka i { transform: rotate(180deg); }
+body.extraliga .zapasy-obsah {
+    padding: 0 14px 12px 14px;
+    border: 1px solid var(--border-color);
+    border-top: 0;
+    border-radius: 0 0 10px 10px;
+    background: var(--panel-soft);
+}
 body.extraliga .zapasy-tabs { margin: 4px 0 0 0; justify-content: flex-start; }
 body.extraliga .zapasy-tabs .tab-btn { font-size: 0.8rem; padding: 6px 14px; }
 body.extraliga #zapasy-seznam { max-height: 62vh; overflow-y: auto; }
@@ -546,6 +561,8 @@ body.extraliga .zapas-tretiny { color: var(--text-muted); font-size: 0.78rem; te
 body.extraliga .zapasy-zdroj { color: var(--text-muted); font-size: 0.78rem; margin-top: 10px; }
 body.extraliga .zapasy-prazdno { color: var(--text-muted); font-style: italic; padding: 6px 0; }
 @media (max-width: 760px) {
+    body.extraliga .zapasy-rozbal > summary { padding: 11px 14px; font-size: 0.85rem; letter-spacing: 1px; }
+    body.extraliga .zapasy-vyzva { display: none; }
     body.extraliga .zapas-radek {
         grid-template-columns: 1fr auto 1fr;
         grid-template-areas: "kolo kolo tretiny" "domaci skore hoste";

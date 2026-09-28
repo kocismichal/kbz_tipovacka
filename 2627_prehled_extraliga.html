@@ -588,13 +588,12 @@
             // Seznam zápasů: schovaný, rozklikne se a teprve pak se stahuje JSON se zápasy
             const odehranoCelkem = stavTabulky ? stavTabulky.poradi.reduce((a, p) => a + (Number(p.zapasy) || 0), 0) / 2 : 0;
             html += `<details class="zapasy-rozbal" id="zapasy-rozbal" ontoggle="nactiZapasy()">
-                <summary><i class="fa-solid fa-list-ul"></i> Zápasy a výsledky <span class="pocet">${odehranoCelkem ? '(odehráno ' + esc(odehranoCelkem) + ')' : ''}</span></summary>
+                <summary>
+                    <span class="zapasy-nadpis"><i class="fa-solid fa-hockey-puck"></i> Zápasy a výsledky <span class="pocet">${odehranoCelkem ? '(odehráno ' + esc(odehranoCelkem) + ')' : ''}</span></span>
+                    <span class="zapasy-sipka"><span class="zapasy-vyzva">Rozklikni</span><i class="fa-solid fa-chevron-down"></i></span>
+                </summary>
                 <div class="zapasy-obsah" id="zapasy-obsah"><div class="loader">Načítám zápasy...</div></div>
             </details>`;
-
-            if (!KONFIG.FINALE) {
-                html += `<div class="prubezne-info"><i class="fa-solid fa-circle-info"></i><strong>Průběžné bodování:</strong> počítají se body za pořadí týmů (žolíci ${KONFIG.ZOLIK_NASOBEK_UMISTENI}×) a čtyři týmové otázky podle statistik hokej.cz (góly, góly v přesilovkách, trestné minuty). Tipy na body žolíků a ostatní bonusové otázky se vyhodnotí po konci základní části.</div>`;
-            }
 
             const vyhodnocene = EXTRALIGA.bodyBonusy(PRAZDNY_RADEK, vysledky).polozky.filter(p => p.spravne !== '');
             html += `<div class="modal-subtitle">${KONFIG.FINALE ? 'Už vyhodnocené bonusové otázky' : 'Průběžně vedou (týmové otázky ze statistik hokej.cz)'}</div>`;
@@ -613,6 +612,11 @@
                     </div>`;
                 });
                 html += `</div>`;
+            }
+
+            // Vysvětlení až pod seznamem – nejdřív ať je vidět, kdo průběžně vede
+            if (!KONFIG.FINALE) {
+                html += `<div class="prubezne-info"><i class="fa-solid fa-circle-info"></i><strong>Průběžné bodování:</strong> počítají se body za pořadí týmů (žolíci ${KONFIG.ZOLIK_NASOBEK_UMISTENI}×) a čtyři týmové otázky podle statistik hokej.cz (góly, góly v přesilovkách, trestné minuty). Tipy na body žolíků a ostatní bonusové otázky se vyhodnotí po konci základní části.</div>`;
             }
             c.innerHTML = html + `</div>`;
         }
