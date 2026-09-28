@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-09-28T07:51:39.957Z",
+  "aktualizovano": "2026-09-28T18:53:09.518Z",
   "zdroj": "hokej.cz",
   "zapasy": [
     {
@@ -451,11 +451,11 @@
       "domaci": "Sparta Praha",
       "hoste": "Karlovy Vary",
       "datum": "2026-09-28",
-      "cas": "16:00",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
+      "cas": "",
+      "odehrany": true,
+      "domaci_goly": 0,
+      "hoste_goly": 1,
+      "tretiny": "0:0, 0:1, 0:0",
       "konec": ""
     },
     {

@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-09-28T13:21:27.959Z",
+  "aktualizovano": "2026-09-28T18:53:05.415Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
@@ -20,6 +20,11 @@
       "body": 10
     },
     {
+      "tym": "Karlovy Vary",
+      "zapasy": 5,
+      "body": 9
+    },
+    {
       "tym": "Kladno",
       "zapasy": 5,
       "body": 9
@@ -31,13 +36,8 @@
     },
     {
       "tym": "Sparta Praha",
-      "zapasy": 4,
+      "zapasy": 5,
       "body": 7
-    },
-    {
-      "tym": "Karlovy Vary",
-      "zapasy": 4,
-      "body": 6
     },
     {
       "tym": "Kometa Brno",
@@ -94,6 +94,12 @@
       "presilovky": 7,
       "tresty": 40
     },
+    "Karlovy Vary": {
+      "goly": 12,
+      "obdrzene": 9,
+      "presilovky": 2,
+      "tresty": 37
+    },
     "Kladno": {
       "goly": 14,
       "obdrzene": 14,
@@ -108,15 +114,9 @@
     },
     "Sparta Praha": {
       "goly": 14,
-      "obdrzene": 11,
+      "obdrzene": 12,
       "presilovky": 4,
-      "tresty": 30
-    },
-    "Karlovy Vary": {
-      "goly": 11,
-      "obdrzene": 9,
-      "presilovky": 2,
-      "tresty": 33
+      "tresty": 36
     },
     "Kometa Brno": {
       "goly": 16,
