@@ -43,6 +43,7 @@ Screenshoty se ukládají do `testy/vystup/` (složka je v .gitignore).
 | `test_2526_snap.js` | vyhodnocení 25/26 ze snímku dat (298 tipujících, vítěz, karta) |
 | `test_lista.js` | lišta se nikde neořezává (400–1440 px) a od 1250 px je na jednom řádku; měří se skutečnými fonty (potřebuje internet) |
 | `test_mistri_filtr.js` | společný tip „Mistři světa“ jako pátá karta s logem a bez koruny, není mezi fanoušky; filtr matice podle oblíbeného klubu (počty, procenta z podmnožiny) |
+| `test_soupisky.js` | stahování soupisek: odmítnutý klub (HTTP 403) se zkusí třikrát a pak se vezme z minulé soupisky, bez minulých dat je to chyba, kontrola pozná neúplný klub |
 | `test_naseptavac.js` | našeptávač jmen hráčů ve formuláři: nabídka podle jména i příjmení, klub u hráče, výběr klávesnicí, brankáři mimo icetime |
 | `test_index.js` | úvodní stránka bez chyb v konzoli |
 | `test_vzhled.js` | screenshoty formuláře a přehledu (desktop/iPad/mobil) do `vystup/` |
