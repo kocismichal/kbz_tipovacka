@@ -199,6 +199,10 @@ Soupisky jsou v souboru `extraliga_soupisky.js` a obnovují se samy každé pond
 v záložce Actions, jde spustit i ručně). Když hokej.cz změní vzhled stránky, workflow skončí chybou a na webu
 zůstane poslední uložená soupiska – nic se nerozbije.
 
+Hokej.cz občas stránku klubu robotovi na GitHubu odmítne (chyba 403). Skript ji proto zkusí třikrát s pauzou
+a teprve pak u toho jednoho klubu použije minulou soupisku a jede dál – v protokolu je napsáno, kterého klubu
+se to týká. Kdyby takhle vypadly víc než tři kluby, workflow skončí chybou a přijde e-mail.
+
 ## 9. Společný tip Mistrů a pohled fanoušků klubu
 
 - **Společný tip podcastu** se odesílá formulářem jako kdokoli jiný, jen pod jménem **„Mistři světa“** (na velikosti

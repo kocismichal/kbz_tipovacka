@@ -11,6 +11,10 @@
  * "table-soupiska" pod nadpisy Brankáři / Obránci / Útočníci. Uloží se jen výsledek, který projde
  * kontrolou (všech 14 klubů, každý aspoň 15 hráčů a aspoň 1 brankář, žádné prázdné jméno). Jinak skript
  * skončí chybou a soubor se nemění – web pak dál nabízí poslední uloženou soupisku.
+ *
+ * Když stránka klubu nejde stáhnout (hokej.cz umí runnerům GitHubu vrátit HTTP 403), zkouší se třikrát
+ * s pauzou a teprve pak se u toho klubu použije minulá soupiska ze souboru. Takový klub se vypíše;
+ * když by se takhle musely nahradit víc než tři kluby, skript skončí chybou, ať se na to přijde.
  */
 const fs = require("fs");
 const path = require("path");
@@ -49,14 +53,43 @@ const POZICE = { "Brankáři": "B", "Obránci": "O", "Útočníci": "U" };
 const MIN_HRACU_KLUBU = 15;
 
 const HLAVICKY = {
-  "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
-  "Accept": "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
-  "Accept-Language": "cs-CZ,cs;q=0.9,en;q=0.7"
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+  "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+  "Accept-Language": "cs-CZ,cs;q=0.9,en;q=0.8",
+  "Upgrade-Insecure-Requests": "1",
+  "Sec-Fetch-Dest": "document",
+  "Sec-Fetch-Mode": "navigate",
+  "Sec-Fetch-Site": "same-origin",
+  "Sec-Fetch-User": "?1",
+  "Referer": "https://www.hokej.cz/tipsport-extraliga/kluby"
 };
+const POKUSY = 3;                      // kolikrát se stránka klubu zkusí, než se vzdá
+const PAUZA_PO_CHYBE_S = [4, 10];      // pauza před druhým a třetím pokusem
+const PAUZA_MEZI_KLUBY_MS = 800;       // ať to nevypadá jako nálet robota
+const MAX_NAHRAZENYCH = 3;             // víc nahrazených klubů = chyba, ať se na to přijde
+const pauza = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function stahni(url) {
   const r = await fetch(url, { headers: HLAVICKY, redirect: "follow", signal: AbortSignal.timeout(25000) });
   if (r.status !== 200) throw new Error(`HTTP ${r.status} pro ${url}`);
   return r.text();
+}
+// Jeden klub s opakováním: 403 od hokej.cz bývá jen chvilkové odmítnutí
+async function stahniOpakovane(url, stahniFn) {
+  const stahnout = stahniFn || stahni;
+  let posledni = null;
+  for (let pokus = 0; pokus < POKUSY; pokus++) {
+    try { return await stahnout(url); }
+    catch (e) {
+      posledni = e;
+      if (pokus < POKUSY - 1) {
+        const cekat = PAUZA_PO_CHYBE_S[pokus];
+        console.log(`   ${e.message} – zkouším znovu za ${cekat} s`);
+        await pauza(cekat * 1000);
+      }
+    }
+  }
+  throw posledni;
 }
 
 const entity = (s) => s.replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">");
@@ -127,16 +160,41 @@ function zapis(hraci, stazeno) {
   fs.writeFileSync(VYSTUP, obsah, "utf8");
 }
 
-(async () => {
+// Projde všechny kluby. Klub, který se nepodaří stáhnout, se vezme z minulé soupisky (a vypíše se).
+// stahniFn a pauzaFn jdou podstrčit v testu.
+async function soupiskyKlubu(stahniFn, stavajici, pauzaFn) {
+  const cekej = pauzaFn || pauza;
   const vsichni = [];
+  const nahrazene = [];
   for (const tym of EXTRALIGA.KONFIG.TYMY) {
     const url = "https://www.hokej.cz" + KLUBY[tym] + "/soupiska";
-    const html = await stahni(url);
-    const hr = parsujSoupisku(html, tym);
-    const sezona = (html.match(/Soupiska[^<]*?(\d{4}-\d{4})/) || [])[1] || "?";
-    console.log(`${tym}: ${hr.length} hráčů (B ${hr.filter((h) => h.p === "B").length}, O ${hr.filter((h) => h.p === "O").length}, U ${hr.filter((h) => h.p === "U").length}), sezóna ${sezona}`);
-    vsichni.push(...hr);
+    try {
+      const html = await stahniOpakovane(url, stahniFn);
+      const hr = parsujSoupisku(html, tym);
+      const sezona = (html.match(/Soupiska[^<]*?(\d{4}-\d{4})/) || [])[1] || "?";
+      console.log(`${tym}: ${hr.length} hráčů (B ${hr.filter((h) => h.p === "B").length}, O ${hr.filter((h) => h.p === "O").length}, U ${hr.filter((h) => h.p === "U").length}), sezóna ${sezona}`);
+      vsichni.push(...hr);
+    } catch (e) {
+      const stare = ((stavajici && stavajici.hraci) || []).filter((h) => h.t === tym);
+      if (!stare.length) throw new Error(`${tym}: ${e.message} a v souboru není minulá soupiska`);
+      console.log(`${tym}: nepodařilo se stáhnout (${e.message}) – beru minulou soupisku (${stare.length} hráčů)`);
+      nahrazene.push(tym);
+      vsichni.push(...stare);
+    }
+    await cekej(PAUZA_MEZI_KLUBY_MS);
   }
+  return { vsichni, nahrazene };
+}
+
+if (require.main === module) {
+(async () => {
+  const stavajici = nactiStavajici();
+  const { vsichni, nahrazene } = await soupiskyKlubu(null, stavajici);
+  if (nahrazene.length > MAX_NAHRAZENYCH) {
+    console.error(`Nepodařilo se stáhnout ${nahrazene.length} klubů (${nahrazene.join(", ")}) – soubor se nemění.`);
+    process.exit(1);
+  }
+  if (nahrazene.length) console.log(`Pozor: z minulé soupisky se bere ${nahrazene.length} klub(ů): ${nahrazene.join(", ")}.`);
   const chyby = zkontroluj(vsichni);
   console.log(`Celkem ${vsichni.length} hráčů.`);
   if (chyby.length) {
@@ -146,10 +204,13 @@ function zapis(hraci, stazeno) {
   if (rezim === "sonda") { console.log("Sonda: nic se neukládá."); return; }
 
   const nove = serad(vsichni);
-  const stavajici = nactiStavajici();
   const stejne = stavajici && Array.isArray(stavajici.hraci) && JSON.stringify(stavajici.hraci) === JSON.stringify(nove);
   if (stejne) { console.log("Soupisky beze změny, soubor zůstává."); return; }
   const dnes = new Date().toISOString().slice(0, 10);
   zapis(nove, dnes);
   console.log(`Uloženo do ${path.basename(VYSTUP)} (${nove.length} hráčů, ${dnes}).`);
 })().catch((e) => { console.error("Chyba: " + e.message); process.exit(1); });
+}
+
+// Načtení přes require (testy): jen funkce, nic se nestahuje ani neukládá
+module.exports = { soupiskyKlubu, parsujSoupisku, zkontroluj, serad, KLUBY, MAX_NAHRAZENYCH, POKUSY };
