@@ -1,10 +1,11 @@
 // Historie snímků tabulky pro graf vývoje (skripty/stahni_tabulku_extraligy.js → aktualizujHistorii):
-// nový bod přibude jen po odehraných zápasech, ve dnech bez zápasů se graf nemění.
+// nový bod přibude jen po odehraných zápasech, ve dnech bez zápasů se graf nemění. Navíc se kontroluje,
+// že zpožděný zdroj (Wikipedie) nepřepíše čerstvou tabulku z hokej.cz (zdrojJePozadu).
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const E = require('../extraliga_spolecne.js');
-const { aktualizujHistorii } = require('../skripty/stahni_tabulku_extraligy.js');
+const { aktualizujHistorii, zdrojJePozadu } = require('../skripty/stahni_tabulku_extraligy.js');
 const T = E.KONFIG.TYMY;
 
 let chyb = 0;
@@ -69,6 +70,25 @@ over(dnu().length === 2, 'tři dny bez zápasů nepřidají nic', dnu());
 const poPauze = poVecerni.map((r, i) => i === 7 ? [r[0], r[1] + 1, r[2] + 2] : r.slice());
 aktualizujHistorii(stav('2026-09-23', poPauze, statistiky), soubor);
 over(dnu().length === 3 && dnu()[2] === '2026-09-23', 'po přestávce přibude bod až s odehraným zápasem', dnu());
+
+// 9) zpožděný zdroj (Wikipedie po víkendu) nesmí historii vrátit zpátky
+const pozadu = poVecerni.map((r, i) => [r[0], Math.max(0, r[1] - 2), Math.max(0, r[2] - 4)]);
+aktualizujHistorii(stav('2026-09-24', pozadu, null), soubor);
+over(dnu().length === 3 && dnu()[2] === '2026-09-23', 'snímek pozadu za posledním se nepřidá', dnu());
+over(cti().snimky[2].poradi[0].zapasy === poPauze[0][1], 'poslední snímek zůstal nedotčený', cti().snimky[2].poradi[0]);
+
+// ---------- ochrana zdroje tabulky ----------
+const tabulka = (zapasu, statistiky) => {
+  const s = { poradi: T.map((t, i) => ({ tym: t, zapasy: zapasu, body: 20 - i })) };
+  if (statistiky) s.statistiky = { [T[0]]: { goly: 10, obdrzene: 5, presilovky: 2, tresty: 20 } };
+  return s;
+};
+over(zdrojJePozadu(tabulka(5, true), null) === null, 'bez uloženého snímku se bere cokoli');
+over(zdrojJePozadu(tabulka(6, true), tabulka(5, true)) === null, 'novější tabulka projde');
+over(zdrojJePozadu(tabulka(5, true), tabulka(5, true)) === null, 'stejná tabulka se statistikami projde');
+over(/jen 3|odehraných/.test(zdrojJePozadu(tabulka(3, false), tabulka(5, true)) || ''), 'zdroj s méně zápasy se zahodí', zdrojJePozadu(tabulka(3, false), tabulka(5, true)));
+over(/statistiky/.test(zdrojJePozadu(tabulka(5, false), tabulka(5, true)) || ''), 'zdroj bez statistik nepřepíše snímek se statistikami', zdrojJePozadu(tabulka(5, false), tabulka(5, true)));
+over(zdrojJePozadu(tabulka(5, false), tabulka(5, false)) === null, 'bez statistik na obou stranách je to v pořádku');
 
 fs.rmSync(path.dirname(soubor), { recursive: true, force: true });
 console.log(chyb ? (chyb + ' kontrol selhalo.') : 'Historie: všechny kontroly prošly.');

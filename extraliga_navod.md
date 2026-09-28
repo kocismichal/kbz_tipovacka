@@ -172,6 +172,9 @@ a teprve pak začne kontrolovat po pěti minutách.
   a nic neukládá.
 - Kdyby hokej.cz změnil vzhled stránky a parser přestal tabulku poznávat, workflow skončí chybou (přijde
   e-mail) a web zůstane na ručním zápisu – nic se nerozbije.
+- **Záloha nikdy nepřepíše čerstvější tabulku.** Když se k hokej.cz nedá dostat (umí robotovi na GitHubu
+  vrátit chybu 403) a Wikipedie je pozadu, skript to pozná podle počtu odehraných zápasů, starší tabulku
+  zahodí a nechá v repu tu, co už tam je. Každá adresa se navíc zkouší třikrát.
 
 ## 7. Zápasy a výsledky
 
