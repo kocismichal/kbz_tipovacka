@@ -599,3 +599,9 @@ body.extraliga .zapasy-prazdno { color: var(--text-muted); font-style: italic; p
     body.extraliga .zapas-tym > span { font-size: 0.85rem; white-space: normal; overflow: visible; line-height: 1.2; }
     body.extraliga .zapas-tym img { width: 20px; height: 20px; }
 }
+/* Nejužší telefony: i "České Budějovice" se musí vejít do sloupce */
+@media (max-width: 420px) {
+    body.extraliga .zapas-tym { gap: 5px; }
+    body.extraliga .zapas-tym > span { font-size: 0.8rem; overflow-wrap: anywhere; }
+    body.extraliga .zapas-tym img { width: 18px; height: 18px; }
+}

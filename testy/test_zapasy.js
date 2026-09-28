@@ -210,6 +210,22 @@ const zapasyJson = { sezona: '2026/27', aktualizovano: '2026-09-27T18:36:00Z', z
   await page.waitForTimeout(200);
   await page.screenshot({ path: path.join(__dirname, 'vystup', 'zapasy_mobil.png'), fullPage: false });
 
+  // nejužší telefon a dlouhá jména klubů v programu
+  await page.setViewportSize({ width: 360, height: 780 });
+  await page.evaluate(() => {
+    const dlouha = zapasyData.zapasy.map((z, i) => Object.assign({}, z, { odehrany: false, domaci: 'České Budějovice', hoste: 'Mountfield HK', cas: '18:00', domaci_goly: null }));
+    zapasyData = Object.assign({}, zapasyData, { zapasy: dlouha });
+    zmenZapasy('program');
+  });
+  await page.waitForTimeout(300);
+  const uzky = await page.evaluate(() => {
+    const box = document.getElementById('zapasy-seznam');
+    return { preteka: box.scrollWidth - box.clientWidth, stranka: document.documentElement.scrollWidth - window.innerWidth,
+      radku: box.querySelectorAll('.zapas-radek').length };
+  });
+  over(uzky.preteka <= 0 && uzky.stranka <= 0, 'i dlouhé názvy klubů se na nejužším telefonu vejdou', uzky);
+  await page.evaluate(() => { zapasyData = zapasyPuvodni; zmenZapasy('odehrane'); });
+
   over(errors.length === 0, 'stránka je bez chyb v konzoli', errors);
   await browser.close();
   console.log(chyb ? (chyb + ' kontrol selhalo.') : 'Odehrané zápasy: všechny kontroly prošly.');
