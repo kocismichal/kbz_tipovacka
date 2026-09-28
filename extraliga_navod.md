@@ -173,16 +173,19 @@ a teprve pak začne kontrolovat po pěti minutách.
 - Kdyby hokej.cz změnil vzhled stránky a parser přestal tabulku poznávat, workflow skončí chybou (přijde
   e-mail) a web zůstane na ručním zápisu – nic se nerozbije.
 
-## 7. Odehrané zápasy s výsledky
+## 7. Zápasy a výsledky
 
-V přehledu 26/27 je pod tabulkou pořadí řádek **„Odehrané zápasy a výsledky“**. Je schovaný, takže stránku
-nezahltí; po kliknutí se rozbalí seznam všech odehraných zápasů sezóny – od posledního hracího dne nazpátek,
-u každého zápasu kolo, oba týmy s logem, skóre a výsledky třetin. Vítěz je tučně, `pp` znamená po prodloužení,
-`sn` po samostatných nájezdech. Kliknutím na skóre se otevře detail zápasu na hokej.cz.
+V přehledu 26/27 je pod tabulkou pořadí řádek **„Zápasy a výsledky“**. Je schovaný, takže stránku nezahltí;
+po kliknutí se rozbalí seznam se dvěma záložkami:
 
-Seznam plní stejná automatika jako tabulku (soubor `2627_extraliga_zapasy.json`), takže se doplňuje sám
-během hracího večera. Data se stahují teprve ve chvíli, kdy někdo seznam rozklikne – kdo na něj neklikne,
-nic navíc nenačítá.
+- **Odehrané** – všechny odehrané zápasy sezóny od posledního hracího dne nazpátek. U každého kolo, oba týmy
+  s logem, skóre a výsledky třetin. Vítěz je tučně, `pp` znamená po prodloužení, `sn` po samostatných
+  nájezdech, kliknutím na skóre se otevře detail zápasu na hokej.cz.
+- **Program** – zápasy, které se teprve hrají, od nejbližšího dál, s datem a časem začátku.
+
+Seznam plní stejná automatika jako tabulku (soubor `2627_extraliga_zapasy.json` s celým rozpisem sezóny),
+takže se výsledky doplňují samy během hracího večera. Data se stahují teprve ve chvíli, kdy někdo seznam
+rozklikne – kdo na něj neklikne, nic navíc nenačítá.
 
 ## 8. Našeptávač jmen hráčů
 

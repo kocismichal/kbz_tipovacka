@@ -4,8 +4,8 @@
  * (pořadí, odehrané zápasy a body každého týmu; z hokej.cz i statistiky týmů: vstřelené góly,
  * góly v přesilovkách a trestné minuty – z nich web průběžně vyhodnocuje čtyři týmové otázky).
  * Každý nový stav tabulky se navíc přidá do 2627_extraliga_historie.json (graf vývoje na webu)
- * a ze stránky všech kol se uloží seznam odehraných zápasů s výsledky do 2627_extraliga_zapasy.json
- * (web ho ukazuje po rozkliknutí v panelu aktuálního stavu). Spouští ho GitHub Actions
+ * a ze stránky všech kol se uloží celý program sezóny do 2627_extraliga_zapasy.json – odehrané zápasy
+ * s výsledky i ty, které se teprve hrají (web je ukazuje po rozkliknutí v panelu aktuálního stavu). Spouští ho GitHub Actions
  * (.github/workflows/extraliga_tabulka.yml) každé ráno – web i Apps Script pak berou pořadí a body
  * týmů z tohoto souboru, bonusové odpovědi zůstávají v listu "Přehled HOTOVO".
  *
@@ -226,9 +226,12 @@ async function sonda() {
     try {
       const rz = await stahni(VSECHNA_KOLA_URL);
       const zapasy = zapasyZHtml(rz.text);
-      console.log("==================== odehrané zápasy ====================");
-      console.log(VSECHNA_KOLA_URL + " | odehraných " + zapasy.length + (zapasy.length ? ", poslední kolo " + zapasy[zapasy.length - 1].kolo : ""));
-      zapasy.slice(-6).forEach((z) => console.log("   " + z.datum + " " + z.kolo + ". kolo  " + z.domaci + " " + z.domaci_goly + ":" + z.hoste_goly + " " + z.hoste + (z.konec ? " " + z.konec : "") + "  (" + z.tretiny + ")"));
+      const odehranych = zapasy.filter((x) => x.odehrany);
+      console.log("==================== zápasy ====================");
+      console.log(VSECHNA_KOLA_URL + " | celkem " + zapasy.length + ", odehraných " + odehranych.length
+        + (odehranych.length ? ", poslední kolo " + odehranych[odehranych.length - 1].kolo : ""));
+      odehranych.slice(-4).forEach((z) => console.log("   " + z.datum + " " + z.kolo + ". kolo  " + z.domaci + " " + z.domaci_goly + ":" + z.hoste_goly + " " + z.hoste + (z.konec ? " " + z.konec : "") + "  (" + z.tretiny + ")"));
+      zapasy.filter((x) => !x.odehrany).slice(0, 4).forEach((z) => console.log("   " + z.datum + " " + z.cas + "  " + z.kolo + ". kolo  " + z.domaci + " - " + z.hoste + "  (na programu)"));
     } catch (e) { console.log("Seznam zápasů se nepodařilo stáhnout: " + e.message); }
     if (rozhodnuti.dnesni.length) console.log("Dnes už mělo skončit: " + melySkoncit(rozhodnuti.dnesni, ted) + " zápasů; odehráno před dneškem podle historie: " + odehranoPredDneskem(ted));
   } catch (e) {
@@ -311,10 +314,16 @@ function rokPodleSezony(mesic) {
   const prvni = m ? Number(m[1]) : new Date().getFullYear();
   return mesic >= 8 ? prvni : prvni + 1;
 }
-// Odehrané zápasy ze stránky všech kol: před každou tabulkou je <h2>N. kolo</h2>, v řádku
-// <tr data-href="/zapas/ID"> jsou jména týmů, dvě buňky preview__score s góly a v preview__period
-// datum se třetinami, např. "(0:1, 2:1, 2:3)", po prodloužení "(… ) - 0:1", po nájezdech "… - 0:0 - 1:0".
-// Neodehraný zápas místo skóre ukazuje jen datum a čas (preview__center), ten se přeskočí.
+// "15", "9" → "2026-09-15" podle ročníku sezóny
+function datumSezony(den, mesic) {
+  const m = Number(mesic);
+  return rokPodleSezony(m) + "-" + String(m).padStart(2, "0") + "-" + String(Number(den)).padStart(2, "0");
+}
+// Zápasy ze stránky všech kol: před každou tabulkou je <h2>N. kolo</h2>, v řádku <tr data-href="/zapas/ID">
+// jsou jména týmů a podle toho, jestli se zápas hrál:
+//   odehraný   – dvě buňky preview__score s góly a v preview__period datum se třetinami "(0:1, 2:1, 2:3)";
+//                po prodloužení je za nimi " - 0:1", po nájezdech ještě " - 1:0",
+//   na programu – místo skóre buňka preview__center se dnem, datem a časem ("ST", "13. 01.", "18:00").
 function zapasyZHtml(html) {
   const zapasy = [];
   const casti = html.split(/<h2[^>]*>\s*(\d+)\.\s*kolo\s*<\/h2>/i);
@@ -322,31 +331,48 @@ function zapasyZHtml(html) {
     const kolo = Number(casti[i]);
     const radky = casti[i + 1].match(/<tr data-href="\/zapas\/\d+"[\s\S]*?<\/tr>/g) || [];
     for (const r of radky) {
-      const skore = [...r.matchAll(/<td class="preview__score[^"]*"[^>]*>([\s\S]*?)<\/td>/g)]
-        .map((m) => odstranTagy(m[1])).filter((x) => /^\d+$/.test(x));
-      if (skore.length !== 2) continue;                       // zápas se ještě nehrál
       const jmena = [...r.matchAll(/preview__name--long">([^<]+)</g)].map((m) => poznejTym(m[1]) || odstranTagy(m[1]));
       if (jmena.length !== 2) continue;
-      const den = (r.match(/match-start-time">\s*[^\d<]*(\d{1,2})\.\s*(\d{1,2})\./) || []);
-      if (!den[1]) continue;
-      const mesic = Number(den[2]);
-      const datum = rokPodleSezony(mesic) + "-" + String(mesic).padStart(2, "0") + "-" + String(Number(den[1])).padStart(2, "0");
-      const uvnitr = (r.match(/<span>\(([^)]+)\)<\/span>/) || [])[1] || "";
-      const useky = uvnitr.split(/\s+-\s+/).map((x) => x.trim()).filter(Boolean);
-      zapasy.push({
-        id: (r.match(/\/zapas\/(\d+)/) || [])[1],
-        kolo,
-        datum,
-        domaci: jmena[0],
-        hoste: jmena[1],
-        domaci_goly: Number(skore[0]),
-        hoste_goly: Number(skore[1]),
-        tretiny: useky[0] || "",
-        konec: useky.length >= 3 ? "sn" : (useky.length === 2 ? "pp" : "")
-      });
+      const zaklad = { id: (r.match(/\/zapas\/(\d+)/) || [])[1], kolo, domaci: jmena[0], hoste: jmena[1] };
+      const skore = [...r.matchAll(/<td class="preview__score[^"]*"[^>]*>([\s\S]*?)<\/td>/g)]
+        .map((m) => odstranTagy(m[1])).filter((x) => /^\d+$/.test(x));
+
+      if (skore.length === 2) {                                  // odehraný zápas
+        const den = (r.match(/match-start-time">\s*[^\d<]*(\d{1,2})\.\s*(\d{1,2})\./) || []);
+        if (!den[1]) continue;
+        const uvnitr = (r.match(/<span>\(([^)]+)\)<\/span>/) || [])[1] || "";
+        const useky = uvnitr.split(/\s+-\s+/).map((x) => x.trim()).filter(Boolean);
+        zapasy.push(Object.assign(zaklad, {
+          datum: datumSezony(den[1], den[2]),
+          cas: "",
+          odehrany: true,
+          domaci_goly: Number(skore[0]),
+          hoste_goly: Number(skore[1]),
+          tretiny: useky[0] || "",
+          konec: useky.length >= 3 ? "sn" : (useky.length === 2 ? "pp" : "")
+        }));
+        continue;
+      }
+
+      // zápas na programu: den, datum a čas jsou ve třech buňkách preview__center (ta je v HTML dvakrát – mobil a desktop)
+      const stred = (r.match(/<td class="preview__center[^"]*"[^>]*>([\s\S]*?)<\/td>/) || [])[1];
+      if (!stred) continue;
+      const text = odstranTagy(stred);
+      const den = text.match(/(\d{1,2})\.\s*(\d{1,2})\./);
+      if (!den) continue;
+      const cas = (text.match(/(\d{1,2}):(\d{2})/) || []);
+      zapasy.push(Object.assign(zaklad, {
+        datum: datumSezony(den[1], den[2]),
+        cas: cas[1] ? String(Number(cas[1])).padStart(2, "0") + ":" + cas[2] : "",
+        odehrany: false,
+        domaci_goly: null,
+        hoste_goly: null,
+        tretiny: "",
+        konec: ""
+      }));
     }
   }
-  return zapasy.sort((a, b) => (a.datum < b.datum ? -1 : a.datum > b.datum ? 1 : Number(a.id) - Number(b.id)));
+  return zapasy.sort((a, b) => (a.datum < b.datum ? -1 : a.datum > b.datum ? 1 : (a.cas < b.cas ? -1 : a.cas > b.cas ? 1 : Number(a.id) - Number(b.id))));
 }
 
 // Stáhne a uloží seznam odehraných zápasů. Když se to nepovede nebo by seznam nečekaně zkrátil,
@@ -358,17 +384,20 @@ async function ulozZapasy() {
     const r = await stahni(VSECHNA_KOLA_URL);
     if (r.status !== 200) throw new Error("HTTP " + r.status);
     const zapasy = zapasyZHtml(r.text);
+    const odehrane = (z) => (z || []).filter((x) => x.odehrany).length;
     const bylo = stary && Array.isArray(stary.zapasy) ? stary.zapasy.length : 0;
-    if (zapasy.length === 0 && bylo > 0) throw new Error("stránka nevrátila žádný odehraný zápas");
+    const byloOdehranych = stary && Array.isArray(stary.zapasy) ? odehrane(stary.zapasy) : 0;
+    if (zapasy.length === 0) throw new Error("stránka nevrátila žádný zápas");
     if (zapasy.length < bylo) throw new Error("zápasů by ubylo (" + bylo + " → " + zapasy.length + ")");
+    if (odehrane(zapasy) < byloOdehranych) throw new Error("odehraných zápasů by ubylo (" + byloOdehranych + " → " + odehrane(zapasy) + ")");
     const novy = { sezona: EXTRALIGA.KONFIG.SEZONA, aktualizovano: new Date().toISOString(), zdroj: "hokej.cz", zapasy };
     if (stary && JSON.stringify(stary.zapasy) === JSON.stringify(zapasy)) {
-      console.log("Zápasy: beze změny (" + zapasy.length + " odehraných).");
+      console.log("Zápasy: beze změny (" + odehrane(zapasy) + " odehraných z " + zapasy.length + ").");
       return zapasy.length;
     }
     fs.writeFileSync(ZAPASY, JSON.stringify(novy, null, 2) + "\n");
-    console.log("Zápasy: uloženo " + path.basename(ZAPASY) + " – " + zapasy.length + " odehraných"
-      + (bylo ? " (+" + (zapasy.length - bylo) + " od minula)" : "") + ".");
+    console.log("Zápasy: uloženo " + path.basename(ZAPASY) + " – " + odehrane(zapasy) + " odehraných z " + zapasy.length
+      + (byloOdehranych ? " (+" + (odehrane(zapasy) - byloOdehranych) + " od minula)" : "") + ".");
     return zapasy.length;
   } catch (e) {
     console.log("Zápasy: seznam se nepodařilo stáhnout (" + e.message + ") – starý soubor zůstává.");

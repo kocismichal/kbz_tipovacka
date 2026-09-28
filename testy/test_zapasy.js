@@ -1,5 +1,5 @@
-// Odehrané zápasy s výsledky: parser stránky všech kol (skripty/stahni_tabulku_extraligy.js)
-// a rozbalovací seznam v přehledu 26/27 – načte se teprve po rozkliknutí.
+// Zápasy sezóny: parser stránky všech kol (skripty/stahni_tabulku_extraligy.js) – odehrané s výsledky
+// i ty na programu – a rozbalovací seznam v přehledu 26/27 se záložkami, který se načte až po rozkliknutí.
 const { chromium } = require('playwright');
 const fs = require('fs'); const path = require('path');
 const E = require('../extraliga_spolecne.js');
@@ -43,7 +43,13 @@ const html = `<h2 class="m-t-30">1. kolo</h2><table class="preview"><tbody>
 </tbody></table>`;
 
 const z = S.zapasyZHtml(html);
-over(z.length === 5, 'parser vezme jen odehrané zápasy (budoucí přeskočí)', z.length);
+over(z.length === 6, 'parser vezme odehrané i budoucí zápasy', z.length);
+over(z.filter(x => x.odehrany).length === 5, 'odehrané zápasy jsou označené', z.filter(x => x.odehrany).length);
+const budouciZ = z.find(x => !x.odehrany);
+over(budouciZ && budouciZ.datum === '2027-01-13' && budouciZ.cas === '18:00' && budouciZ.kolo === 2,
+  'zápas na programu má datum, čas i své kolo', budouciZ);
+over(budouciZ && budouciZ.domaci === 'Liberec' && budouciZ.hoste === 'Vítkovice' && budouciZ.domaci_goly === null && budouciZ.tretiny === '',
+  'zápas na programu je bez skóre', budouciZ);
 const trinec = z.find(x => x.domaci === 'Třinec');
 over(trinec && trinec.kolo === 1 && trinec.datum === '2026-09-16' && trinec.domaci_goly === 6 && trinec.hoste_goly === 5,
   'základní zápas: kolo, datum, skóre', trinec);
@@ -94,7 +100,7 @@ const zapasyJson = { sezona: '2026/27', aktualizovano: '2026-09-27T18:36:00Z', z
     return { open: d.open, summary: d.querySelector('summary').innerText.replace(/\s+/g, ' ').trim(), radky: d.querySelectorAll('.zapas-radek').length };
   });
   over(zavreno.open === false, 'seznam je po načtení zavřený', zavreno);
-  over(/Odehrané zápasy a výsledky/i.test(zavreno.summary) && /\(35\)/.test(zavreno.summary), 'v nadpisu je počet zápasů z tabulky', zavreno.summary);
+  over(/Zápasy a výsledky/i.test(zavreno.summary) && /odehráno 35/.test(zavreno.summary), 'v nadpisu je počet odehraných z tabulky', zavreno.summary);
   over(stahnutoZapasu === 0, 'dokud se neklikne, soubor se zápasy se nestahuje', stahnutoZapasu);
   over(zavreno.radky === 0, 'zavřený seznam nemá vykreslené zápasy', zavreno.radky);
 
@@ -109,15 +115,17 @@ const zapasyJson = { sezona: '2026/27', aktualizovano: '2026-09-27T18:36:00Z', z
     }));
     return {
       summary: d.querySelector('summary').innerText.replace(/\s+/g, ' ').trim(),
+      zalozky: [...d.querySelectorAll('.zapasy-tabs .tab-btn')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).join(' | '),
       dny: [...d.querySelectorAll('.zapasy-den')].map(e => e.textContent),
       radky,
       zdroj: (d.querySelector('.zapasy-zdroj') || {}).innerText || '',
       sirka: d.querySelector('.zapas-radek').getBoundingClientRect().width
     };
   });
-  over(otevreno.radky.length === 5, 'po rozkliknutí se vykreslí všechny odehrané zápasy', otevreno.radky.length);
+  over(otevreno.radky.length === 5, 'po rozkliknutí se vykreslí odehrané zápasy', otevreno.radky.length);
   over(stahnutoZapasu === 1, 'soubor se zápasy se stáhne jen jednou', stahnutoZapasu);
-  over(/\(5\)/.test(otevreno.summary), 'počet v nadpisu se po načtení srovná se seznamem', otevreno.summary);
+  over(/odehráno 5 z 6/.test(otevreno.summary), 'počet v nadpisu se po načtení srovná se seznamem', otevreno.summary);
+  over(/odehrané \(5\)/i.test(otevreno.zalozky) && /program \(1\)/i.test(otevreno.zalozky), 'jsou vidět obě záložky s počty', otevreno.zalozky);
   over(otevreno.dny[0] === 'Út 26. 1.' && otevreno.dny[otevreno.dny.length - 1] === 'St 16. 9.',
     'hrací dny jsou od nejnovějšího s českým názvem dne', otevreno.dny);
   const prvni = otevreno.radky[0].text;
@@ -134,6 +142,29 @@ const zapasyJson = { sezona: '2026/27', aktualizovano: '2026-09-27T18:36:00Z', z
   await page.evaluate(() => document.getElementById('zapasy-rozbal').scrollIntoView({ block: 'center' }));
   await page.waitForTimeout(200);
   await page.screenshot({ path: path.join(__dirname, 'vystup', 'zapasy_desktop.png'), fullPage: false });
+
+  // záložka Program: zápasy, které se teprve hrají, s časem začátku
+  await page.click('#btn-zapasy-program');
+  await page.waitForTimeout(200);
+  const program = await page.evaluate(() => {
+    const d = document.getElementById('zapasy-rozbal');
+    return {
+      radky: [...d.querySelectorAll('.zapas-radek')].map(r => r.innerText.replace(/\s+/g, ' ').trim()),
+      dny: [...d.querySelectorAll('.zapasy-den')].map(e => e.textContent),
+      cas: [...d.querySelectorAll('.zapas-cas')].map(e => e.textContent),
+      skore: d.querySelectorAll('.zapas-skore').length,
+      aktivni: (d.querySelector('.zapasy-tabs .tab-btn.active') || {}).id || ''
+    };
+  });
+  over(program.aktivni === 'btn-zapasy-program', 'kliknutí přepne záložku na program', program.aktivni);
+  over(program.radky.length === 1 && /2\. kolo/.test(program.radky[0]) && /Liberec/.test(program.radky[0]) && /Vítkovice/.test(program.radky[0]),
+    'program ukazuje zápas, který se teprve hraje', program.radky);
+  over(program.cas.length === 1 && program.cas[0] === '18:00', 'u zápasu na programu je čas začátku', program.cas);
+  over(program.skore === 0 && program.dny[0] === 'St 13. 1.', 'program je bez skóre a s datem zápasu', program);
+  await page.click('#btn-zapasy-odehrane');
+  await page.waitForTimeout(200);
+  const zpet = await page.evaluate(() => document.querySelectorAll('#zapasy-obsah .zapas-radek').length);
+  over(zpet === 5, 'zpátky na odehrané zápasy', zpet);
 
   // mobil: řádek se nesmí roztáhnout mimo obrazovku
   await page.setViewportSize({ width: 390, height: 844 });

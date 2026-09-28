@@ -507,6 +507,9 @@ body.extraliga .zapasy-rozbal > summary .pocet {
     font-family: 'Inter', sans-serif; text-transform: none; letter-spacing: 0; color: var(--text-muted);
 }
 body.extraliga .zapasy-obsah { padding: 0 14px 12px 14px; }
+body.extraliga .zapasy-tabs { margin: 4px 0 0 0; justify-content: flex-start; }
+body.extraliga .zapasy-tabs .tab-btn { font-size: 0.8rem; padding: 6px 14px; }
+body.extraliga #zapasy-seznam { max-height: 62vh; overflow-y: auto; }
 body.extraliga .zapasy-den {
     font-family: 'Oswald', sans-serif;
     text-transform: uppercase;
@@ -535,6 +538,7 @@ body.extraliga .zapas-tym img { width: 22px; height: 22px; object-fit: contain; 
 body.extraliga .zapas-tym > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 body.extraliga .zapas-vitez { font-weight: 700; }
 body.extraliga .zapas-skore { font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+body.extraliga .zapas-cas { font-weight: 600; color: var(--text-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 body.extraliga .zapas-skore a { color: var(--navy); text-decoration: none; border-bottom: 1px dotted var(--border-color); }
 body.extraliga .zapas-skore a:hover { color: var(--accent-primary); }
 body.extraliga .zapas-skore .znacka { font-size: 0.72rem; font-weight: 600; color: var(--accent-primary); margin-left: 3px; }
