@@ -524,7 +524,23 @@ body.extraliga .zapasy-obsah {
 }
 body.extraliga .zapasy-tabs { margin: 4px 0 0 0; justify-content: flex-start; }
 body.extraliga .zapasy-tabs .tab-btn { font-size: 0.8rem; padding: 6px 14px; }
-body.extraliga #zapasy-seznam { max-height: 62vh; overflow-y: auto; }
+body.extraliga .pocet-kratky { display: none; }
+body.extraliga .zapasy-vic {
+    display: block;
+    width: 100%;
+    margin: 10px 0 2px 0;
+    padding: 9px 12px;
+    border: 1px dashed var(--accent-primary);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--accent-primary);
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+body.extraliga .zapasy-vic:hover { background: rgba(200, 16, 46, 0.07); }
 body.extraliga .zapasy-den {
     font-family: 'Oswald', sans-serif;
     text-transform: uppercase;
@@ -561,8 +577,13 @@ body.extraliga .zapas-tretiny { color: var(--text-muted); font-size: 0.78rem; te
 body.extraliga .zapasy-zdroj { color: var(--text-muted); font-size: 0.78rem; margin-top: 10px; }
 body.extraliga .zapasy-prazdno { color: var(--text-muted); font-style: italic; padding: 6px 0; }
 @media (max-width: 760px) {
-    body.extraliga .zapasy-rozbal > summary { padding: 11px 14px; font-size: 0.85rem; letter-spacing: 1px; }
+    body.extraliga .zapasy-rozbal > summary { padding: 11px 13px; font-size: 0.8rem; letter-spacing: 0.5px; gap: 8px; }
+    body.extraliga .zapasy-nadpis { gap: 7px; }
+    body.extraliga .zapasy-rozbal > summary .pocet { font-size: 0.78rem; }
+    body.extraliga .pocet-dlouhy { display: none; }
+    body.extraliga .pocet-kratky { display: inline; }
     body.extraliga .zapasy-vyzva { display: none; }
+    body.extraliga .zapasy-obsah { padding: 0 10px 12px 10px; }
     body.extraliga .zapas-radek {
         grid-template-columns: 1fr auto 1fr;
         grid-template-areas: "kolo kolo tretiny" "domaci skore hoste";

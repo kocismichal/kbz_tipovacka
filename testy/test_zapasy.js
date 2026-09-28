@@ -106,6 +106,7 @@ const zapasyJson = { sezona: '2026/27', aktualizovano: '2026-09-27T18:36:00Z', z
 
   await page.click('#zapasy-rozbal > summary');
   await page.waitForFunction(() => document.querySelectorAll('#zapasy-obsah .zapas-radek').length > 0, { timeout: 10000 });
+  await page.evaluate(() => { window.zapasyPuvodni = zapasyData; });
   const otevreno = await page.evaluate(() => {
     const d = document.getElementById('zapasy-rozbal');
     const radky = [...d.querySelectorAll('.zapas-radek')].map(r => ({
@@ -165,15 +166,46 @@ const zapasyJson = { sezona: '2026/27', aktualizovano: '2026-09-27T18:36:00Z', z
   await page.waitForTimeout(200);
   const zpet = await page.evaluate(() => document.querySelectorAll('#zapasy-obsah .zapas-radek').length);
   over(zpet === 5, 'zpátky na odehrané zápasy', zpet);
+  over(await page.evaluate(() => !document.querySelector('.zapasy-vic')), 'krátký seznam je rovnou celý, bez tlačítka');
+
+  // dlouhý seznam se ukáže po částech, ať dlouhý program nezahltí stránku
+  const dlouhy = await page.evaluate(() => {
+    const vzor = zapasyData.zapasy.find(z => z.odehrany);
+    const navic = [];
+    for (let i = 0; i < 40; i++) navic.push(Object.assign({}, vzor, { id: String(900000 + i), datum: '2026-1' + (i % 2) + '-0' + (1 + (i % 9)) }));
+    zapasyData = Object.assign({}, zapasyData, { zapasy: navic });
+    vykresliZapasy();
+    const t = document.querySelector('.zapasy-vic');
+    return { radku: document.querySelectorAll('#zapasy-seznam .zapas-radek').length, tlacitko: t ? t.innerText.replace(/\s+/g, ' ').trim() : '' };
+  });
+  over(dlouhy.radku === 25 && /40/.test(dlouhy.tlacitko), 'dlouhý seznam se ukáže po prvních 25 s tlačítkem na zbytek', dlouhy);
+  await page.click('.zapasy-vic');
+  await page.waitForTimeout(200);
+  const celyDlouhy = await page.evaluate(() => ({ radku: document.querySelectorAll('#zapasy-seznam .zapas-radek').length, tlacitko: !!document.querySelector('.zapasy-vic'), posuvnik: (() => { const b = document.getElementById('zapasy-seznam'); return b.scrollHeight > b.clientHeight + 2; })() }));
+  over(celyDlouhy.radku === 40 && !celyDlouhy.tlacitko, 'po kliknutí se ukáže celý seznam', celyDlouhy);
+  over(celyDlouhy.posuvnik === false, 'seznam nemá vlastní posuvník (stránka se posouvá normálně)', celyDlouhy);
+  await page.evaluate(() => { zapasyData = zapasyPuvodni; zapasyVse = { odehrane: false, program: false }; vykresliZapasy(); });
 
   // mobil: řádek se nesmí roztáhnout mimo obrazovku
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(300);
   const mobil = await page.evaluate(() => {
     const r = document.querySelector('#zapasy-obsah .zapas-radek');
-    return { sirka: Math.round(r.getBoundingClientRect().width), telo: document.documentElement.scrollWidth, okno: window.innerWidth };
+    const sum = document.querySelector('#zapasy-rozbal > summary');
+    const seznam = document.getElementById('zapasy-seznam');
+    const viditelny = (e) => e && getComputedStyle(e).display !== 'none';
+    return {
+      sirka: Math.round(r.getBoundingClientRect().width), telo: document.documentElement.scrollWidth, okno: window.innerWidth,
+      vyskaPruhu: Math.round(sum.getBoundingClientRect().height),
+      pocetKratky: viditelny(document.querySelector('.pocet-kratky')), pocetDlouhy: viditelny(document.querySelector('.pocet-dlouhy')),
+      vyzva: viditelny(document.querySelector('.zapasy-vyzva')),
+      pretekaSeznam: seznam.scrollWidth - seznam.clientWidth
+    };
   });
   over(mobil.telo <= mobil.okno + 1, 'na mobilu se stránka neroztahuje do šířky', mobil);
+  over(mobil.pretekaSeznam <= 0, 'seznam se na mobilu vejde do šířky', mobil.pretekaSeznam);
+  over(mobil.vyskaPruhu <= 52, 'nadpis v pruhu se na mobilu vejde na jeden řádek', mobil.vyskaPruhu);
+  over(mobil.pocetKratky === true && mobil.pocetDlouhy === false && mobil.vyzva === false, 'na mobilu je zkrácený počet a bez výzvy', mobil);
   await page.evaluate(() => document.getElementById('zapasy-rozbal').scrollIntoView({ block: 'start' }));
   await page.waitForTimeout(200);
   await page.screenshot({ path: path.join(__dirname, 'vystup', 'zapasy_mobil.png'), fullPage: false });
