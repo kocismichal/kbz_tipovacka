@@ -24,7 +24,7 @@ mergne do `main` a ověří nasazení (viz Pracovní postup).
 | `extraliga_apps_script.gs` | Kód Google Apps Scriptu (doPost ukládá tip, doGet vrací data listů, `doplnHlavicky`, `vypisBodovaniDoProtokolu`). |
 | `extraliga_apps_script_komplet.gs` | **Generovaný** bundle = `skripty/apps_script_hlavicka.gs` + `extraliga_spolecne.js` + `extraliga_apps_script.gs`. Po změně zdrojů spusť `node skripty/sestav_apps_script.js` (test `test_bundle.js` to hlídá). |
 | `extraliga_zavadec.gs` | Jediný soubor v projektu Apps Scriptu u majitele: stahuje bundle z `main` (cache 5 min, záloha v PropertiesService). Změna v repu se v tabulce projeví sama, nic se nekopíruje. |
-| `skripty/stahni_tabulku_extraligy.js` + `.github/workflows/extraliga_tabulka.yml` | Automatická tabulka: stáhne pořadí, body a statistiky týmů (góly, góly v přesilovkách, trestné minuty ze sloupců Skóre/GPř/T široké tabulky) z hokej.cz (záloha cs.wikipedia bez statistik), zkontroluje a uloží `2627_extraliga_stav.json`; po odehraných zápasech přidá snímek do `2627_extraliga_historie.json` (graf) a ze stránky všech kol uloží odehrané zápasy s výsledky do `2627_extraliga_zapasy.json` – ve dnech bez zápasů se bod nepřidává, jen se případně aktualizuje poslední snímek. Workflow má dva joby: `tabulka` (ráno 4:30 UTC a ruční spuštění, vždy `--vzdy`) a `hlidani` (crony 12:00 a 15:00 UTC, dva pokusy kvůli zdržení GitHubu, souběh hlídá `concurrency`), který skript pouští ve smyčce po 5 minutách, dokud nejsou dnešní zápasy v tabulce, a každou změnu hned commitne; 5,5hodinový rozpočet se počítá až od prvních krátkých kontrol, čekání na výkop ho nesnídá. Funkce jdou načíst i přes `require` (testy `test_historie.js`, `test_program.js`, `test_zapasy.js`). |
+| `skripty/stahni_tabulku_extraligy.js` + `.github/workflows/extraliga_tabulka.yml` | Automatická tabulka: stáhne pořadí, body a statistiky týmů (góly, góly v přesilovkách, trestné minuty ze sloupců Skóre/GPř/T široké tabulky) z hokej.cz (záloha cs.wikipedia bez statistik), zkontroluje a uloží `2627_extraliga_stav.json`; po odehraných zápasech přidá snímek do `2627_extraliga_historie.json` (graf) a ze stránky všech kol uloží celý program sezóny do `2627_extraliga_zapasy.json` (odehrané i budoucí zápasy) – ve dnech bez zápasů se bod nepřidává, jen se případně aktualizuje poslední snímek. Workflow má dva joby: `tabulka` (ráno 4:30 UTC a ruční spuštění, vždy `--vzdy`) a `hlidani` (crony 12:00 a 15:00 UTC, dva pokusy kvůli zdržení GitHubu, souběh hlídá `concurrency`), který skript pouští ve smyčce po 5 minutách, dokud nejsou dnešní zápasy v tabulce, a každou změnu hned commitne; 5,5hodinový rozpočet se počítá až od prvních krátkých kontrol, čekání na výkop ho nesnídá. Funkce jdou načíst i přes `require` (testy `test_historie.js`, `test_program.js`, `test_zapasy.js`). |
 | `extraliga_soupisky.js` | **Generovaný** seznam hráčů 14 klubů (jméno, tým, pozice) pro našeptávač u otázek na hráče ve formuláři. Vytváří ho `skripty/stahni_soupisky.js` z hokej.cz (stránky klubů → Soupiska); workflow `.github/workflows/extraliga_soupisky.yml` ho obnovuje každé pondělí (i ručně). Neupravovat ručně. |
 | `extraliga_navod.md` | Návod pro majitele (sloupce tabulky, žolíci, otázky, automatika). Při změně chování aktualizuj. |
 | `testy/` | Testy (Node + Playwright), viz `testy/README.md`. |
@@ -62,13 +62,15 @@ mergne do `main` a ověří nasazení (viz Pracovní postup).
   Poslední řádek výpisu řídí hlídač ve workflow: `KONTROLA: hotovo` (dnes už není na co čekat) nebo
   `KONTROLA: ceka <sekundy>` (během zápasů 300 s, před prvním zápasem rovnou až k výkopu). S `--vzdy` se
   řádek nevypisuje. GitHub plánované běhy zdržuje i o hodiny, proto se nespoléhá na cron po 5 minutách.
-- **Odehrané zápasy** (`zapasyZHtml`, `2627_extraliga_zapasy.json`): ze stránky `?do=matchList-view-all` (celá
-  základní část v jednom HTML) se berou jen zápasy se skóre – kolo z nadpisu `<h2>N. kolo</h2>`, datum z
-  `match-start-time` (rok podle `KONFIG.SEZONA`: srpen–prosinec první rok, leden–červenec druhý), třetiny ze
-  závorky; `" - "` navíc znamená prodloužení (`konec: "pp"`), dvakrát nájezdy (`"sn"`). Soubor se obnovuje jen
-  při změně tabulky, v ranním běhu a když chybí; když by zápasů ubylo, starý zůstane. V přehledu je pod pořadím
-  `<details id="zapasy-rozbal">` – JSON se stahuje **až po rozkliknutí** (`nactiZapasy`), řadí se od nejnovějšího
-  hracího dne, vítěz je tučně, skóre odkazuje na detail na hokej.cz (test `test_zapasy.js`).
+- **Zápasy sezóny** (`zapasyZHtml`, `2627_extraliga_zapasy.json`, ~100 kB): ze stránky `?do=matchList-view-all`
+  (celá základní část v jednom HTML) se berou všechny zápasy – kolo z nadpisu `<h2>N. kolo</h2>`, datum z
+  `match-start-time` (rok podle `KONFIG.SEZONA`: srpen–prosinec první rok, leden–červenec druhý). Odehraný zápas
+  (`odehrany: true`) má dvě buňky `preview__score` a třetiny v závorce; `" - "` navíc znamená prodloužení
+  (`konec: "pp"`), dvakrát nájezdy (`"sn"`). Zápas na programu má místo skóre `preview__center` se dnem, datem
+  a časem (`cas`, skóre `null`). Soubor se obnovuje při změně tabulky, v ranním běhu a když chybí; kdyby zápasů
+  nebo odehraných ubylo, starý zůstane. V přehledu je pod pořadím `<details id="zapasy-rozbal">` – JSON se stahuje
+  **až po rozkliknutí** (`nactiZapasy`) a má dvě záložky (`zmenZapasy`): *Odehrané* od nejnovějšího hracího dne
+  (vítěz tučně, skóre odkazuje na hokej.cz) a *Program* od nejbližšího zápasu s časem (test `test_zapasy.js`).
 - **Loga týmů** jsou z imgur (`KONFIG.LOGA`), při chybě náhradní `logo_neznamy.svg` (`onerror`).
 - **Lišta** (`navbar.js`): dlaždice nesou ročník, obsah se musí vejít do 1200 px (test `test_lista.js`).
   Na ledových stránkách je tmavě modrá (kontrast k ledu), nikdy se neořezává (co se nevejde, zalomí se pod

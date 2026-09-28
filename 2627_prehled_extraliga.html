@@ -380,9 +380,10 @@
         const STAV_URL = '2627_extraliga_stav.json';
         // Denní snímky tabulky (GitHub Actions → 2627_extraliga_historie.json) pro graf vývoje tipovačky
         const HISTORIE_URL = '2627_extraliga_historie.json';
-        // Odehrané zápasy s výsledky (GitHub Actions → 2627_extraliga_zapasy.json); stahují se až po rozkliknutí
+        // Zápasy sezóny – odehrané s výsledky i ty na programu (GitHub Actions → 2627_extraliga_zapasy.json);
+        // stahují se až po rozkliknutí seznamu
         const ZAPASY_URL = '2627_extraliga_zapasy.json';
-        let zapasyData = null, zapasyStav = '';
+        let zapasyData = null, zapasyStav = '', zapasyRezim = 'odehrane';
 
         const KONFIG = EXTRALIGA.KONFIG;
         const SL = EXTRALIGA.SLOUPCE;
@@ -584,10 +585,10 @@
             });
             html += `</div>`;
 
-            // Seznam odehraných zápasů: schovaný, rozklikne se a teprve pak se stahuje JSON se zápasy
+            // Seznam zápasů: schovaný, rozklikne se a teprve pak se stahuje JSON se zápasy
             const odehranoCelkem = stavTabulky ? stavTabulky.poradi.reduce((a, p) => a + (Number(p.zapasy) || 0), 0) / 2 : 0;
             html += `<details class="zapasy-rozbal" id="zapasy-rozbal" ontoggle="nactiZapasy()">
-                <summary><i class="fa-solid fa-list-ul"></i> Odehrané zápasy a výsledky <span class="pocet">${odehranoCelkem ? '(' + esc(odehranoCelkem) + ')' : ''}</span></summary>
+                <summary><i class="fa-solid fa-list-ul"></i> Zápasy a výsledky <span class="pocet">${odehranoCelkem ? '(odehráno ' + esc(odehranoCelkem) + ')' : ''}</span></summary>
                 <div class="zapasy-obsah" id="zapasy-obsah"><div class="loader">Načítám zápasy...</div></div>
             </details>`;
 
@@ -633,6 +634,33 @@
             const den = d.toLocaleDateString('cs-CZ', { weekday: 'short' }).replace('.', '');
             return den.charAt(0).toUpperCase() + den.slice(1) + ' ' + d.getDate() + '. ' + (d.getMonth() + 1) + '.';
         }
+        // Starší soubor neměl příznak odehrany – pozná se podle toho, jestli je u zápasu skóre
+        function jeOdehrany(z) { return z.odehrany !== undefined ? !!z.odehrany : (z.domaci_goly !== null && z.domaci_goly !== undefined && z.domaci_goly !== ''); }
+        function zmenZapasy(rezim) { zapasyRezim = rezim; vykresliZapasy(); }
+        function radekZapasu(z) {
+            const jmenaLog = (tym, domaci) => `<img src="${logoNeboFallback(tym)}" ${ONERR} alt="${esc(tym)}">`;
+            const kolo = `<span class="zapas-kolo">${esc(z.kolo)}. kolo</span>`;
+            if (!jeOdehrany(z)) {
+                return `<div class="zapas-radek">
+                    ${kolo}
+                    <span class="zapas-tym domaci"><span>${esc(z.domaci)}</span>${jmenaLog(z.domaci)}</span>
+                    <span class="zapas-cas">${esc(z.cas || '–')}</span>
+                    <span class="zapas-tym hoste">${jmenaLog(z.hoste)}<span>${esc(z.hoste)}</span></span>
+                    <span class="zapas-tretiny"></span>
+                </div>`;
+            }
+            const d = Number(z.domaci_goly), h = Number(z.hoste_goly);
+            const znacka = z.konec === 'pp' ? 'pp' : (z.konec === 'sn' ? 'sn' : '');
+            const titulek = z.konec === 'pp' ? 'po prodloužení' : (z.konec === 'sn' ? 'po samostatných nájezdech' : '');
+            const skore = `${esc(d)}:${esc(h)}`;
+            return `<div class="zapas-radek">
+                ${kolo}
+                <span class="zapas-tym domaci"><span class="${d > h ? 'zapas-vitez' : ''}">${esc(z.domaci)}</span>${jmenaLog(z.domaci)}</span>
+                <span class="zapas-skore">${z.id ? `<a href="https://www.hokej.cz/zapas/${esc(z.id)}" target="_blank" rel="noopener" title="Detail zápasu na hokej.cz">${skore}</a>` : skore}${znacka ? `<span class="znacka" title="${esc(titulek)}">${esc(znacka)}</span>` : ''}</span>
+                <span class="zapas-tym hoste">${jmenaLog(z.hoste)}<span class="${h > d ? 'zapas-vitez' : ''}">${esc(z.hoste)}</span></span>
+                <span class="zapas-tretiny">${esc(z.tretiny ? '(' + z.tretiny + ')' : '')}</span>
+            </div>`;
+        }
         function vykresliZapasy() {
             const box = document.getElementById('zapasy-obsah');
             if (!box) return;
@@ -640,26 +668,29 @@
                 box.innerHTML = `<div class="zapasy-prazdno">Seznam zápasů se teď nepodařilo načíst. Zkus to prosím za chvíli znovu.</div>`;
                 return;
             }
-            // Nejnovější hrací den nahoře, v rámci dne podle kola (dohrávky mají číslo svého původního kola)
-            const zapasy = zapasyData.zapasy.slice().sort((a, b) =>
+            const vse = zapasyData.zapasy || [];
+            // Odehrané od posledního hracího dne nazpátek, program od nejbližšího zápasu dopředu
+            const odehrane = vse.filter(jeOdehrany).sort((a, b) =>
                 (a.datum < b.datum ? 1 : a.datum > b.datum ? -1 : 0) || (a.kolo - b.kolo) || (Number(a.id) - Number(b.id)));
+            const program = vse.filter(z => !jeOdehrany(z)).sort((a, b) =>
+                (a.datum < b.datum ? -1 : a.datum > b.datum ? 1 : 0) || (a.cas < b.cas ? -1 : a.cas > b.cas ? 1 : 0) || (Number(a.id) - Number(b.id)));
             const pocet = document.querySelector('#zapasy-rozbal .pocet');
-            if (pocet) pocet.textContent = '(' + zapasy.length + ')';
-            let html = '', den = '';
-            zapasy.forEach(z => {
+            if (pocet) pocet.textContent = '(odehráno ' + odehrane.length + ' z ' + vse.length + ')';
+
+            const seznam = zapasyRezim === 'program' ? program : odehrane;
+            let html = `<div class="tabs zapasy-tabs">
+                <button class="tab-btn${zapasyRezim === 'odehrane' ? ' active' : ''}" id="btn-zapasy-odehrane" onclick="zmenZapasy('odehrane')">Odehrané (${odehrane.length})</button>
+                <button class="tab-btn${zapasyRezim === 'program' ? ' active' : ''}" id="btn-zapasy-program" onclick="zmenZapasy('program')">Program (${program.length})</button>
+            </div><div id="zapasy-seznam">`;
+            if (seznam.length === 0) {
+                html += `<div class="zapasy-prazdno">${zapasyRezim === 'program' ? 'Další zápasy zatím nejsou v rozpisu.' : 'Zatím se neodehrál žádný zápas.'}</div>`;
+            }
+            let den = '';
+            seznam.forEach(z => {
                 if (z.datum !== den) { den = z.datum; html += `<div class="zapasy-den">${esc(denKratce(den))}</div>`; }
-                const d = Number(z.domaci_goly), h = Number(z.hoste_goly);
-                const znacka = z.konec === 'pp' ? 'pp' : (z.konec === 'sn' ? 'sn' : '');
-                const titulek = z.konec === 'pp' ? 'po prodloužení' : (z.konec === 'sn' ? 'po samostatných nájezdech' : '');
-                html += `<div class="zapas-radek">
-                    <span class="zapas-kolo">${esc(z.kolo)}. kolo</span>
-                    <span class="zapas-tym domaci"><span class="${d > h ? 'zapas-vitez' : ''}">${esc(z.domaci)}</span><img src="${logoNeboFallback(z.domaci)}" ${ONERR} alt="${esc(z.domaci)}"></span>
-                    <span class="zapas-skore">${z.id ? `<a href="https://www.hokej.cz/zapas/${esc(z.id)}" target="_blank" rel="noopener" title="Detail zápasu na hokej.cz">${esc(d)}:${esc(h)}</a>` : `${esc(d)}:${esc(h)}`}${znacka ? `<span class="znacka" title="${esc(titulek)}">${esc(znacka)}</span>` : ''}</span>
-                    <span class="zapas-tym hoste"><img src="${logoNeboFallback(z.hoste)}" ${ONERR} alt="${esc(z.hoste)}"><span class="${h > d ? 'zapas-vitez' : ''}">${esc(z.hoste)}</span></span>
-                    <span class="zapas-tretiny">${esc(z.tretiny ? '(' + z.tretiny + ')' : '')}</span>
-                </div>`;
+                html += radekZapasu(z);
             });
-            html += `<div class="zapasy-zdroj">Výsledky z hokej.cz${zapasyData.aktualizovano ? ', stav ' + esc(formatDatumCas(zapasyData.aktualizovano)) : ''}. <em>pp</em> = po prodloužení, <em>sn</em> = po samostatných nájezdech.</div>`;
+            html += `</div><div class="zapasy-zdroj">Rozpis i výsledky z hokej.cz${zapasyData.aktualizovano ? ', stav ' + esc(formatDatumCas(zapasyData.aktualizovano)) : ''}. <em>pp</em> = po prodloužení, <em>sn</em> = po samostatných nájezdech.</div>`;
             box.innerHTML = html;
         }
 
