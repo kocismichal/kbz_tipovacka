@@ -1451,7 +1451,7 @@
   },
   {
    "datum": "2026-09-29",
-   "aktualizovano": "2026-09-29T18:42:21.491Z",
+   "aktualizovano": "2026-09-29T18:53:44.636Z",
    "poradi": [
     {
      "tym": "Třinec",
@@ -1479,6 +1479,11 @@
      "body": 9
     },
     {
+     "tym": "Mountfield HK",
+     "zapasy": 6,
+     "body": 9
+    },
+    {
      "tym": "Kladno",
      "zapasy": 6,
      "body": 9
@@ -1490,16 +1495,11 @@
     },
     {
      "tym": "Sparta Praha",
-     "zapasy": 5,
+     "zapasy": 6,
      "body": 7
     },
     {
      "tym": "Kometa Brno",
-     "zapasy": 5,
-     "body": 6
-    },
-    {
-     "tym": "Mountfield HK",
      "zapasy": 5,
      "body": 6
     },
@@ -1555,6 +1555,12 @@
      "presilovky": 2,
      "tresty": 37
     },
+    "Mountfield HK": {
+     "goly": 16,
+     "obdrzene": 15,
+     "presilovky": 2,
+     "tresty": 47
+    },
     "Kladno": {
      "goly": 18,
      "obdrzene": 20,
@@ -1568,22 +1574,16 @@
      "tresty": 60
     },
     "Sparta Praha": {
-     "goly": 14,
-     "obdrzene": 12,
+     "goly": 17,
+     "obdrzene": 16,
      "presilovky": 4,
-     "tresty": 36
+     "tresty": 51
     },
     "Kometa Brno": {
      "goly": 16,
      "obdrzene": 16,
      "presilovky": 1,
      "tresty": 30
-    },
-    "Mountfield HK": {
-     "goly": 12,
-     "obdrzene": 12,
-     "presilovky": 1,
-     "tresty": 32
     },
     "Vítkovice": {
      "goly": 17,
