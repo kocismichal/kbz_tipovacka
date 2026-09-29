@@ -24,7 +24,9 @@
  * česká Wikipedie (šablona {{Hokejová tabulka}} – aktualizují ji dobrovolníci, jen záloha).
  * Každá adresa se zkouší třikrát (hokej.cz umí runnerům GitHubu vrátit HTTP 403). Zdroj, který je pozadu
  * za uloženým snímkem (méně odehraných zápasů, nebo stejně a bez statistik), se zahodí – jinak by
- * zpožděná Wikipedie přepsala čerstvou tabulku z hokej.cz staršími daty.
+ * zpožděná Wikipedie přepsala čerstvou tabulku z hokej.cz staršími daty. Když neprojde žádný zdroj,
+ * ale uložená tabulka není starší než tři dny, skript skončí bez chyby (dorovná to další běh);
+ * teprve stará nebo chybějící tabulka je chyba, na kterou přijde e-mail.
  * Uloží se jen tabulka, která projde kontrolou: přesně 14 týmů z konfigurace, každý jednou, body i zápasy
  * jsou čísla, body ≤ 3 × zápasy a pořadí jde podle bodů. Jinak skript skončí chybou a JSON se nemění
  * (web pak bere pořadí z ručního zápisu v listu Přehled HOTOVO).
@@ -91,6 +93,7 @@ const HLAVICKY = {
   "Sec-Fetch-User": "?1"
 };
 const POKUSY = 3;                   // kolikrát se adresa zkusí, než se jde na další zdroj
+const STARE_PO_DNECH = 3;           // dokud není uložená tabulka starší, je odmítnutí od hokej.cz jen zpráva, ne chyba
 const PAUZA_PO_CHYBE_S = [3, 8];
 const pauza = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -482,6 +485,17 @@ function zdrojJePozadu(novy, stary) {
   return null;
 }
 
+// Jak stará (ve dnech) je uložená tabulka; null = žádná uložená není
+function stariUlozeneTabulky(ted, soubor) {
+  try {
+    const s = JSON.parse(fs.readFileSync(soubor || VYSTUP, "utf8"));
+    if (!s || !Array.isArray(s.poradi) || !s.poradi.length) return null;
+    const kdy = new Date(s.aktualizovano);
+    if (isNaN(kdy)) return null;
+    return Math.max(0, (ted.getTime() - kdy.getTime()) / 86400000);
+  } catch (e) { return null; }
+}
+
 // Počet odehraných zápasů podle tabulky (každý zápas mají v tabulce oba týmy)
 function odehranoZTabulky(poradi) {
   return (poradi || []).reduce((s, p) => s + (Number(p.zapasy) || 0), 0) / 2;
@@ -633,7 +647,17 @@ async function aktualizace() {
     oznamKontrolu(false);
     return;
   }
-  console.error("Tabulku se nepodařilo stáhnout z žádného zdroje:\n - " + chyby.join("\n - "));
+  // hokej.cz umí runnerům GitHubu vrátit 403. Dokud je v repu čerstvá tabulka, není to důvod k poplachu –
+  // dorovná to některý z dalších běhů. Teprve stará (nebo chybějící) tabulka je chyba, na kterou má přijít e-mail.
+  const stariDnu = stariUlozeneTabulky(ted);
+  if (stariDnu !== null && stariDnu <= STARE_PO_DNECH) {
+    console.log("Tabulku teď nešlo stáhnout (zdroj odmítl nebo je pozadu):\n - " + chyby.join("\n - "));
+    console.log("V repu je tabulka stará " + stariDnu.toFixed(1) + " dne – nechávám ji a zkusí to další běh.");
+    oznamKontrolu(false);
+    return;
+  }
+  console.error("Tabulku se nepodařilo stáhnout z žádného zdroje"
+    + (stariDnu === null ? " a v repu žádná není" : " a ta v repu je stará " + stariDnu.toFixed(1) + " dne") + ":\n - " + chyby.join("\n - "));
   process.exit(1);
 }
 
@@ -655,5 +679,5 @@ function hlasStavZapisu(dnesni, ted, poradi) {
   // Načtení přes require (testy): jen funkce, nic se nestahuje ani neukládá
   module.exports = { aktualizujHistorii, poradiZHtml, poradiZTabulky, statistikyZPoradi, overPoradi, poznejTym,
     programZapasu, rozhodniStahovani, melySkoncit, odehranoZTabulky, odehranoPredDneskem, dnesVPraze, prazskyCas,
-    zapasyZHtml, zdrojJePozadu };
+    zapasyZHtml, zdrojJePozadu, stariUlozeneTabulky, STARE_PO_DNECH };
 }

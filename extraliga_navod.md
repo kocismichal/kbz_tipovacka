@@ -174,7 +174,9 @@ a teprve pak začne kontrolovat po pěti minutách.
   e-mail) a web zůstane na ručním zápisu – nic se nerozbije.
 - **Záloha nikdy nepřepíše čerstvější tabulku.** Když se k hokej.cz nedá dostat (umí robotovi na GitHubu
   vrátit chybu 403) a Wikipedie je pozadu, skript to pozná podle počtu odehraných zápasů, starší tabulku
-  zahodí a nechá v repu tu, co už tam je. Každá adresa se navíc zkouší třikrát.
+  zahodí a nechá v repu tu, co už tam je. Každá adresa se navíc zkouší třikrát. Takový běh skončí bez chyby
+  (jen to napíše do protokolu) – tabulku dorovná některý z dalších běhů. E-mail přijde, až kdyby se tabulku
+  nepodařilo stáhnout tři dny v řadě.
 
 ## 7. Zápasy a výsledky
 

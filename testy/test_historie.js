@@ -5,7 +5,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const E = require('../extraliga_spolecne.js');
-const { aktualizujHistorii, zdrojJePozadu } = require('../skripty/stahni_tabulku_extraligy.js');
+const { aktualizujHistorii, zdrojJePozadu, stariUlozeneTabulky, STARE_PO_DNECH } = require('../skripty/stahni_tabulku_extraligy.js');
 const T = E.KONFIG.TYMY;
 
 let chyb = 0;
@@ -89,6 +89,14 @@ over(zdrojJePozadu(tabulka(5, true), tabulka(5, true)) === null, 'stejná tabulk
 over(/jen 3|odehraných/.test(zdrojJePozadu(tabulka(3, false), tabulka(5, true)) || ''), 'zdroj s méně zápasy se zahodí', zdrojJePozadu(tabulka(3, false), tabulka(5, true)));
 over(/statistiky/.test(zdrojJePozadu(tabulka(5, false), tabulka(5, true)) || ''), 'zdroj bez statistik nepřepíše snímek se statistikami', zdrojJePozadu(tabulka(5, false), tabulka(5, true)));
 over(zdrojJePozadu(tabulka(5, false), tabulka(5, false)) === null, 'bez statistik na obou stranách je to v pořádku');
+
+// ---------- stáří uložené tabulky (kdy je odmítnutí hokej.cz ještě v pořádku) ----------
+const stavSoubor = path.join(path.dirname(soubor), 'stav.json');
+fs.writeFileSync(stavSoubor, JSON.stringify({ poradi: [{ tym: T[0], zapasy: 6, body: 18 }], aktualizovano: '2026-09-29T10:00:00Z' }));
+const stari = (kdy) => stariUlozeneTabulky(new Date(kdy), stavSoubor);
+over(stari('2026-09-29T14:00:00Z') < STARE_PO_DNECH, 'čerstvá tabulka je pod mezí (odmítnutí zdroje není chyba)', stari('2026-09-29T14:00:00Z'));
+over(stari('2026-10-04T10:00:00Z') > STARE_PO_DNECH, 'tabulka stará pět dní je nad mezí (má přijít e-mail)', stari('2026-10-04T10:00:00Z'));
+over(stariUlozeneTabulky(new Date(), path.join(path.dirname(soubor), 'neexistuje.json')) === null, 'chybějící soubor se pozná');
 
 fs.rmSync(path.dirname(soubor), { recursive: true, force: true });
 console.log(chyb ? (chyb + ' kontrol selhalo.') : 'Historie: všechny kontroly prošly.');
