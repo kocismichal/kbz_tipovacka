@@ -1,22 +1,27 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-09-28T18:53:05.415Z",
+  "aktualizovano": "2026-09-29T18:42:21.491Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
     {
       "tym": "Třinec",
-      "zapasy": 5,
-      "body": 15
+      "zapasy": 6,
+      "body": 18
     },
     {
       "tym": "Pardubice",
+      "zapasy": 7,
+      "body": 15
+    },
+    {
+      "tym": "Plzeň",
       "zapasy": 6,
-      "body": 12
+      "body": 11
     },
     {
       "tym": "České Budějovice",
-      "zapasy": 5,
+      "zapasy": 6,
       "body": 10
     },
     {
@@ -26,12 +31,12 @@
     },
     {
       "tym": "Kladno",
-      "zapasy": 5,
+      "zapasy": 6,
       "body": 9
     },
     {
-      "tym": "Plzeň",
-      "zapasy": 5,
+      "tym": "Litvínov",
+      "zapasy": 6,
       "body": 8
     },
     {
@@ -50,49 +55,50 @@
       "body": 6
     },
     {
-      "tym": "Litvínov",
+      "tym": "Vítkovice",
       "zapasy": 5,
       "body": 6
     },
     {
       "tym": "Olomouc",
-      "zapasy": 5,
-      "body": 5
-    },
-    {
-      "tym": "Mladá Boleslav",
-      "zapasy": 5,
+      "zapasy": 6,
       "body": 5
     },
     {
       "tym": "Liberec",
-      "zapasy": 5,
-      "body": 4
+      "zapasy": 6,
+      "body": 5
     },
     {
-      "tym": "Vítkovice",
-      "zapasy": 4,
-      "body": 3
+      "tym": "Mladá Boleslav",
+      "zapasy": 6,
+      "body": 5
     }
   ],
   "statistiky": {
     "Třinec": {
-      "goly": 22,
-      "obdrzene": 10,
+      "goly": 28,
+      "obdrzene": 14,
       "presilovky": 9,
-      "tresty": 40
+      "tresty": 52
     },
     "Pardubice": {
-      "goly": 24,
-      "obdrzene": 17,
-      "presilovky": 9,
-      "tresty": 46
+      "goly": 29,
+      "obdrzene": 19,
+      "presilovky": 10,
+      "tresty": 52
+    },
+    "Plzeň": {
+      "goly": 16,
+      "obdrzene": 12,
+      "presilovky": 3,
+      "tresty": 50
     },
     "České Budějovice": {
-      "goly": 13,
-      "obdrzene": 14,
+      "goly": 15,
+      "obdrzene": 19,
       "presilovky": 7,
-      "tresty": 40
+      "tresty": 48
     },
     "Karlovy Vary": {
       "goly": 12,
@@ -101,16 +107,16 @@
       "tresty": 37
     },
     "Kladno": {
-      "goly": 14,
-      "obdrzene": 14,
-      "presilovky": 4,
-      "tresty": 28
+      "goly": 18,
+      "obdrzene": 20,
+      "presilovky": 5,
+      "tresty": 61
     },
-    "Plzeň": {
-      "goly": 12,
-      "obdrzene": 11,
-      "presilovky": 2,
-      "tresty": 42
+    "Litvínov": {
+      "goly": 16,
+      "obdrzene": 19,
+      "presilovky": 7,
+      "tresty": 60
     },
     "Sparta Praha": {
       "goly": 14,
@@ -130,35 +136,29 @@
       "presilovky": 1,
       "tresty": 32
     },
-    "Litvínov": {
-      "goly": 11,
-      "obdrzene": 15,
-      "presilovky": 5,
-      "tresty": 54
+    "Vítkovice": {
+      "goly": 17,
+      "obdrzene": 20,
+      "presilovky": 6,
+      "tresty": 69
     },
     "Olomouc": {
-      "goly": 13,
-      "obdrzene": 15,
-      "presilovky": 1,
-      "tresty": 50
-    },
-    "Mladá Boleslav": {
-      "goly": 12,
+      "goly": 16,
       "obdrzene": 19,
       "presilovky": 2,
-      "tresty": 51
+      "tresty": 58
     },
     "Liberec": {
-      "goly": 10,
-      "obdrzene": 17,
-      "presilovky": 2,
-      "tresty": 38
+      "goly": 14,
+      "obdrzene": 22,
+      "presilovky": 3,
+      "tresty": 46
     },
-    "Vítkovice": {
+    "Mladá Boleslav": {
       "goly": 13,
-      "obdrzene": 17,
-      "presilovky": 6,
-      "tresty": 61
+      "obdrzene": 23,
+      "presilovky": 2,
+      "tresty": 59
     }
   }
 }
