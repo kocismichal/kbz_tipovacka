@@ -145,6 +145,7 @@ ručním zápisu pořadí v listu (E2–R2, body AY2–BL2) jako dřív. Body se
 `KONFIG.BODOVANI_OD` (30. 9. 2026), do té doby jen tipy.
 
 **Kdy to běží:** ráno jednou (6:30 letního času, stahuje vždy) a odpoledne se spustí **hlídání hracího dne**.
+Hlídání si bere, co se dnes hraje, z uloženého rozpisu sezóny (ten samý, co je na webu v záložce Program).
 Pokusy o start jsou dva, ve 14:00 a v 17:00 letního času, protože GitHub plánované běhy zdržuje (měřeno o 3,5 až
 5 hodin); co stihne první, druhý už jen dorovná. Hlídání si stáhne program zápasů na hokej.cz a dál se řídí jím:
 

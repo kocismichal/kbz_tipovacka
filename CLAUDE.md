@@ -53,9 +53,10 @@ mergne do `main` a ověří nasazení (viz Pracovní postup).
 - **Bodování**: umístění 10 − |rozdíl míst| (min 0), násobek 1,1/1,2/1,3/1,4 za 7/9/11/13 přesných;
   žolíci: umístění 2×, tip na body žolíka = číselná škála 2× (20/16/12/8/4); číselné otázky 10/8/6/4/2;
   týmové a hráčské 20 b.; finále play-off a Ano/Ne 10 b. Text pravidel ve formuláři musí sedět s kódem.
-- **Kdy se stahuje tabulka** (`programZapasu`, `rozhodniStahovani`): běh bez `--vzdy` si nejdřív stáhne rozpis
-  (`/tipsport-extraliga/zapasy`) – v řádcích `<tr data-href="/zapas/ID">` je buď čas začátku, nebo výsledek po
-  třetinách (pak je zápas odehraný a čas začátku už web neuvádí). Den bez zápasů i doba před prvním zápasem
+- **Kdy se stahuje tabulka** (`zapasyZeSouboru`, `rozhodniStahovani`): běh bez `--vzdy` bere dnešní zápasy
+  z uloženého rozpisu `2627_extraliga_zapasy.json` a stránku rozpisu stahuje, jen když soubor chybí
+  (`programZapasu`). **Během zápasu totiž hokej.cz v řádku rozpisu místo data ukazuje průběžné skóre**, takže
+  by takový zápas v programu nebyl vidět a hlídání by usoudilo „dnes se nehraje“ a skončilo. Den bez zápasů i doba před prvním zápasem
   skončí bez stahování; jinak se kontroluje každých 5 minut, dokud počet odehraných zápasů v tabulce
   (součet `zapasy` / 2) nedosáhne základu z historie plus počtu dnešních zápasů. Pak se hlásí „vše zapsané“
   a zbytek dne se nestahuje; 2 h po očekávaném konci posledního zápasu se kontroly ukončí (dorovná ranní běh).

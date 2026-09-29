@@ -1,4 +1,5 @@
-// Program zápasů z hokej.cz a rozhodování, kdy stahovat tabulku (skripty/stahni_tabulku_extraligy.js):
+// Dnešní zápasy (z uloženého rozpisu i ze stránky hokej.cz) a rozhodování, kdy stahovat tabulku
+// (skripty/stahni_tabulku_extraligy.js):
 // den bez hokeje se nestahuje, před prvním zápasem taky ne, během zápasů a po nich ano – dokud počet
 // odehraných zápasů v tabulce nesedí s programem.
 const E = require('../extraliga_spolecne.js');
@@ -106,6 +107,30 @@ over(r.stahovat, 'večer po zápasech s chybějícím zápisem: stahovat (čas z
 // pomocné funkce
 over(S.odehranoZTabulky(tabulkaPresne(5).poradi) === 5, 'počet odehraných zápasů z tabulky', S.odehranoZTabulky(tabulkaPresne(5).poradi));
 over(S.dnesVPraze(new Date('2026-09-18T23:30:00Z')) === '2026-09-19', 'pozdě večer v UTC je v Praze už další den', S.dnesVPraze(new Date('2026-09-18T23:30:00Z')));
+
+// ---------- dnešní zápasy z uloženého rozpisu ----------
+// Během zápasů hokej.cz v rozpisu místo data ukazuje průběžné skóre, takže se na web nespoléháme.
+const fs = require('fs'); const os = require('os'); const path = require('path');
+const slozka = fs.mkdtempSync(path.join(os.tmpdir(), 'rozpis-'));
+const souborRozpisu = path.join(slozka, 'zapasy.json');
+fs.writeFileSync(souborRozpisu, JSON.stringify({ zapasy: [
+  { datum: '2026-09-29', cas: '', odehrany: true },
+  { datum: '2026-09-29', cas: '', odehrany: true },
+  { datum: '2026-09-30', cas: '17:30', odehrany: false },
+  { datum: '2027-01-13', cas: '18:00', odehrany: false }
+] }));
+const zeSouboru = S.zapasyZeSouboru(souborRozpisu);
+over(zeSouboru.length === 4, 'rozpis ze souboru má všechny zápasy', zeSouboru.length);
+const zitra = zeSouboru.find(z => z.datum === '2026-09-30');
+over(zitra.zacatek && zitra.zacatek.toISOString() === '2026-09-30T15:30:00.000Z', 'čas začátku se bere jako pražský', zitra.zacatek);
+over(zeSouboru.filter(z => z.odehrany).every(z => z.zacatek === null), 'odehraný zápas nemá čas začátku', zeSouboru[0]);
+over(S.zapasyZeSouboru(path.join(slozka, 'neexistuje.json')).length === 0, 'chybějící soubor vrátí prázdno');
+
+// klíčová regrese: dnešní zápasy bez času (běží nebo dohrané) se pořád počítají jako dnešní
+const stav35 = { poradi: T.map((t) => ({ tym: t, zapasy: 5, body: 5 })) };
+const rr = S.rozhodniStahovani(zeSouboru, cas(29, 19, 10), stav35, 35);
+over(rr.stahovat && /2 zápasů dnes/.test(rr.duvod), 'během dnešních zápasů se kontroluje dál, i když nemají čas', rr.duvod);
+fs.rmSync(slozka, { recursive: true, force: true });
 
 console.log(chyb ? (chyb + ' kontrol selhalo.') : 'Program zápasů: všechny kontroly prošly.');
 process.exit(chyb ? 1 : 0);

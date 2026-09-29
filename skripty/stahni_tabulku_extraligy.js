@@ -13,8 +13,10 @@
  *   node skripty/stahni_tabulku_extraligy.js --vzdy          stáhne tabulku bez ohledu na program (ranní běh, ruční spuštění)
  *   node skripty/stahni_tabulku_extraligy.js --rezim sonda   jen vypíše, co zdroje vracejí (ladění)
  *
- * Kdy se stahuje: skript si nejdřív stáhne program zápasů z hokej.cz. Když se dnes nehraje nebo první zápas
- * ještě nezačal, hned skončí a nic nestahuje. Během zápasů a ještě dvě hodiny po očekávaném konci posledního
+ * Kdy se stahuje: dnešní zápasy si skript vezme z uloženého rozpisu sezóny (2627_extraliga_zapasy.json),
+ * a jen když chybí, stáhne rozpis z webu. Během zápasů totiž hokej.cz v řádku rozpisu místo data ukazuje
+ * průběžné skóre a takový zápas by v rozpisu nebyl vidět. Když se dnes nehraje nebo první zápas
+ * ještě nezačal, skript hned skončí a nic nestahuje. Během zápasů a ještě dvě hodiny po očekávaném konci posledního
  * z nich se stahuje, dokud počet odehraných zápasů v tabulce nesedí s programem.
  * Poslední řádek výpisu je určený hlídači ve workflow: "KONTROLA: hotovo" = dnes už není na co čekat,
  * "KONTROLA: ceka <sekundy>" = za tolik sekund má smysl zkusit to znovu (během zápasů 5 minut,
@@ -244,13 +246,18 @@ function overPoradi(poradi) {
 async function sonda() {
   try {
     const ted = new Date();
+    const ze_souboru = zapasyZeSouboru();
     const r = await stahni(PROGRAM_URL);
-    const zapasy = programZapasu(r.text, ted);
+    const zWebu = programZapasu(r.text, ted);
+    const zapasy = ze_souboru.length ? ze_souboru : zWebu;
     let ulozeny = null;
     try { ulozeny = JSON.parse(fs.readFileSync(VYSTUP, "utf8")); } catch (e) {}
     const rozhodnuti = rozhodniStahovani(zapasy, ted, ulozeny, odehranoPredDneskem(ted));
     console.log("==================== program zápasů ====================");
-    console.log(PROGRAM_URL + " | v rozpisu " + zapasy.length + " zápasů | dnes (" + dnesVPraze(ted) + "): " + rozhodnuti.dnesni.length);
+    console.log("uložený rozpis: " + ze_souboru.length + " zápasů | web: " + zWebu.length + " zápasů"
+      + " (dnešních na webu " + zWebu.filter((z) => z.datum === dnesVPraze(ted)).length + ")");
+    console.log(PROGRAM_URL + " | rozhoduje se podle " + (ze_souboru.length ? "uloženého rozpisu" : "webu")
+      + " | dnes (" + dnesVPraze(ted) + "): " + rozhodnuti.dnesni.length);
     zapasy.slice(-12).forEach((z) => console.log("   " + z.datum + " " + (z.odehrany ? "odehráno" : z.cas)));
     console.log("Rozhodnutí: " + (rozhodnuti.stahovat ? "STAHOVAT" : "nestahovat") + " – " + rozhodnuti.duvod);
     try {
@@ -435,6 +442,26 @@ async function ulozZapasy() {
   }
 }
 
+// Dnešní zápasy z uloženého rozpisu sezóny (2627_extraliga_zapasy.json). Stejný tvar jako programZapasu,
+// takže se s ním dá rozhodovat úplně stejně – jen se nemusí nic stahovat a nevadí běžící zápasy.
+function zapasyZeSouboru(soubor) {
+  try {
+    const j = JSON.parse(fs.readFileSync(soubor || ZAPASY, "utf8"));
+    if (!j || !Array.isArray(j.zapasy) || !j.zapasy.length) return [];
+    return j.zapasy.map((z) => {
+      const d = String(z.datum || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      const c = String(z.cas || "").match(/^(\d{1,2}):(\d{2})$/);
+      return {
+        datum: z.datum,
+        cas: z.cas || "",
+        zacatek: (d && c) ? prazskyCas(Number(d[1]), Number(d[2]), Number(d[3]), Number(c[1]), Number(c[2])) : null,
+        odehrany: !!z.odehrany
+      };
+    }).filter((z) => z.datum)
+      .sort((a, b) => (a.datum < b.datum ? -1 : a.datum > b.datum ? 1 : (a.cas < b.cas ? -1 : a.cas > b.cas ? 1 : 0)));
+  } catch (e) { return []; }
+}
+
 // Kolik dnešních zápasů už má být dohraných: odehrané (web u nich ukazuje výsledek) a ty,
 // od jejichž začátku uplynula obvyklá délka zápasu.
 function melySkoncit(dnesni, ted) {
@@ -578,16 +605,21 @@ async function aktualizace() {
   let dnesni = [];
   if (!vzdy) {
     try {
-      const r = await stahni(PROGRAM_URL);
-      const zapasy = programZapasu(r.text, ted);
+      let zapasy = zapasyZeSouboru();
+      let odkud = "uložený rozpis";
+      if (!zapasy.length) {                       // první běh, než se rozpis jednou uloží
+        const r = await stahni(PROGRAM_URL);
+        zapasy = programZapasu(r.text, ted);
+        odkud = "rozpis z webu";
+      }
       let ulozeny = null;
       try { ulozeny = JSON.parse(fs.readFileSync(VYSTUP, "utf8")); } catch (e) {}
       const rozhodnuti = rozhodniStahovani(zapasy, ted, ulozeny, odehranoPredDneskem(ted));
       dnesni = rozhodnuti.dnesni;
-      console.log("Program (" + zapasy.length + " zápasů v rozpisu): " + rozhodnuti.duvod + ".");
+      console.log("Program (" + odkud + ", " + zapasy.length + " zápasů): " + rozhodnuti.duvod + ".");
       if (!rozhodnuti.stahovat) { oznamKontrolu(rozhodnuti.konec, rozhodnuti.cekat); return; }
     } catch (e) {
-      console.log("Program se nepodařilo stáhnout (" + e.message + ") – pro jistotu stahuji tabulku.");
+      console.log("Rozpis se nepodařilo zjistit (" + e.message + ") – pro jistotu stahuji tabulku.");
     }
   }
 
@@ -679,5 +711,5 @@ function hlasStavZapisu(dnesni, ted, poradi) {
   // Načtení přes require (testy): jen funkce, nic se nestahuje ani neukládá
   module.exports = { aktualizujHistorii, poradiZHtml, poradiZTabulky, statistikyZPoradi, overPoradi, poznejTym,
     programZapasu, rozhodniStahovani, melySkoncit, odehranoZTabulky, odehranoPredDneskem, dnesVPraze, prazskyCas,
-    zapasyZHtml, zdrojJePozadu, stariUlozeneTabulky, STARE_PO_DNECH };
+    zapasyZHtml, zdrojJePozadu, stariUlozeneTabulky, STARE_PO_DNECH, zapasyZeSouboru };
 }
