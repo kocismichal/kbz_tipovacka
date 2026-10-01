@@ -19,9 +19,9 @@ var EXTRALIGA = (function () {
   var KONFIG = {
     SEZONA: "2026/27",
     NAZEV: "Extraliga Mistrů světa",
-    DEADLINE: "2026-09-30T23:59:59",
-    DEADLINE_TEXT: "STŘEDA 30. 9. 2026 23:59",
-    DEADLINE_DATUM_TEXT: "30. 9. 2026",
+    DEADLINE: "2026-10-02T17:00:00",
+    DEADLINE_TEXT: "PÁTEK 2. 10. 2026 17:00",
+    DEADLINE_DATUM_TEXT: "2. 10. 2026 17:00",
     // Od kdy web ukazuje body (do té doby jen tipy) = start sezóny: pořadí se boduje průběžně po každém kole.
     BODOVANI_OD: "2026-09-16T00:00:00",
     // Průběžné bodování během sezóny: web boduje pořadí (vč. žolíků 2×) z automatické tabulky a bonusové otázky

@@ -102,6 +102,6 @@ mergne do `main` a ověří nasazení (viz Pracovní postup).
 - V řádku 2 listu `Přehled HOTOVO` jsou zatím **loňské výsledky** – průběžně se pro bonusy ignorují, ale pořadí
   E2–R2 by se použilo, kdyby selhal snímek tabulky; majitel má řádek vyčistit a před přepnutím `FINALE` vyplnit
   letošní odpovědi.
-- Sezóna Extraligy běží od 16. 9. 2026, bodování pořadí je průběžné; tipování je otevřené do 30. 9. 2026.
+- Sezóna Extraligy běží od 16. 9. 2026, bodování pořadí je průběžné; tipování je otevřené do 2. 10. 2026 17:00 (původně 30. 9., prodlouženo 1. 10. na Michalův pokyn).
 - `KONFIG.REKORDY.goly_zakladni_cast` je prázdné (rekordní počet gólů základní části se doplní do otázky).
 - GitHub vypne plánované workflow po 60 dnech bez aktivity v repu – stačí ho znovu povolit.
