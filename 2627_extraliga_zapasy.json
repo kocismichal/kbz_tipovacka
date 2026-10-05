@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-04T16:05:53.425Z",
+  "aktualizovano": "2026-10-05T11:40:46.008Z",
   "zdroj": "hokej.cz",
   "zapasy": [
     {
@@ -636,8 +636,21 @@
       "cas": "",
       "odehrany": true,
       "domaci_goly": 0,
-      "hoste_goly": 5,
-      "tretiny": "0:2, 0:3, 0:0",
+      "hoste_goly": 9,
+      "tretiny": "0:2, 0:4, 0:3",
+      "konec": ""
+    },
+    {
+      "id": "2928305",
+      "kolo": 8,
+      "domaci": "Pardubice",
+      "hoste": "Sparta Praha",
+      "datum": "2026-10-04",
+      "cas": "",
+      "odehrany": true,
+      "domaci_goly": 6,
+      "hoste_goly": 4,
+      "tretiny": "2:1, 2:1, 2:2",
       "konec": ""
     },
     {
@@ -648,9 +661,9 @@
       "datum": "2026-10-04",
       "cas": "",
       "odehrany": true,
-      "domaci_goly": 2,
-      "hoste_goly": 3,
-      "tretiny": "1:2, 1:1, 0:0",
+      "domaci_goly": 3,
+      "hoste_goly": 5,
+      "tretiny": "1:2, 1:1, 1:2",
       "konec": ""
     },
     {
@@ -662,9 +675,9 @@
       "cas": "",
       "odehrany": true,
       "domaci_goly": 2,
-      "hoste_goly": 0,
-      "tretiny": "2:0, 0:0, 0:0",
-      "konec": ""
+      "hoste_goly": 3,
+      "tretiny": "2:0, 0:1, 0:1",
+      "konec": "pp"
     },
     {
       "id": "2928308",
@@ -674,10 +687,10 @@
       "datum": "2026-10-04",
       "cas": "",
       "odehrany": true,
-      "domaci_goly": 0,
+      "domaci_goly": 3,
       "hoste_goly": 2,
-      "tretiny": "0:1, 0:1, 0:0",
-      "konec": ""
+      "tretiny": "0:1, 1:1, 1:0",
+      "konec": "pp"
     },
     {
       "id": "2928309",
@@ -688,21 +701,8 @@
       "cas": "",
       "odehrany": true,
       "domaci_goly": 4,
-      "hoste_goly": 0,
-      "tretiny": "2:0, 1:0, 1:0",
-      "konec": ""
-    },
-    {
-      "id": "2928305",
-      "kolo": 8,
-      "domaci": "Pardubice",
-      "hoste": "Sparta Praha",
-      "datum": "2026-10-04",
-      "cas": "18:30",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
+      "hoste_goly": 1,
+      "tretiny": "2:0, 1:0, 1:1",
       "konec": ""
     },
     {
