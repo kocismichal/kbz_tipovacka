@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-05T11:40:44.122Z",
+  "aktualizovano": "2026-10-06T11:23:05.708Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
@@ -25,6 +25,11 @@
       "body": 13
     },
     {
+      "tym": "České Budějovice",
+      "zapasy": 8,
+      "body": 13
+    },
+    {
       "tym": "Kladno",
       "zapasy": 8,
       "body": 12
@@ -45,18 +50,13 @@
       "body": 10
     },
     {
-      "tym": "České Budějovice",
-      "zapasy": 7,
-      "body": 10
-    },
-    {
       "tym": "Litvínov",
       "zapasy": 8,
       "body": 9
     },
     {
       "tym": "Kometa Brno",
-      "zapasy": 6,
+      "zapasy": 7,
       "body": 8
     },
     {
@@ -100,6 +100,12 @@
       "presilovky": 4,
       "tresty": 61
     },
+    "České Budějovice": {
+      "goly": 22,
+      "obdrzene": 24,
+      "presilovky": 9,
+      "tresty": 70
+    },
     "Kladno": {
       "goly": 24,
       "obdrzene": 26,
@@ -124,12 +130,6 @@
       "presilovky": 6,
       "tresty": 97
     },
-    "České Budějovice": {
-      "goly": 17,
-      "obdrzene": 23,
-      "presilovky": 7,
-      "tresty": 60
-    },
     "Litvínov": {
       "goly": 20,
       "obdrzene": 25,
@@ -137,10 +137,10 @@
       "tresty": 72
     },
     "Kometa Brno": {
-      "goly": 19,
-      "obdrzene": 18,
-      "presilovky": 1,
-      "tresty": 41
+      "goly": 20,
+      "obdrzene": 23,
+      "presilovky": 2,
+      "tresty": 53
     },
     "Vítkovice": {
       "goly": 19,

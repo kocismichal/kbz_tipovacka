@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-05T11:40:46.008Z",
+  "aktualizovano": "2026-10-06T11:23:06.938Z",
   "zdroj": "hokej.cz",
   "zapasy": [
     {
@@ -711,11 +711,11 @@
       "domaci": "České Budějovice",
       "hoste": "Kometa Brno",
       "datum": "2026-10-05",
-      "cas": "17:30",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
+      "cas": "",
+      "odehrany": true,
+      "domaci_goly": 5,
+      "hoste_goly": 1,
+      "tretiny": "2:0, 1:0, 2:1",
       "konec": ""
     },
     {
