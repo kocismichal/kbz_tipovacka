@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-06T11:23:06.938Z",
+  "aktualizovano": "2026-10-09T11:24:48.370Z",
   "zdroj": "hokej.cz",
   "zapasy": [
     {
@@ -719,29 +719,29 @@
       "konec": ""
     },
     {
-      "id": "2928315",
-      "kolo": 9,
-      "domaci": "Plzeň",
-      "hoste": "České Budějovice",
-      "datum": "2026-10-08",
-      "cas": "17:30",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
-      "konec": ""
-    },
-    {
       "id": "2928311",
       "kolo": 9,
       "domaci": "Sparta Praha",
       "hoste": "Kometa Brno",
       "datum": "2026-10-08",
-      "cas": "18:30",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
+      "cas": "",
+      "odehrany": true,
+      "domaci_goly": 3,
+      "hoste_goly": 4,
+      "tretiny": "0:1, 1:1, 2:1",
+      "konec": "pp"
+    },
+    {
+      "id": "2928315",
+      "kolo": 9,
+      "domaci": "Plzeň",
+      "hoste": "České Budějovice",
+      "datum": "2026-10-08",
+      "cas": "",
+      "odehrany": true,
+      "domaci_goly": 4,
+      "hoste_goly": 1,
+      "tretiny": "0:0, 3:1, 1:0",
       "konec": ""
     },
     {
@@ -1200,6 +1200,19 @@
       "konec": ""
     },
     {
+      "id": "2928351",
+      "kolo": 14,
+      "domaci": "Třinec",
+      "hoste": "Karlovy Vary",
+      "datum": "2026-10-25",
+      "cas": "10:30",
+      "odehrany": false,
+      "domaci_goly": null,
+      "hoste_goly": null,
+      "tretiny": "",
+      "konec": ""
+    },
+    {
       "id": "2928347",
       "kolo": 14,
       "domaci": "Mladá Boleslav",
@@ -1243,19 +1256,6 @@
       "kolo": 14,
       "domaci": "Mountfield HK",
       "hoste": "Pardubice",
-      "datum": "2026-10-25",
-      "cas": "17:00",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
-      "konec": ""
-    },
-    {
-      "id": "2928351",
-      "kolo": 14,
-      "domaci": "Třinec",
-      "hoste": "Karlovy Vary",
       "datum": "2026-10-25",
       "cas": "17:00",
       "odehrany": false,
@@ -1388,19 +1388,6 @@
       "hoste": "Vítkovice",
       "datum": "2026-10-30",
       "cas": "17:30",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
-      "konec": ""
-    },
-    {
-      "id": "2928360",
-      "kolo": 16,
-      "domaci": "Mountfield HK",
-      "hoste": "Kometa Brno",
-      "datum": "2026-10-30",
-      "cas": "18:00",
       "odehrany": false,
       "domaci_goly": null,
       "hoste_goly": null,
@@ -1713,6 +1700,19 @@
       "hoste": "Olomouc",
       "datum": "2026-11-18",
       "cas": "17:00",
+      "odehrany": false,
+      "domaci_goly": null,
+      "hoste_goly": null,
+      "tretiny": "",
+      "konec": ""
+    },
+    {
+      "id": "2928360",
+      "kolo": 16,
+      "domaci": "Mountfield HK",
+      "hoste": "Kometa Brno",
+      "datum": "2026-11-18",
+      "cas": "18:00",
       "odehrany": false,
       "domaci_goly": null,
       "hoste_goly": null,
@@ -2266,6 +2266,19 @@
       "konec": ""
     },
     {
+      "id": "2928431",
+      "kolo": 26,
+      "domaci": "Pardubice",
+      "hoste": "Kladno",
+      "datum": "2026-12-06",
+      "cas": "15:00",
+      "odehrany": false,
+      "domaci_goly": null,
+      "hoste_goly": null,
+      "tretiny": "",
+      "konec": ""
+    },
+    {
       "id": "2928432",
       "kolo": 26,
       "domaci": "Sparta Praha",
@@ -2309,19 +2322,6 @@
       "kolo": 26,
       "domaci": "České Budějovice",
       "hoste": "Třinec",
-      "datum": "2026-12-06",
-      "cas": "17:00",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
-      "konec": ""
-    },
-    {
-      "id": "2928431",
-      "kolo": 26,
-      "domaci": "Pardubice",
-      "hoste": "Kladno",
       "datum": "2026-12-06",
       "cas": "17:00",
       "odehrany": false,
