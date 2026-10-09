@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-09T18:04:40.536Z",
+  "aktualizovano": "2026-10-09T18:09:43.726Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
@@ -11,8 +11,8 @@
     },
     {
       "tym": "Pardubice",
-      "zapasy": 9,
-      "body": 21
+      "zapasy": 10,
+      "body": 24
     },
     {
       "tym": "Karlovy Vary",
@@ -61,7 +61,7 @@
     },
     {
       "tym": "Vítkovice",
-      "zapasy": 7,
+      "zapasy": 8,
       "body": 7
     },
     {
@@ -83,10 +83,10 @@
       "tresty": 74
     },
     "Pardubice": {
-      "goly": 39,
-      "obdrzene": 25,
-      "presilovky": 13,
-      "tresty": 73
+      "goly": 42,
+      "obdrzene": 27,
+      "presilovky": 14,
+      "tresty": 108
     },
     "Karlovy Vary": {
       "goly": 19,
@@ -143,10 +143,10 @@
       "tresty": 67
     },
     "Vítkovice": {
-      "goly": 19,
-      "obdrzene": 26,
-      "presilovky": 7,
-      "tresty": 85
+      "goly": 21,
+      "obdrzene": 29,
+      "presilovky": 8,
+      "tresty": 100
     },
     "Mladá Boleslav": {
       "goly": 18,
