@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-09T11:24:48.370Z",
+  "aktualizovano": "2026-10-09T17:39:34.273Z",
   "zdroj": "hokej.cz",
   "zapasy": [
     {
@@ -745,16 +745,29 @@
       "konec": ""
     },
     {
+      "id": "2928312",
+      "kolo": 9,
+      "domaci": "Kladno",
+      "hoste": "Mladá Boleslav",
+      "datum": "2026-10-09",
+      "cas": "",
+      "odehrany": true,
+      "domaci_goly": 2,
+      "hoste_goly": 2,
+      "tretiny": "1:0, 1:2, 0:0",
+      "konec": ""
+    },
+    {
       "id": "2928313",
       "kolo": 9,
       "domaci": "Třinec",
       "hoste": "Mountfield HK",
       "datum": "2026-10-09",
-      "cas": "17:00",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
+      "cas": "",
+      "odehrany": true,
+      "domaci_goly": 5,
+      "hoste_goly": 2,
+      "tretiny": "2:0, 2:1, 1:1",
       "konec": ""
     },
     {
@@ -763,11 +776,11 @@
       "domaci": "Litvínov",
       "hoste": "Olomouc",
       "datum": "2026-10-09",
-      "cas": "17:30",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
+      "cas": "",
+      "odehrany": true,
+      "domaci_goly": 2,
+      "hoste_goly": 0,
+      "tretiny": "0:0, 2:0, 0:0",
       "konec": ""
     },
     {
@@ -776,24 +789,11 @@
       "domaci": "Vítkovice",
       "hoste": "Pardubice",
       "datum": "2026-10-09",
-      "cas": "17:30",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
-      "konec": ""
-    },
-    {
-      "id": "2928312",
-      "kolo": 9,
-      "domaci": "Kladno",
-      "hoste": "Mladá Boleslav",
-      "datum": "2026-10-09",
-      "cas": "18:00",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
+      "cas": "",
+      "odehrany": true,
+      "domaci_goly": 2,
+      "hoste_goly": 3,
+      "tretiny": "1:1, 1:2, 0:0",
       "konec": ""
     },
     {
@@ -802,11 +802,11 @@
       "domaci": "Liberec",
       "hoste": "Karlovy Vary",
       "datum": "2026-10-09",
-      "cas": "18:00",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
+      "cas": "",
+      "odehrany": true,
+      "domaci_goly": 4,
+      "hoste_goly": 0,
+      "tretiny": "4:0, 0:0, 0:0",
       "konec": ""
     },
     {

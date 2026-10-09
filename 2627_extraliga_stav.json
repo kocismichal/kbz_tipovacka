@@ -1,13 +1,13 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-08T19:06:19.073Z",
+  "aktualizovano": "2026-10-09T17:39:33.097Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
     {
       "tym": "Třinec",
-      "zapasy": 8,
-      "body": 24
+      "zapasy": 9,
+      "body": 27
     },
     {
       "tym": "Pardubice",
@@ -26,7 +26,7 @@
     },
     {
       "tym": "Mountfield HK",
-      "zapasy": 8,
+      "zapasy": 9,
       "body": 13
     },
     {
@@ -77,10 +77,10 @@
   ],
   "statistiky": {
     "Třinec": {
-      "goly": 40,
-      "obdrzene": 16,
-      "presilovky": 11,
-      "tresty": 68
+      "goly": 45,
+      "obdrzene": 18,
+      "presilovky": 12,
+      "tresty": 74
     },
     "Pardubice": {
       "goly": 39,
@@ -101,10 +101,10 @@
       "tresty": 77
     },
     "Mountfield HK": {
-      "goly": 23,
-      "obdrzene": 20,
-      "presilovky": 4,
-      "tresty": 61
+      "goly": 25,
+      "obdrzene": 25,
+      "presilovky": 5,
+      "tresty": 69
     },
     "České Budějovice": {
       "goly": 23,
