@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-09T18:19:47.862Z",
+  "aktualizovano": "2026-10-09T18:34:52.897Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
@@ -17,6 +17,11 @@
     {
       "tym": "Karlovy Vary",
       "zapasy": 8,
+      "body": 15
+    },
+    {
+      "tym": "Kladno",
+      "zapasy": 9,
       "body": 15
     },
     {
@@ -40,11 +45,6 @@
       "body": 13
     },
     {
-      "tym": "Kladno",
-      "zapasy": 8,
-      "body": 12
-    },
-    {
       "tym": "Litvínov",
       "zapasy": 9,
       "body": 12
@@ -66,7 +66,7 @@
     },
     {
       "tym": "Mladá Boleslav",
-      "zapasy": 8,
+      "zapasy": 9,
       "body": 6
     },
     {
@@ -94,6 +94,12 @@
       "presilovky": 4,
       "tresty": 60
     },
+    "Kladno": {
+      "goly": 28,
+      "obdrzene": 29,
+      "presilovky": 7,
+      "tresty": 79
+    },
     "Plzeň": {
       "goly": 23,
       "obdrzene": 21,
@@ -117,12 +123,6 @@
       "obdrzene": 28,
       "presilovky": 9,
       "tresty": 78
-    },
-    "Kladno": {
-      "goly": 24,
-      "obdrzene": 26,
-      "presilovky": 5,
-      "tresty": 67
     },
     "Litvínov": {
       "goly": 23,
@@ -149,10 +149,10 @@
       "tresty": 100
     },
     "Mladá Boleslav": {
-      "goly": 18,
-      "obdrzene": 31,
-      "presilovky": 3,
-      "tresty": 101
+      "goly": 21,
+      "obdrzene": 35,
+      "presilovky": 4,
+      "tresty": 115
     },
     "Olomouc": {
       "goly": 17,
