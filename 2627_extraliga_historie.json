@@ -2261,7 +2261,7 @@
   },
   {
    "datum": "2026-10-09",
-   "aktualizovano": "2026-10-09T18:09:43.726Z",
+   "aktualizovano": "2026-10-09T18:19:47.862Z",
    "poradi": [
     {
      "tym": "Třinec",
@@ -2275,11 +2275,16 @@
     },
     {
      "tym": "Karlovy Vary",
-     "zapasy": 7,
+     "zapasy": 8,
      "body": 15
     },
     {
      "tym": "Plzeň",
+     "zapasy": 9,
+     "body": 14
+    },
+    {
+     "tym": "Liberec",
      "zapasy": 9,
      "body": 14
     },
@@ -2306,11 +2311,6 @@
     {
      "tym": "Sparta Praha",
      "zapasy": 9,
-     "body": 11
-    },
-    {
-     "tym": "Liberec",
-     "zapasy": 8,
      "body": 11
     },
     {
@@ -2349,15 +2349,21 @@
     },
     "Karlovy Vary": {
      "goly": 19,
-     "obdrzene": 10,
+     "obdrzene": 15,
      "presilovky": 4,
-     "tresty": 56
+     "tresty": 60
     },
     "Plzeň": {
      "goly": 23,
      "obdrzene": 21,
      "presilovky": 5,
      "tresty": 77
+    },
+    "Liberec": {
+     "goly": 26,
+     "obdrzene": 25,
+     "presilovky": 4,
+     "tresty": 99
     },
     "Mountfield HK": {
      "goly": 25,
@@ -2388,12 +2394,6 @@
      "obdrzene": 28,
      "presilovky": 8,
      "tresty": 103
-    },
-    "Liberec": {
-     "goly": 21,
-     "obdrzene": 25,
-     "presilovky": 4,
-     "tresty": 91
     },
     "Kometa Brno": {
      "goly": 24,
