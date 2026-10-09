@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-09T17:39:33.097Z",
+  "aktualizovano": "2026-10-09T18:04:40.536Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
@@ -40,6 +40,11 @@
       "body": 12
     },
     {
+      "tym": "Litvínov",
+      "zapasy": 9,
+      "body": 12
+    },
+    {
       "tym": "Sparta Praha",
       "zapasy": 9,
       "body": 11
@@ -55,11 +60,6 @@
       "body": 10
     },
     {
-      "tym": "Litvínov",
-      "zapasy": 8,
-      "body": 9
-    },
-    {
       "tym": "Vítkovice",
       "zapasy": 7,
       "body": 7
@@ -71,7 +71,7 @@
     },
     {
       "tym": "Olomouc",
-      "zapasy": 8,
+      "zapasy": 9,
       "body": 5
     }
   ],
@@ -118,6 +118,12 @@
       "presilovky": 5,
       "tresty": 67
     },
+    "Litvínov": {
+      "goly": 23,
+      "obdrzene": 26,
+      "presilovky": 8,
+      "tresty": 82
+    },
     "Sparta Praha": {
       "goly": 28,
       "obdrzene": 28,
@@ -136,12 +142,6 @@
       "presilovky": 2,
       "tresty": 67
     },
-    "Litvínov": {
-      "goly": 20,
-      "obdrzene": 25,
-      "presilovky": 7,
-      "tresty": 72
-    },
     "Vítkovice": {
       "goly": 19,
       "obdrzene": 26,
@@ -155,10 +155,10 @@
       "tresty": 101
     },
     "Olomouc": {
-      "goly": 16,
-      "obdrzene": 30,
-      "presilovky": 2,
-      "tresty": 80
+      "goly": 17,
+      "obdrzene": 33,
+      "presilovky": 3,
+      "tresty": 84
     }
   }
 }
