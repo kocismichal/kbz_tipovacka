@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-09T18:34:52.897Z",
+  "aktualizovano": "2026-10-11T16:55:37.194Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
@@ -25,6 +25,11 @@
       "body": 15
     },
     {
+      "tym": "Sparta Praha",
+      "zapasy": 10,
+      "body": 14
+    },
+    {
       "tym": "Plzeň",
       "zapasy": 9,
       "body": 14
@@ -46,13 +51,8 @@
     },
     {
       "tym": "Litvínov",
-      "zapasy": 9,
+      "zapasy": 10,
       "body": 12
-    },
-    {
-      "tym": "Sparta Praha",
-      "zapasy": 9,
-      "body": 11
     },
     {
       "tym": "Kometa Brno",
@@ -60,14 +60,14 @@
       "body": 10
     },
     {
-      "tym": "Vítkovice",
-      "zapasy": 8,
-      "body": 7
+      "tym": "Mladá Boleslav",
+      "zapasy": 10,
+      "body": 9
     },
     {
-      "tym": "Mladá Boleslav",
+      "tym": "Vítkovice",
       "zapasy": 9,
-      "body": 6
+      "body": 7
     },
     {
       "tym": "Olomouc",
@@ -100,6 +100,12 @@
       "presilovky": 7,
       "tresty": 79
     },
+    "Sparta Praha": {
+      "goly": 31,
+      "obdrzene": 28,
+      "presilovky": 8,
+      "tresty": 113
+    },
     "Plzeň": {
       "goly": 23,
       "obdrzene": 21,
@@ -125,16 +131,10 @@
       "tresty": 78
     },
     "Litvínov": {
-      "goly": 23,
-      "obdrzene": 26,
-      "presilovky": 8,
-      "tresty": 82
-    },
-    "Sparta Praha": {
-      "goly": 28,
+      "goly": 24,
       "obdrzene": 28,
       "presilovky": 8,
-      "tresty": 103
+      "tresty": 88
     },
     "Kometa Brno": {
       "goly": 24,
@@ -142,17 +142,17 @@
       "presilovky": 2,
       "tresty": 67
     },
+    "Mladá Boleslav": {
+      "goly": 23,
+      "obdrzene": 36,
+      "presilovky": 4,
+      "tresty": 121
+    },
     "Vítkovice": {
       "goly": 21,
-      "obdrzene": 29,
+      "obdrzene": 32,
       "presilovky": 8,
       "tresty": 100
-    },
-    "Mladá Boleslav": {
-      "goly": 21,
-      "obdrzene": 35,
-      "presilovky": 4,
-      "tresty": 115
     },
     "Olomouc": {
       "goly": 17,
