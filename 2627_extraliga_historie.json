@@ -2423,7 +2423,7 @@
   },
   {
    "datum": "2026-10-11",
-   "aktualizovano": "2026-10-11T17:40:52.460Z",
+   "aktualizovano": "2026-10-11T18:05:59.942Z",
    "poradi": [
     {
      "tym": "Třinec",
@@ -2451,6 +2451,11 @@
      "body": 16
     },
     {
+     "tym": "České Budějovice",
+     "zapasy": 10,
+     "body": 16
+    },
+    {
      "tym": "Kladno",
      "zapasy": 10,
      "body": 15
@@ -2462,13 +2467,8 @@
     },
     {
      "tym": "Liberec",
-     "zapasy": 9,
+     "zapasy": 10,
      "body": 14
-    },
-    {
-     "tym": "České Budějovice",
-     "zapasy": 9,
-     "body": 13
     },
     {
      "tym": "Litvínov",
@@ -2527,6 +2527,12 @@
      "presilovky": 6,
      "tresty": 83
     },
+    "České Budějovice": {
+     "goly": 27,
+     "obdrzene": 31,
+     "presilovky": 10,
+     "tresty": 91
+    },
     "Kladno": {
      "goly": 29,
      "obdrzene": 32,
@@ -2540,16 +2546,10 @@
      "tresty": 113
     },
     "Liberec": {
-     "goly": 26,
-     "obdrzene": 25,
-     "presilovky": 4,
-     "tresty": 99
-    },
-    "České Budějovice": {
-     "goly": 23,
-     "obdrzene": 28,
-     "presilovky": 9,
-     "tresty": 78
+     "goly": 29,
+     "obdrzene": 29,
+     "presilovky": 5,
+     "tresty": 114
     },
     "Litvínov": {
      "goly": 24,
