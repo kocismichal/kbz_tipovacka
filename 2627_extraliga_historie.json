@@ -2423,7 +2423,7 @@
   },
   {
    "datum": "2026-10-11",
-   "aktualizovano": "2026-10-11T16:55:37.194Z",
+   "aktualizovano": "2026-10-11T17:25:46.684Z",
    "poradi": [
     {
      "tym": "Třinec",
@@ -2437,22 +2437,22 @@
     },
     {
      "tym": "Karlovy Vary",
-     "zapasy": 8,
-     "body": 15
+     "zapasy": 9,
+     "body": 18
+    },
+    {
+     "tym": "Plzeň",
+     "zapasy": 10,
+     "body": 16
     },
     {
      "tym": "Kladno",
-     "zapasy": 9,
+     "zapasy": 10,
      "body": 15
     },
     {
      "tym": "Sparta Praha",
      "zapasy": 10,
-     "body": 14
-    },
-    {
-     "tym": "Plzeň",
-     "zapasy": 9,
      "body": 14
     },
     {
@@ -2477,8 +2477,8 @@
     },
     {
      "tym": "Kometa Brno",
-     "zapasy": 8,
-     "body": 10
+     "zapasy": 9,
+     "body": 11
     },
     {
      "tym": "Mladá Boleslav",
@@ -2510,28 +2510,28 @@
      "tresty": 108
     },
     "Karlovy Vary": {
-     "goly": 19,
-     "obdrzene": 15,
+     "goly": 22,
+     "obdrzene": 16,
      "presilovky": 4,
-     "tresty": 60
+     "tresty": 66
+    },
+    "Plzeň": {
+     "goly": 25,
+     "obdrzene": 22,
+     "presilovky": 5,
+     "tresty": 81
     },
     "Kladno": {
-     "goly": 28,
-     "obdrzene": 29,
+     "goly": 29,
+     "obdrzene": 32,
      "presilovky": 7,
-     "tresty": 79
+     "tresty": 89
     },
     "Sparta Praha": {
      "goly": 31,
      "obdrzene": 28,
      "presilovky": 8,
      "tresty": 113
-    },
-    "Plzeň": {
-     "goly": 23,
-     "obdrzene": 21,
-     "presilovky": 5,
-     "tresty": 77
     },
     "Liberec": {
      "goly": 26,
@@ -2558,10 +2558,10 @@
      "tresty": 88
     },
     "Kometa Brno": {
-     "goly": 24,
-     "obdrzene": 26,
-     "presilovky": 2,
-     "tresty": 67
+     "goly": 25,
+     "obdrzene": 28,
+     "presilovky": 3,
+     "tresty": 69
     },
     "Mladá Boleslav": {
      "goly": 23,
