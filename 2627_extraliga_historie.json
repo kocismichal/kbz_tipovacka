@@ -2423,7 +2423,7 @@
   },
   {
    "datum": "2026-10-11",
-   "aktualizovano": "2026-10-11T17:25:46.684Z",
+   "aktualizovano": "2026-10-11T17:40:52.460Z",
    "poradi": [
     {
      "tym": "Třinec",
@@ -2446,6 +2446,11 @@
      "body": 16
     },
     {
+     "tym": "Mountfield HK",
+     "zapasy": 10,
+     "body": 16
+    },
+    {
      "tym": "Kladno",
      "zapasy": 10,
      "body": 15
@@ -2459,11 +2464,6 @@
      "tym": "Liberec",
      "zapasy": 9,
      "body": 14
-    },
-    {
-     "tym": "Mountfield HK",
-     "zapasy": 9,
-     "body": 13
     },
     {
      "tym": "České Budějovice",
@@ -2492,7 +2492,7 @@
     },
     {
      "tym": "Olomouc",
-     "zapasy": 9,
+     "zapasy": 10,
      "body": 5
     }
    ],
@@ -2521,6 +2521,12 @@
      "presilovky": 5,
      "tresty": 81
     },
+    "Mountfield HK": {
+     "goly": 28,
+     "obdrzene": 26,
+     "presilovky": 6,
+     "tresty": 83
+    },
     "Kladno": {
      "goly": 29,
      "obdrzene": 32,
@@ -2538,12 +2544,6 @@
      "obdrzene": 25,
      "presilovky": 4,
      "tresty": 99
-    },
-    "Mountfield HK": {
-     "goly": 25,
-     "obdrzene": 25,
-     "presilovky": 5,
-     "tresty": 69
     },
     "České Budějovice": {
      "goly": 23,
@@ -2576,10 +2576,10 @@
      "tresty": 100
     },
     "Olomouc": {
-     "goly": 17,
-     "obdrzene": 33,
-     "presilovky": 3,
-     "tresty": 84
+     "goly": 18,
+     "obdrzene": 36,
+     "presilovky": 4,
+     "tresty": 96
     }
    }
   }
