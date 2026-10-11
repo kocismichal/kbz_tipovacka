@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-11T17:40:53.442Z",
+  "aktualizovano": "2026-10-11T19:11:19.484Z",
   "zdroj": "hokej.cz",
   "zapasy": [
     {
@@ -817,10 +817,10 @@
       "datum": "2026-10-11",
       "cas": "",
       "odehrany": true,
-      "domaci_goly": 2,
-      "hoste_goly": 2,
-      "tretiny": "2:0, 0:2, 0:0",
-      "konec": ""
+      "domaci_goly": 5,
+      "hoste_goly": 4,
+      "tretiny": "2:0, 0:2, 2:2",
+      "konec": "pp"
     },
     {
       "id": "2928319",

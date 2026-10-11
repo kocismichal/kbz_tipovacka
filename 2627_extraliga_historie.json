@@ -2423,17 +2423,17 @@
   },
   {
    "datum": "2026-10-11",
-   "aktualizovano": "2026-10-11T18:05:59.942Z",
+   "aktualizovano": "2026-10-11T19:11:18.366Z",
    "poradi": [
     {
      "tym": "Třinec",
-     "zapasy": 9,
-     "body": 27
+     "zapasy": 10,
+     "body": 28
     },
     {
      "tym": "Pardubice",
-     "zapasy": 10,
-     "body": 24
+     "zapasy": 11,
+     "body": 26
     },
     {
      "tym": "Karlovy Vary",
@@ -2498,16 +2498,16 @@
    ],
    "statistiky": {
     "Třinec": {
-     "goly": 45,
-     "obdrzene": 18,
-     "presilovky": 12,
-     "tresty": 74
+     "goly": 49,
+     "obdrzene": 23,
+     "presilovky": 13,
+     "tresty": 90
     },
     "Pardubice": {
-     "goly": 42,
-     "obdrzene": 27,
-     "presilovky": 14,
-     "tresty": 108
+     "goly": 47,
+     "obdrzene": 31,
+     "presilovky": 15,
+     "tresty": 118
     },
     "Karlovy Vary": {
      "goly": 22,
