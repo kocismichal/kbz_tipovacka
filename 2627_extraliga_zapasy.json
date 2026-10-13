@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-11T19:11:19.484Z",
+  "aktualizovano": "2026-10-13T11:57:37.412Z",
   "zdroj": "hokej.cz",
   "zapasy": [
     {
@@ -2383,6 +2383,19 @@
       "konec": ""
     },
     {
+      "id": "2928442",
+      "kolo": 27,
+      "domaci": "Karlovy Vary",
+      "hoste": "Třinec",
+      "datum": "2026-12-17",
+      "cas": "18:00",
+      "odehrany": false,
+      "domaci_goly": null,
+      "hoste_goly": null,
+      "tretiny": "",
+      "konec": ""
+    },
+    {
       "id": "2928438",
       "kolo": 27,
       "domaci": "České Budějovice",
@@ -2439,19 +2452,6 @@
       "kolo": 27,
       "domaci": "Kometa Brno",
       "hoste": "Litvínov",
-      "datum": "2026-12-18",
-      "cas": "18:00",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
-      "konec": ""
-    },
-    {
-      "id": "2928442",
-      "kolo": 27,
-      "domaci": "Karlovy Vary",
-      "hoste": "Třinec",
       "datum": "2026-12-18",
       "cas": "18:00",
       "odehrany": false,
@@ -2643,19 +2643,6 @@
       "konec": ""
     },
     {
-      "id": "2928460",
-      "kolo": 30,
-      "domaci": "Litvínov",
-      "hoste": "Sparta Praha",
-      "datum": "2026-12-26",
-      "cas": "15:30",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
-      "konec": ""
-    },
-    {
       "id": "2928458",
       "kolo": 30,
       "domaci": "Kladno",
@@ -2673,6 +2660,19 @@
       "kolo": 30,
       "domaci": "Mladá Boleslav",
       "hoste": "Pardubice",
+      "datum": "2026-12-26",
+      "cas": "16:00",
+      "odehrany": false,
+      "domaci_goly": null,
+      "hoste_goly": null,
+      "tretiny": "",
+      "konec": ""
+    },
+    {
+      "id": "2928460",
+      "kolo": 30,
+      "domaci": "Litvínov",
+      "hoste": "Sparta Praha",
       "datum": "2026-12-26",
       "cas": "16:00",
       "odehrany": false,
