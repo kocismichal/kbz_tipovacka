@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-13T11:57:37.412Z",
+  "aktualizovano": "2026-10-15T18:00:29.555Z",
   "zdroj": "hokej.cz",
   "zapasy": [
     {
@@ -906,11 +906,11 @@
       "domaci": "Litvínov",
       "hoste": "Mountfield HK",
       "datum": "2026-10-15",
-      "cas": "17:30",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
+      "cas": "",
+      "odehrany": true,
+      "domaci_goly": 1,
+      "hoste_goly": 4,
+      "tretiny": "1:2, 0:0, 0:2",
       "konec": ""
     },
     {
