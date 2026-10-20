@@ -87,8 +87,10 @@ jobs:
               echo "Tabulku se nepodařilo stáhnout ($chyb. pokus v řadě):"
               cat "$LOG"
               if [ "$chyb" -ge 3 ]; then
-                echo "Třikrát po sobě chyba – hlídání končí, zbytek dorovná ranní běh."
-                exit 1
+                # hokej.cz runnerům GitHubu vrací 403; tabulku proto stahuje naplánovaná úloha z PC
+                # (skripty/aktualizuj_z_pc.ps1). Běh tady proto končí bez chyby, ať z toho nechodí e-maily.
+                echo "Třikrát po sobě se nepodařilo stáhnout – hlídání končí, tabulku dorovná běh z PC."
+                break
               fi
               sleep 300
               continue
