@@ -2,3 +2,7 @@
 testy/node_modules/
 testy/vystup/
 testy/package-lock.json
+
+# protokol a zámek naplánované úlohy na PC
+skripty/aktualizace.log
+skripty/aktualizace.lock

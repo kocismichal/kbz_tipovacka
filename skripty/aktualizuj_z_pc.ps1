@@ -4,15 +4,21 @@
 #
 # Spuštění ručně:  powershell -NoProfile -ExecutionPolicy Bypass -File skripty\aktualizuj_z_pc.ps1
 # Naplánování:     powershell -NoProfile -ExecutionPolicy Bypass -File skripty\nastav_ulohu.ps1
+# Protokol běhů:   skripty\aktualizace.log
 #
 # Bez parametru se řídí programem zápasů (ve dnech bez hokeje a po zapsání všech zápasů hned skončí).
 # S -Vzdy stáhne tabulku vždy.
 param([switch]$Vzdy)
 
 $ErrorActionPreference = 'Stop'
+# Výpis z node je v UTF-8; bez tohohle by v protokolu byly zprzněné háčky
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
 $repo = Split-Path -Parent $PSScriptRoot
-$log = Join-Path $env:LOCALAPPDATA 'kbz_tipovacka_aktualizace.log'
-$zamek = Join-Path $env:LOCALAPPDATA 'kbz_tipovacka_aktualizace.lock'
+# Protokol i zámek leží vedle skriptu (ne v AppData): složku AppData má Claude přesměrovanou jinam,
+# takže by do protokolu z úlohy neviděl. Oba soubory jsou v .gitignore.
+$log = Join-Path $PSScriptRoot 'aktualizace.log'
+$zamek = Join-Path $PSScriptRoot 'aktualizace.lock'
 
 function Zapis($text) {
     $radek = (Get-Date -Format 'yyyy-MM-dd HH:mm:ss') + '  ' + $text

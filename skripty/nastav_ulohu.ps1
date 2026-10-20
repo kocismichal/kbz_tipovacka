@@ -39,4 +39,4 @@ Register-ScheduledTask -TaskName $nazev -Action $akce -Trigger @($rano, $vecer) 
     -Force | Out-Null
 
 Write-Output "Úloha '$nazev' nastavena: 8:00 a pak od 16:00 do 23:30 po půl hodině."
-Write-Output "Protokol běhů: $env:LOCALAPPDATA\kbz_tipovacka_aktualizace.log"
+Write-Output ('Protokol běhů: ' + (Join-Path $PSScriptRoot 'aktualizace.log'))
