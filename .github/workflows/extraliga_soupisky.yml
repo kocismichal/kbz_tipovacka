@@ -10,8 +10,12 @@ on:
         description: "aktualizace = stáhnout a uložit soupisky, sonda = jen vypsat, co hokej.cz vrací"
         required: false
         default: "aktualizace"
-  schedule:
-    - cron: "45 4 * * 1"   # každé pondělí 6:45 (letní čas) / 5:45 (zimní čas)
+  # Pravidelné spouštění je od 20. 10. 2026 vypnuté: hokej.cz vrací runnerům GitHubu 403, takže běh
+  # stejně nic nestáhne a jen posílá chybové e-maily. Našeptávač jmen navíc slouží jen ve formuláři,
+  # a ten je po uzávěrce zavřený. Až bude potřeba (nová sezóna), stačí odkomentovat řádek s cronem
+  # a soupisky stáhnout z PC: node skripty/stahni_soupisky.js
+  # schedule:
+  #   - cron: "45 4 * * 1"   # každé pondělí 6:45 (letní čas) / 5:45 (zimní čas)
 
 permissions:
   contents: write
