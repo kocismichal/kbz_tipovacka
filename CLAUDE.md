@@ -72,6 +72,13 @@ mergne do `main` a ověří nasazení (viz Pracovní postup).
   nebo odehraných ubylo, starý zůstane. V přehledu je pod pořadím `<details id="zapasy-rozbal">` – JSON se stahuje
   **až po rozkliknutí** (`nactiZapasy`) a má dvě záložky (`zmenZapasy`): *Odehrané* od nejnovějšího hracího dne
   (vítěz tučně, skóre odkazuje na hokej.cz) a *Program* od nejbližšího zápasu s časem (test `test_zapasy.js`).
+- **hokej.cz odmítá roboty GitHub Actions** (HTTP 403 na všechny adresy, ověřeno 20. 10. 2026; neprojde ani
+  přes Apps Script, tedy Google IP, a Wikipedie letos tabulku vůbec nemá). Tabulku proto stahuje
+  **naplánovaná úloha na PC**: `skripty/aktualizuj_z_pc.ps1` (pull → skript → commit → push, zámek proti
+  dvěma běhům naráz, protokol v `%LOCALAPPDATA%\kbz_tipovacka_aktualizace.log`), úlohu zakládá
+  `skripty/nastav_ulohu.ps1` (8:00 a od 16:00 do 23:30 po 30 minutách). Workflow v Actions zůstává jako
+  pokus zdarma – když hokej.cz odmítne, končí bez chyby, aby nechodily e-maily; jediný poplach je ranní
+  běh, když je tabulka starší než `STARE_PO_DNECH`.
 - **Loga týmů** jsou z imgur (`KONFIG.LOGA`), při chybě náhradní `logo_neznamy.svg` (`onerror`).
 - **Lišta** (`navbar.js`): dlaždice nesou ročník, obsah se musí vejít do 1200 px (test `test_lista.js`).
   Na ledových stránkách je tmavě modrá (kontrast k ledu), nikdy se neořezává (co se nevejde, zalomí se pod
