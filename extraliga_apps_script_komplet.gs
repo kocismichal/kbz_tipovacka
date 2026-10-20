@@ -632,7 +632,44 @@ function doGet(e) {
     if (!sheet) return webJson({ error: "List nenalezen: " + nazev });
     return webJson(webDataListu(sheet, nazev === WEB_LIST_TIPY));
   }
-  return webJson({ error: "Neznámá akce. Použij ?action=getCount nebo ?action=data&sheet=Tipy" });
+  if (param.action === "hokej") {
+    return webHokej(param.cesta || "");
+  }
+  return webJson({ error: "Neznámá akce. Použij ?action=getCount, ?action=data&sheet=Tipy nebo ?action=hokej&cesta=/tipsport-extraliga/table" });
+}
+
+// Stránka z hokej.cz přes Apps Script. hokej.cz odmítá (HTTP 403) roboty GitHub Actions, ale Google IP
+// pouští, takže si automatika řekne o stránku tudy. Povolené jsou jen cesty soutěže a klubů, aby z toho
+// nebyl otevřený průchod na celý internet.
+var HOKEJ_WEB = "https://www.hokej.cz";
+var HOKEJ_POVOLENE = [/^\/tipsport-extraliga(\/|\?|$)/, /^\/klub\/[a-z0-9\-]+\/\d+(\/soupiska)?$/];
+function webHokej(cesta) {
+  var c = String(cesta || "");
+  if (c.charAt(0) !== "/" || c.indexOf("//") === 0 || c.indexOf("..") !== -1) {
+    return webText("CHYBA: cesta musí začínat lomítkem a být z hokej.cz", 400);
+  }
+  var povoleno = false;
+  for (var i = 0; i < HOKEJ_POVOLENE.length; i++) if (HOKEJ_POVOLENE[i].test(c)) povoleno = true;
+  if (!povoleno) return webText("CHYBA: tato cesta není povolená", 400);
+
+  try {
+    var r = UrlFetchApp.fetch(HOKEJ_WEB + c, {
+      muteHttpExceptions: true,
+      followRedirects: true,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "cs-CZ,cs;q=0.9,en;q=0.8"
+      }
+    });
+    if (r.getResponseCode() !== 200) return webText("CHYBA: hokej.cz vrátil HTTP " + r.getResponseCode(), 200);
+    return webText(r.getContentText(), 200);
+  } catch (err) {
+    return webText("CHYBA: " + err, 200);
+  }
+}
+function webText(text, kod) {
+  return ContentService.createTextOutput(text).setMimeType(ContentService.MimeType.TEXT);
 }
 
 // Celý list jako pole řádků. U listu Tipy se e-maily (osobní údaj) nahradí prázdným textem, datum se převede na text.
