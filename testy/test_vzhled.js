@@ -1,7 +1,7 @@
 const { chromium } = require('playwright');
 const E = require('../extraliga_spolecne.js');
 const K = E.KONFIG, SL = E.SLOUPCE, T = K.TYMY;
-const { SCR, KOREN } = require('./pomocne');
+const { SCR, KOREN, podstrcUzaverku, UZAVERKA_OTEVRENO } = require('./pomocne');
 const fs = require('fs');
 // loga týmů z imgur nejsou dostupná → místo nich lokální barevné SVG, ať je vidět oddělení od podkladu
 const svgLogo = (txt, barva) => `data:image/svg+xml;utf8,` + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><circle cx="32" cy="32" r="28" fill="${barva}"/><text x="32" y="40" font-size="22" text-anchor="middle" fill="#fff" font-family="Arial" font-weight="bold">${txt}</text></svg>`);
@@ -72,6 +72,7 @@ function hotovo(sVysledky) {
       }
       // formulář (jen před uzávěrkou)
       if (!sc.cas) {
+        await podstrcUzaverku(page, UZAVERKA_OTEVRENO);   // skutečná uzávěrka už je pryč, pro snímky ho potřebujeme otevřený
         await page.goto('http://127.0.0.1:8765/2627_form_extraliga.html');
         await page.waitForTimeout(500);
         await page.evaluate(() => {

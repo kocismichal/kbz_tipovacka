@@ -1,7 +1,7 @@
 // Našeptávač jmen hráčů ve formuláři (soupisky z hokej.cz v extraliga_soupisky.js):
 // nabídka podle začátku jména i příjmení, klub u každého hráče, výběr klávesnicí, brankáři mimo icetime.
 const { chromium } = require('playwright');
-const { SCR } = require('./pomocne');
+const { SCR, podstrcUzaverku, UZAVERKA_OTEVRENO } = require('./pomocne');
 
 let chyb = 0;
 function over(podminka, popis, detail) {
@@ -22,6 +22,7 @@ function over(podminka, popis, detail) {
     if (url.includes('script.google.com')) return route.fulfill({ status: 200, body: '' });
     return route.abort();   // fonty, ikony, loga – offline
   });
+  await podstrcUzaverku(page, UZAVERKA_OTEVRENO);   // našeptávač je součástí otevřeného formuláře
   await page.goto('http://127.0.0.1:8765/2627_form_extraliga.html');
   await page.waitForTimeout(300);
 

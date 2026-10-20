@@ -1,5 +1,5 @@
 const { chromium } = require('playwright');
-const { SCR, KOREN } = require('./pomocne');
+const { SCR, KOREN, podstrcUzaverku, UZAVERKA_OTEVRENO, UZAVERKA_ZAVRENO } = require('./pomocne');
 (async () => {
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1300, height: 900 } });
@@ -13,6 +13,7 @@ const { SCR, KOREN } = require('./pomocne');
     if (url.includes('script.google.com')) { postData = route.request().postData(); return route.fulfill({ status: 200, body: '' }); }
     return route.abort();   // fonty, ikony, loga – offline
   });
+  await podstrcUzaverku(page, UZAVERKA_OTEVRENO);   // ať se formulář ukáže i po skutečné uzávěrce
   await page.goto('http://127.0.0.1:8765/2627_form_extraliga.html');
   await page.waitForTimeout(300);
 
@@ -87,6 +88,26 @@ const { SCR, KOREN } = require('./pomocne');
   } else console.log('POST neproběhl!');
 
   await page.screenshot({ path: SCR + 'form.png', fullPage: true });
+
+  // Po uzávěrce: místo polí jen hláška, nic se nedá odeslat
+  const pageZ = await browser.newPage({ viewport: { width: 1300, height: 900 } });
+  await pageZ.route('**/*', route => {
+    const url = route.request().url();
+    if (url.startsWith('http://127.0.0.1:8765')) return route.continue();
+    return route.abort();
+  });
+  await podstrcUzaverku(pageZ, UZAVERKA_ZAVRENO);
+  await pageZ.goto('http://127.0.0.1:8765/2627_form_extraliga.html');
+  await pageZ.waitForTimeout(300);
+  const zavreno = await pageZ.evaluate(() => ({
+    hlaska: (document.getElementById('formularContainer').innerText || '').replace(/\s+/g, ' ').trim(),
+    poli: document.querySelectorAll('#formularContainer select, #formularContainer input, #formularContainer button').length
+  }));
+  console.log('Po uzávěrce:', JSON.stringify(zavreno));
+  if (!/pozd/i.test(zavreno.hlaska) || zavreno.poli !== 0) throw new Error('formulář po uzávěrce není zavřený: ' + JSON.stringify(zavreno));
+  await pageZ.screenshot({ path: SCR + 'form_po_uzaverce.png' });
+  await pageZ.close();
+
   console.log('Chyby:', errors);
   await browser.close();
 })();

@@ -26,6 +26,14 @@ node spust_vse.js form   # jen testy s "form" v názvu
 `spust_vse.js` zapne lokální server na http://127.0.0.1:8765 (kořen repa) a pustí testy po jednom.
 Screenshoty se ukládají do `testy/vystup/` (složka je v .gitignore).
 
+## Uzávěrka formuláře
+
+Formulář se po `KONFIG.DEADLINE` zavře a místo polí ukáže hlášku. Testy, které potřebují otevřený
+formulář (`test_form.js`, `test_naseptavac.js`, `test_vzhled.js`), si proto podstrčí konfiguraci
+s uzávěrkou v budoucnu – `podstrcUzaverku(page, UZAVERKA_OTEVRENO)` z `pomocne.js`. Volá se **až po**
+obecném `page.route('**/*')`, jinak by se neuplatnilo. `test_form.js` ověřuje i zavřený stav
+(`UZAVERKA_ZAVRENO`).
+
 ## Co který test hlídá
 
 | Test | Co kontroluje |
@@ -36,7 +44,7 @@ Screenshoty se ukládají do `testy/vystup/` (složka je v .gitignore).
 | `test_zapasy.js` | zápasy sezóny: parser stránky všech kol (kolo, datum přes Nový rok, prodloužení a nájezdy, zápasy na programu s časem) a rozbalovací seznam v přehledu – zavřený se nestahuje, po rozkliknutí má záložky Odehrané a Program, dny od nejnovějšího, zvýrazněného vítěze a drží se v šířce mobilu |
 | `test_graf.js` | graf vývoje tipovačky z denních snímků: legenda ve dvou řádcích se zaškrtávátky, přepínač „jen Mistři“, osa podle rozsahu hodnot, přidání tipujícího psaním i výběrem, bez historie skrytý |
 | `test_bundle.js` | že `extraliga_apps_script_komplet.gs` odpovídá zdrojům (po změně spusť `node skripty/sestav_apps_script.js`) |
-| `test_form.js` | formulář: výběr týmů, žolíci, generované otázky, kontrola před odesláním, odeslaná pole |
+| `test_form.js` | formulář: výběr týmů, žolíci, generované otázky, kontrola před odesláním, odeslaná pole; navíc stav **po uzávěrce** (místo polí jen hláška) |
 | `test_prehled.js` | přehled 26/27 před uzávěrkou (jen tipy) i po ní (body, záložky, karta hráče) |
 | `test_stav.js` | automatická tabulka: platný snímek (finále), neplatný snímek (záloha z listu), před startem nic z výsledků, průběžně jen pořadí a týmové otázky ze statistik |
 | `test_zmeny.js` | vyhodnocení 25/26: stupně vítězů, karta bez oblíbenosti, matice bez %, TOP 10 se správnou odpovědí, lišta s ročníkem, text pravidel |
