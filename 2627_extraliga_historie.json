@@ -3071,7 +3071,7 @@
   },
   {
    "datum": "2026-10-23",
-   "aktualizovano": "2026-10-23T17:30:04.113Z",
+   "aktualizovano": "2026-10-23T18:00:04.227Z",
    "poradi": [
     {
      "tym": "Třinec",
@@ -3100,12 +3100,17 @@
     },
     {
      "tym": "Plzeň",
-     "zapasy": 12,
+     "zapasy": 13,
      "body": 18
     },
     {
      "tym": "Kladno",
      "zapasy": 12,
+     "body": 18
+    },
+    {
+     "tym": "Litvínov",
+     "zapasy": 13,
      "body": 18
     },
     {
@@ -3115,7 +3120,7 @@
     },
     {
      "tym": "Kometa Brno",
-     "zapasy": 12,
+     "zapasy": 13,
      "body": 17
     },
     {
@@ -3124,19 +3129,14 @@
      "body": 16
     },
     {
-     "tym": "Litvínov",
-     "zapasy": 12,
-     "body": 15
+     "tym": "Vítkovice",
+     "zapasy": 13,
+     "body": 13
     },
     {
      "tym": "Mladá Boleslav",
      "zapasy": 13,
      "body": 12
-    },
-    {
-     "tym": "Vítkovice",
-     "zapasy": 12,
-     "body": 10
     },
     {
      "tym": "Olomouc",
@@ -3177,15 +3177,21 @@
     },
     "Plzeň": {
      "goly": 31,
-     "obdrzene": 29,
+     "obdrzene": 31,
      "presilovky": 8,
-     "tresty": 96
+     "tresty": 106
     },
     "Kladno": {
      "goly": 33,
      "obdrzene": 36,
      "presilovky": 9,
      "tresty": 107
+    },
+    "Litvínov": {
+     "goly": 30,
+     "obdrzene": 33,
+     "presilovky": 9,
+     "tresty": 104
     },
     "Sparta Praha": {
      "goly": 34,
@@ -3194,10 +3200,10 @@
      "tresty": 136
     },
     "Kometa Brno": {
-     "goly": 31,
-     "obdrzene": 33,
+     "goly": 33,
+     "obdrzene": 36,
      "presilovky": 3,
-     "tresty": 91
+     "tresty": 97
     },
     "Liberec": {
      "goly": 33,
@@ -3205,23 +3211,17 @@
      "presilovky": 7,
      "tresty": 120
     },
-    "Litvínov": {
-     "goly": 28,
-     "obdrzene": 33,
-     "presilovky": 9,
-     "tresty": 102
+    "Vítkovice": {
+     "goly": 33,
+     "obdrzene": 45,
+     "presilovky": 10,
+     "tresty": 130
     },
     "Mladá Boleslav": {
      "goly": 29,
      "obdrzene": 46,
      "presilovky": 6,
      "tresty": 149
-    },
-    "Vítkovice": {
-     "goly": 30,
-     "obdrzene": 43,
-     "presilovky": 10,
-     "tresty": 126
     },
     "Olomouc": {
      "goly": 23,
