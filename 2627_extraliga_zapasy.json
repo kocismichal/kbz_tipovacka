@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-23T16:30:04.694Z",
+  "aktualizovano": "2026-10-23T17:30:04.743Z",
   "zdroj": "hokej.cz",
   "zapasy": [
     {
@@ -1116,9 +1116,9 @@
       "datum": "2026-10-23",
       "cas": "",
       "odehrany": true,
-      "domaci_goly": 1,
-      "hoste_goly": 4,
-      "tretiny": "1:3, 0:1, 0:0",
+      "domaci_goly": 2,
+      "hoste_goly": 6,
+      "tretiny": "1:3, 0:1, 1:2",
       "konec": ""
     },
     {
@@ -1129,9 +1129,9 @@
       "datum": "2026-10-23",
       "cas": "",
       "odehrany": true,
-      "domaci_goly": 1,
-      "hoste_goly": 0,
-      "tretiny": "1:0, 0:0, 0:0",
+      "domaci_goly": 3,
+      "hoste_goly": 2,
+      "tretiny": "1:0, 2:2, 0:0",
       "konec": ""
     },
     {
@@ -1142,9 +1142,9 @@
       "datum": "2026-10-23",
       "cas": "",
       "odehrany": true,
-      "domaci_goly": 0,
-      "hoste_goly": 0,
-      "tretiny": "0:0, 0:0, 0:0",
+      "domaci_goly": 2,
+      "hoste_goly": 1,
+      "tretiny": "0:0, 2:1, 0:0",
       "konec": ""
     },
     {
@@ -1155,9 +1155,9 @@
       "datum": "2026-10-23",
       "cas": "",
       "odehrany": true,
-      "domaci_goly": 0,
+      "domaci_goly": 2,
       "hoste_goly": 0,
-      "tretiny": "0:0, 0:0, 0:0",
+      "tretiny": "0:0, 0:0, 2:0",
       "konec": ""
     },
     {
@@ -1168,9 +1168,9 @@
       "datum": "2026-10-23",
       "cas": "",
       "odehrany": true,
-      "domaci_goly": 0,
-      "hoste_goly": 2,
-      "tretiny": "0:2, 0:0, 0:0",
+      "domaci_goly": 2,
+      "hoste_goly": 3,
+      "tretiny": "0:2, 2:1, 0:0",
       "konec": ""
     },
     {
@@ -1181,9 +1181,9 @@
       "datum": "2026-10-23",
       "cas": "",
       "odehrany": true,
-      "domaci_goly": 1,
+      "domaci_goly": 3,
       "hoste_goly": 2,
-      "tretiny": "1:2, 0:0, 0:0",
+      "tretiny": "1:2, 1:0, 1:0",
       "konec": ""
     },
     {

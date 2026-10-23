@@ -3071,11 +3071,11 @@
   },
   {
    "datum": "2026-10-23",
-   "aktualizovano": "2026-10-23T16:30:04.120Z",
+   "aktualizovano": "2026-10-23T17:30:04.113Z",
    "poradi": [
     {
      "tym": "Třinec",
-     "zapasy": 12,
+     "zapasy": 13,
      "body": 34
     },
     {
@@ -3089,12 +3089,12 @@
      "body": 23
     },
     {
-     "tym": "Mountfield HK",
-     "zapasy": 12,
-     "body": 19
+     "tym": "České Budějovice",
+     "zapasy": 13,
+     "body": 22
     },
     {
-     "tym": "České Budějovice",
+     "tym": "Mountfield HK",
      "zapasy": 12,
      "body": 19
     },
@@ -3146,10 +3146,10 @@
    ],
    "statistiky": {
     "Třinec": {
-     "goly": 54,
-     "obdrzene": 24,
-     "presilovky": 13,
-     "tresty": 100
+     "goly": 56,
+     "obdrzene": 30,
+     "presilovky": 14,
+     "tresty": 110
     },
     "Pardubice": {
      "goly": 51,
@@ -3163,17 +3163,17 @@
      "presilovky": 5,
      "tresty": 82
     },
+    "České Budějovice": {
+     "goly": 38,
+     "obdrzene": 37,
+     "presilovky": 14,
+     "tresty": 141
+    },
     "Mountfield HK": {
      "goly": 35,
      "obdrzene": 31,
      "presilovky": 8,
      "tresty": 109
-    },
-    "České Budějovice": {
-     "goly": 32,
-     "obdrzene": 35,
-     "presilovky": 12,
-     "tresty": 127
     },
     "Plzeň": {
      "goly": 31,
