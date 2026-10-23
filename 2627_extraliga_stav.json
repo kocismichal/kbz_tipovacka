@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-20T17:43:36.403Z",
+  "aktualizovano": "2026-10-23T16:30:04.120Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
@@ -16,8 +16,8 @@
     },
     {
       "tym": "Karlovy Vary",
-      "zapasy": 11,
-      "body": 21
+      "zapasy": 12,
+      "body": 23
     },
     {
       "tym": "Mountfield HK",
@@ -46,13 +46,13 @@
     },
     {
       "tym": "Kometa Brno",
-      "zapasy": 11,
-      "body": 16
+      "zapasy": 12,
+      "body": 17
     },
     {
       "tym": "Liberec",
-      "zapasy": 11,
-      "body": 15
+      "zapasy": 12,
+      "body": 16
     },
     {
       "tym": "Litvínov",
@@ -61,18 +61,18 @@
     },
     {
       "tym": "Mladá Boleslav",
-      "zapasy": 12,
+      "zapasy": 13,
       "body": 12
     },
     {
       "tym": "Vítkovice",
-      "zapasy": 11,
-      "body": 8
+      "zapasy": 12,
+      "body": 10
     },
     {
       "tym": "Olomouc",
-      "zapasy": 12,
-      "body": 5
+      "zapasy": 13,
+      "body": 8
     }
   ],
   "statistiky": {
@@ -89,10 +89,10 @@
       "tresty": 126
     },
     "Karlovy Vary": {
-      "goly": 28,
-      "obdrzene": 19,
+      "goly": 30,
+      "obdrzene": 20,
       "presilovky": 5,
-      "tresty": 76
+      "tresty": 82
     },
     "Mountfield HK": {
       "goly": 35,
@@ -125,16 +125,16 @@
       "tresty": 136
     },
     "Kometa Brno": {
-      "goly": 30,
-      "obdrzene": 31,
+      "goly": 31,
+      "obdrzene": 33,
       "presilovky": 3,
-      "tresty": 81
+      "tresty": 91
     },
     "Liberec": {
-      "goly": 31,
-      "obdrzene": 32,
-      "presilovky": 6,
-      "tresty": 116
+      "goly": 33,
+      "obdrzene": 35,
+      "presilovky": 7,
+      "tresty": 120
     },
     "Litvínov": {
       "goly": 28,
@@ -143,22 +143,22 @@
       "tresty": 102
     },
     "Mladá Boleslav": {
-      "goly": 27,
-      "obdrzene": 42,
-      "presilovky": 5,
-      "tresty": 137
+      "goly": 29,
+      "obdrzene": 46,
+      "presilovky": 6,
+      "tresty": 149
     },
     "Vítkovice": {
-      "goly": 27,
-      "obdrzene": 41,
+      "goly": 30,
+      "obdrzene": 43,
       "presilovky": 10,
-      "tresty": 118
+      "tresty": 126
     },
     "Olomouc": {
-      "goly": 19,
-      "obdrzene": 45,
-      "presilovky": 4,
-      "tresty": 114
+      "goly": 23,
+      "obdrzene": 47,
+      "presilovky": 5,
+      "tresty": 122
     }
   }
 }
