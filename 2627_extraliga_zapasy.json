@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-25T15:53:57.714Z",
+  "aktualizovano": "2026-10-25T17:23:57.489Z",
   "zdroj": "hokej.cz",
   "zapasy": [
     {
@@ -1200,6 +1200,19 @@
       "konec": "pp"
     },
     {
+      "id": "2928346",
+      "kolo": 14,
+      "domaci": "Mountfield HK",
+      "hoste": "Pardubice",
+      "datum": "2026-10-25",
+      "cas": "",
+      "odehrany": true,
+      "domaci_goly": 2,
+      "hoste_goly": 0,
+      "tretiny": "1:0, 1:0, 0:0",
+      "konec": ""
+    },
+    {
       "id": "2928347",
       "kolo": 14,
       "domaci": "Mladá Boleslav",
@@ -1207,9 +1220,22 @@
       "datum": "2026-10-25",
       "cas": "",
       "odehrany": true,
+      "domaci_goly": 2,
+      "hoste_goly": 2,
+      "tretiny": "1:0, 1:0, 0:2",
+      "konec": "pp"
+    },
+    {
+      "id": "2928349",
+      "kolo": 14,
+      "domaci": "Litvínov",
+      "hoste": "Kometa Brno",
+      "datum": "2026-10-25",
+      "cas": "",
+      "odehrany": true,
       "domaci_goly": 1,
-      "hoste_goly": 0,
-      "tretiny": "1:0, 0:0, 0:0",
+      "hoste_goly": 1,
+      "tretiny": "1:1, 0:0, 0:0",
       "konec": ""
     },
     {
@@ -1220,9 +1246,9 @@
       "datum": "2026-10-25",
       "cas": "",
       "odehrany": true,
-      "domaci_goly": 1,
-      "hoste_goly": 0,
-      "tretiny": "1:0, 0:0, 0:0",
+      "domaci_goly": 2,
+      "hoste_goly": 1,
+      "tretiny": "1:0, 1:0, 0:1",
       "konec": ""
     },
     {
@@ -1246,35 +1272,9 @@
       "datum": "2026-10-25",
       "cas": "",
       "odehrany": true,
-      "domaci_goly": 0,
+      "domaci_goly": 2,
       "hoste_goly": 0,
-      "tretiny": "0:0, 0:0, 0:0",
-      "konec": ""
-    },
-    {
-      "id": "2928346",
-      "kolo": 14,
-      "domaci": "Mountfield HK",
-      "hoste": "Pardubice",
-      "datum": "2026-10-25",
-      "cas": "17:00",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
-      "konec": ""
-    },
-    {
-      "id": "2928349",
-      "kolo": 14,
-      "domaci": "Litvínov",
-      "hoste": "Kometa Brno",
-      "datum": "2026-10-25",
-      "cas": "17:30",
-      "odehrany": false,
-      "domaci_goly": null,
-      "hoste_goly": null,
-      "tretiny": "",
+      "tretiny": "0:0, 0:0, 2:0",
       "konec": ""
     },
     {

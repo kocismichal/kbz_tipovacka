@@ -1,6 +1,6 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-10-25T15:53:57.003Z",
+  "aktualizovano": "2026-10-25T17:23:56.712Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
@@ -18,6 +18,11 @@
       "tym": "Karlovy Vary",
       "zapasy": 14,
       "body": 25
+    },
+    {
+      "tym": "Liberec",
+      "zapasy": 14,
+      "body": 22
     },
     {
       "tym": "České Budějovice",
@@ -40,13 +45,8 @@
       "body": 19
     },
     {
-      "tym": "Liberec",
-      "zapasy": 13,
-      "body": 19
-    },
-    {
       "tym": "Plzeň",
-      "zapasy": 13,
+      "zapasy": 14,
       "body": 18
     },
     {
@@ -94,6 +94,12 @@
       "presilovky": 5,
       "tresty": 98
     },
+    "Liberec": {
+      "goly": 38,
+      "obdrzene": 36,
+      "presilovky": 7,
+      "tresty": 136
+    },
     "České Budějovice": {
       "goly": 38,
       "obdrzene": 37,
@@ -118,17 +124,11 @@
       "presilovky": 9,
       "tresty": 152
     },
-    "Liberec": {
-      "goly": 36,
-      "obdrzene": 36,
-      "presilovky": 7,
-      "tresty": 130
-    },
     "Plzeň": {
       "goly": 31,
-      "obdrzene": 31,
+      "obdrzene": 33,
       "presilovky": 8,
-      "tresty": 106
+      "tresty": 112
     },
     "Litvínov": {
       "goly": 30,
