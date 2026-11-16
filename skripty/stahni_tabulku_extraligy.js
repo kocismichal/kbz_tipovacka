@@ -430,7 +430,15 @@ async function ulozZapasy() {
     if (vada) throw new Error(vada);
     const novy = { sezona: EXTRALIGA.KONFIG.SEZONA, aktualizovano: new Date().toISOString(), zdroj: "hokej.cz", zapasy };
     if (stary && JSON.stringify(stary.zapasy) === JSON.stringify(zapasy)) {
-      console.log("Zápasy: beze změny (" + odehrane(zapasy) + " odehraných z " + zapasy.length + ").");
+      // Beze změny se soubor nepřepisuje – jen když už je starý, obnoví se datum ověření,
+      // jinak by se zastaralý rozpis stahoval znovu při každém běhu
+      const stari = stariRozpisu(new Date());
+      if (stari !== null && stari > ROZPIS_STARY_H) {
+        fs.writeFileSync(ZAPASY, JSON.stringify(novy, null, 2) + "\n");
+        console.log("Zápasy: beze změny (" + odehrane(zapasy) + " odehraných z " + zapasy.length + "), obnoveno datum ověření.");
+      } else {
+        console.log("Zápasy: beze změny (" + odehrane(zapasy) + " odehraných z " + zapasy.length + ").");
+      }
       return zapasy.length;
     }
     fs.writeFileSync(ZAPASY, JSON.stringify(novy, null, 2) + "\n");
