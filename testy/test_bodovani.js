@@ -145,6 +145,21 @@ assert.strictEqual(rad[E.bonusPodleKlice('tympresilovky').idx], T[3], 'finále p
 assert.strictEqual(rad[E.bonusPodleKlice('rekord_goly').idx], 'Ano', 'finále ruční odpovědi platí');
 assert.strictEqual(rad[SL.BODY_MISTO_OD], '6', 'finále body týmů ze snímku');
 assert.strictEqual(E.sestavVysledky(list2, stav, 'prubezne')[E.bonusPodleKlice('rekord_goly').idx], '', 'explicitní režim průběžně');
+
+// žolík: stejný tým víckrát se boduje jen jednou (formulář to hlídá, přímý požadavek na server ne)
+{
+  const tip = new Array(SL.POCET_TIPU).fill('');
+  for (let k = 0; k < E.KONFIG.POCET_ZOLIKU; k++) {
+    const sl = E.sloupceZolika(k);
+    tip[sl.tym] = T[0];
+    tip[sl.body] = String(Number(rad[SL.BODY_MISTO_OD]) + k);   // přesně, o 1 vedle, o 2 vedle
+  }
+  const z = E.bodyZolici(tip, rad);
+  assert.ok(z.polozky[0].body > 0, 'první žolík se boduje');
+  assert.strictEqual(z.polozky[1].body + z.polozky[2].body, 0, 'opakovaný žolík body nedostane');
+  assert.strictEqual(z.celkem, z.polozky[0].body, 'součet žolíků = jen první výskyt');
+  console.log('✔ opakovaný žolík se boduje jen jednou');
+}
 E.KONFIG.FINALE = false;
 console.log('✔ průběžný a finálový režim');
 console.log('VŠECHNY TESTY BODOVÁNÍ PROŠLY');

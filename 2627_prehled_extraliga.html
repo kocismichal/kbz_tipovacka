@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Extraliga 2026/27 – Tipovačka Mistrů světa (přehled tipů)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="extraliga.css">
 
@@ -422,7 +422,7 @@
         function sklonujBody(x) { const n = Number(x) || 0; if (!Number.isInteger(n)) return 'bodu'; if (n === 1) return 'bod'; if (n >= 2 && n <= 4) return 'body'; return 'bodů'; }
         function formatProcenta(pocet, zaklad) { const n = zaklad === undefined ? vsichniHraci.length : zaklad; if (!n) return '0,0'; return (pocet / n * 100).toFixed(1).replace('.', ','); }   // bez znaku %, ten je v přepínači
         function sklonujTipujici(n) { return n === 1 ? '1 tipující' : (n >= 2 && n <= 4 ? n + ' tipující' : n + ' tipujících'); }
-        function getLogoSrc(nazev) { const n = norm(nazev); return n && KONFIG.LOGA[n] ? KONFIG.LOGA[n] : ''; }
+        function getLogoSrc(nazev) { const n = norm(nazev); return n && Object.prototype.hasOwnProperty.call(KONFIG.LOGA, n) ? KONFIG.LOGA[n] : ''; }
         function logoNeboFallback(nazev) { return getLogoSrc(nazev) || FALLBACK_LOGO; }
         function najdiBonus(klic) { return EXTRALIGA.BONUSY.find(q => q.klic === klic); }
         function formatDatumCas(iso) { const d = new Date(iso); if (isNaN(d)) return String(iso || ''); return d.toLocaleDateString('cs-CZ') + ' ' + d.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' }); }
@@ -547,12 +547,9 @@
             document.getElementById('tab-bonusy').textContent = KONFIG.FINALE ? 'Body za bonusové otázky' : 'Body za týmové otázky (průběžně)';
             document.getElementById('sekce-prehled-vsech').style.display = bodovaniAktivni ? 'none' : 'block';
             if (bodovaniAktivni) zmenZalozku('celkem'); else vykresliPrehledVsech();
-            naplnMatrixFiltr();
-            vykresliPrehledMatrix(matrixRezim);
-            vykresliZolici();
-            vykresliBonusy();
-            vykresliMistriStatistiky();
-            vykresliGraf(grafRezim);
+            // Chyba v jedné sekci nesmí shodit celý přehled (catch v nactiData by ho celý nahradil hláškou)
+            [naplnMatrixFiltr, () => vykresliPrehledMatrix(matrixRezim), vykresliZolici, vykresliBonusy, vykresliMistriStatistiky, () => vykresliGraf(grafRezim)]
+                .forEach(f => { try { f(); } catch (e) { console.error('Sekce přehledu se nevykreslila:', e); } });
         }
 
         // ---------- AKTUÁLNÍ STAV EXTRALIGY ----------
@@ -813,7 +810,7 @@
             const sel = document.getElementById('matrix-klub');
             if (!sel) return;
             const puvodni = sel.value;
-            const pocty = {};
+            const pocty = Object.create(null);   // klíče jsou texty z tipů – slovník bez zděděných vlastností
             vsichniHraci.forEach(h => { if (h.klub) pocty[h.klub] = (pocty[h.klub] || 0) + 1; });
             const kluby = Object.keys(pocty).sort((a, b) => pocty[b] - pocty[a] || a.localeCompare(b, 'cs'));
             sel.innerHTML = '';
@@ -826,7 +823,7 @@
 
         function spocitejMatici(hraci) {
             const tymy = KONFIG.TYMY.slice();
-            const pocty = {};
+            const pocty = Object.create(null);
             tymy.forEach(t => { pocty[t] = new Array(KONFIG.POCET_MIST).fill(0); });
             hraci.forEach(h => {
                 for (let j = 0; j < KONFIG.POCET_MIST; j++) {
@@ -883,7 +880,7 @@
 
         // ---------- BONUSOVÉ OTÁZKY ----------
         function spocitejPoctyTymu(idx) {
-            const pocty = {};
+            const pocty = Object.create(null);
             const tymy = KONFIG.TYMY.slice();
             tymy.forEach(t => { pocty[t] = 0; });
             vsichniHraci.forEach(h => {
@@ -1040,7 +1037,7 @@
             if (vsichniHraci.length === 0) { c.innerHTML = `<div class="loader">${TEXT_PRAZDNE}</div>`; return; }
 
             const tymy = KONFIG.TYMY.slice();
-            const stat = {};
+            const stat = Object.create(null);
             tymy.forEach(t => { stat[t] = { pocet: 0, soucetBodu: 0, pocetBodu: 0 }; });
             let sZoliky = 0;
             vsichniHraci.forEach(h => {
@@ -1091,11 +1088,11 @@
             const c = document.getElementById('mistri-stat-container');
             if (vsichniHraci.length === 0) { c.innerHTML = `<div class="loader">${TEXT_PRAZDNE}</div>`; return; }
 
-            const klicMistra = {};
+            const klicMistra = Object.create(null);
             KONFIG.MISTRI.forEach(m => { klicMistra[m.toLowerCase()] = m; });
 
             // Kdo vyhraje tipovačku Mistrů?
-            const vitezPocty = {};
+            const vitezPocty = Object.create(null);
             KONFIG.MISTRI.forEach(m => { vitezPocty[m] = 0; });
             vsichniHraci.forEach(h => {
                 const m = klicMistra[norm(h.radek[SL.MISTR_VITEZ]).toLowerCase()];
@@ -1106,7 +1103,7 @@
 
             // Matice oblíbenosti Mistr x 1.-4. místo.
             const pocetMist = SL.MISTR_DO - SL.MISTR_OD + 1;
-            const oblibenost = {};
+            const oblibenost = Object.create(null);
             KONFIG.MISTRI.forEach(m => { oblibenost[m] = new Array(pocetMist).fill(0); });
             vsichniHraci.forEach(h => {
                 for (let j = 0; j < pocetMist; j++) {

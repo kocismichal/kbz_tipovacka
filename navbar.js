@@ -30,8 +30,8 @@ const navbarHTML = `
         </div>
     </div>
     <div class="nav-right-wrap">
-        <a href="https://discord.gg/p8WEPtjahD" target="_blank" class="nav-discord-btn"><i class="fab fa-discord"></i> KBZ DISCORD</a>
-        <a href="https://www.kudybezizajic.com/" target="_blank" class="nav-shop-btn"><i class="fas fa-shopping-cart"></i> KBZ SHOP</a>
+        <a href="https://discord.gg/p8WEPtjahD" target="_blank" rel="noopener noreferrer" class="nav-discord-btn"><i class="fab fa-discord"></i> KBZ DISCORD</a>
+        <a href="https://www.kudybezizajic.com/" target="_blank" rel="noopener noreferrer" class="nav-shop-btn"><i class="fas fa-shopping-cart"></i> KBZ SHOP</a>
     </div>
 </nav>
 `;
