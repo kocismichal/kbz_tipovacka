@@ -10,7 +10,7 @@
  *  - když GitHub neodpoví nebo je kód rozbitý, použije se záloha.
  *
  * Nasazení: v editoru Apps Scriptu nahradit obsah souboru tímto textem, uložit,
- * Nasadit → Spravovat nasazení → tužka → Verze: Nová verze → Nasadit (adresa zůstane stejná).
+ * Implementovat → Spravovat implementace → tužka → Verze: Nová verze → Implementovat (adresa zůstane stejná).
  */
 var KOD_URL = "https://raw.githubusercontent.com/kocismichal/kbz_tipovacka/main/extraliga_apps_script_komplet.gs";
 var KOD_KONEC = "\nreturn { EXTRALIGA: EXTRALIGA, doPost: doPost, doGet: doGet, doplnHlavicky: doplnHlavicky, vypisBodovaniDoProtokolu: vypisBodovaniDoProtokolu };";
