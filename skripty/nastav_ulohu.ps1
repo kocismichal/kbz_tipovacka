@@ -20,8 +20,10 @@ if ($Zrusit) {
 
 if (-not (Test-Path $skript)) { throw "Nenašel jsem $skript" }
 
-$akce = New-ScheduledTaskAction -Execute 'powershell.exe' `
-    -Argument ('-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "' + $skript + '"')
+# Spouští se přes "conhost.exe --headless", aby se neotevřelo žádné okno. Samotné "-WindowStyle Hidden"
+# nestačí: Windows Terminal okno stejně ukáže a přeskakuje s ním přes monitory.
+$akce = New-ScheduledTaskAction -Execute 'conhost.exe' `
+    -Argument ('--headless powershell.exe -NoProfile -ExecutionPolicy Bypass -File "' + $skript + '"')
 
 $rano = New-ScheduledTaskTrigger -Daily -At 8:00am
 $vecer = New-ScheduledTaskTrigger -Daily -At 4:00pm
