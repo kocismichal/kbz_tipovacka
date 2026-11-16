@@ -3554,6 +3554,168 @@
      "tresty": 156
     }
    }
+  },
+  {
+   "datum": "2026-11-16",
+   "aktualizovano": "2026-11-16T13:47:37.596Z",
+   "poradi": [
+    {
+     "tym": "Třinec",
+     "zapasy": 19,
+     "body": 48
+    },
+    {
+     "tym": "Pardubice",
+     "zapasy": 19,
+     "body": 39
+    },
+    {
+     "tym": "Kladno",
+     "zapasy": 19,
+     "body": 32
+    },
+    {
+     "tym": "České Budějovice",
+     "zapasy": 19,
+     "body": 32
+    },
+    {
+     "tym": "Plzeň",
+     "zapasy": 19,
+     "body": 30
+    },
+    {
+     "tym": "Karlovy Vary",
+     "zapasy": 18,
+     "body": 28
+    },
+    {
+     "tym": "Sparta Praha",
+     "zapasy": 19,
+     "body": 28
+    },
+    {
+     "tym": "Liberec",
+     "zapasy": 18,
+     "body": 27
+    },
+    {
+     "tym": "Mountfield HK",
+     "zapasy": 18,
+     "body": 27
+    },
+    {
+     "tym": "Kometa Brno",
+     "zapasy": 17,
+     "body": 24
+    },
+    {
+     "tym": "Litvínov",
+     "zapasy": 19,
+     "body": 21
+    },
+    {
+     "tym": "Mladá Boleslav",
+     "zapasy": 19,
+     "body": 21
+    },
+    {
+     "tym": "Vítkovice",
+     "zapasy": 18,
+     "body": 18
+    },
+    {
+     "tym": "Olomouc",
+     "zapasy": 19,
+     "body": 15
+    }
+   ],
+   "statistiky": {
+    "Třinec": {
+     "goly": 76,
+     "obdrzene": 42,
+     "presilovky": 17,
+     "tresty": 177
+    },
+    "Pardubice": {
+     "goly": 71,
+     "obdrzene": 47,
+     "presilovky": 24,
+     "tresty": 205
+    },
+    "Kladno": {
+     "goly": 57,
+     "obdrzene": 55,
+     "presilovky": 14,
+     "tresty": 165
+    },
+    "České Budějovice": {
+     "goly": 51,
+     "obdrzene": 51,
+     "presilovky": 18,
+     "tresty": 223
+    },
+    "Plzeň": {
+     "goly": 49,
+     "obdrzene": 45,
+     "presilovky": 10,
+     "tresty": 136
+    },
+    "Karlovy Vary": {
+     "goly": 42,
+     "obdrzene": 36,
+     "presilovky": 8,
+     "tresty": 131
+    },
+    "Sparta Praha": {
+     "goly": 49,
+     "obdrzene": 44,
+     "presilovky": 11,
+     "tresty": 214
+    },
+    "Liberec": {
+     "goly": 51,
+     "obdrzene": 49,
+     "presilovky": 10,
+     "tresty": 160
+    },
+    "Mountfield HK": {
+     "goly": 47,
+     "obdrzene": 45,
+     "presilovky": 10,
+     "tresty": 162
+    },
+    "Kometa Brno": {
+     "goly": 45,
+     "obdrzene": 49,
+     "presilovky": 5,
+     "tresty": 129
+    },
+    "Litvínov": {
+     "goly": 40,
+     "obdrzene": 54,
+     "presilovky": 10,
+     "tresty": 149
+    },
+    "Mladá Boleslav": {
+     "goly": 40,
+     "obdrzene": 61,
+     "presilovky": 10,
+     "tresty": 205
+    },
+    "Vítkovice": {
+     "goly": 41,
+     "obdrzene": 56,
+     "presilovky": 11,
+     "tresty": 161
+    },
+    "Olomouc": {
+     "goly": 35,
+     "obdrzene": 60,
+     "presilovky": 9,
+     "tresty": 180
+    }
+   }
   }
  ]
 }

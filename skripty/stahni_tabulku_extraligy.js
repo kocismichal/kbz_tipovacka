@@ -96,6 +96,8 @@ const HLAVICKY = {
 };
 const POKUSY = 3;                   // kolikrát se adresa zkusí, než se jde na další zdroj
 const STARE_PO_DNECH = 3;           // dokud není uložená tabulka starší, je odmítnutí od hokej.cz jen zpráva, ne chyba
+const ROZPIS_MIN_PODIL = 0.95;      // nový rozpis smí mít o pár zápasů míň (přeložené), ne ale o čtvrtinu
+const ROZPIS_STARY_H = 36;          // starší uložený rozpis se před rozhodováním obnoví
 const PAUZA_PO_CHYBE_S = [3, 8];
 const pauza = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -424,9 +426,8 @@ async function ulozZapasy() {
     const odehrane = (z) => (z || []).filter((x) => x.odehrany).length;
     const bylo = stary && Array.isArray(stary.zapasy) ? stary.zapasy.length : 0;
     const byloOdehranych = stary && Array.isArray(stary.zapasy) ? odehrane(stary.zapasy) : 0;
-    if (zapasy.length === 0) throw new Error("stránka nevrátila žádný zápas");
-    if (zapasy.length < bylo) throw new Error("zápasů by ubylo (" + bylo + " → " + zapasy.length + ")");
-    if (odehrane(zapasy) < byloOdehranych) throw new Error("odehraných zápasů by ubylo (" + byloOdehranych + " → " + odehrane(zapasy) + ")");
+    const vada = rozpisJeHorsi(zapasy, stary && stary.zapasy);
+    if (vada) throw new Error(vada);
     const novy = { sezona: EXTRALIGA.KONFIG.SEZONA, aktualizovano: new Date().toISOString(), zdroj: "hokej.cz", zapasy };
     if (stary && JSON.stringify(stary.zapasy) === JSON.stringify(zapasy)) {
       console.log("Zápasy: beze změny (" + odehrane(zapasy) + " odehraných z " + zapasy.length + ").");
@@ -440,6 +441,34 @@ async function ulozZapasy() {
     console.log("Zápasy: seznam se nepodařilo stáhnout (" + e.message + ") – starý soubor zůstává.");
     return null;
   }
+}
+
+// Je nový rozpis horší než uložený? (vrací důvod, nebo null když je v pořádku)
+// Celkový počet smí o pár zápasů klesnout – přeložený zápas se v rozpisu slučuje – ale ne o moc.
+// Odehraných nesmí ubýt nikdy. Dřív stačilo, aby ubyl jediný zápas, a rozpis se zasekl: 1. 11. 2026
+// přišlo 363 místo 364, soubor zůstal starý a hlídání pak dva týdny hlásilo „dnes se nehraje“.
+function rozpisJeHorsi(novy, stary) {
+  const odehrane = (z) => (z || []).filter((x) => x.odehrany).length;
+  if (!novy || novy.length === 0) return "stránka nevrátila žádný zápas";
+  const bylo = (stary || []).length;
+  if (bylo && novy.length < bylo * ROZPIS_MIN_PODIL) {
+    return "rozpis by se nečekaně zkrátil (" + bylo + " → " + novy.length + ")";
+  }
+  if (odehrane(novy) < odehrane(stary)) {
+    return "odehraných zápasů by ubylo (" + odehrane(stary) + " → " + odehrane(novy) + ")";
+  }
+  return null;
+}
+
+// Jak starý (v hodinách) je uložený rozpis; null = žádný není
+function stariRozpisu(ted, soubor) {
+  try {
+    const j = JSON.parse(fs.readFileSync(soubor || ZAPASY, "utf8"));
+    if (!j || !Array.isArray(j.zapasy) || !j.zapasy.length) return null;
+    const kdy = new Date(j.aktualizovano);
+    if (isNaN(kdy)) return null;
+    return Math.max(0, (ted.getTime() - kdy.getTime()) / 3600000);
+  } catch (e) { return null; }
 }
 
 // Dnešní zápasy z uloženého rozpisu sezóny (2627_extraliga_zapasy.json). Stejný tvar jako programZapasu,
@@ -605,6 +634,12 @@ async function aktualizace() {
   let dnesni = [];
   if (!vzdy) {
     try {
+      // Zastaralý rozpis by lhal o tom, kdy se hraje (hokej.cz doplňuje termíny průběžně), tak se obnoví
+      const stari = stariRozpisu(ted);
+      if (stari === null || stari > ROZPIS_STARY_H) {
+        console.log("Rozpis je " + (stari === null ? "prázdný" : "starý " + Math.round(stari) + " h") + " – zkouším ho obnovit.");
+        await ulozZapasy();
+      }
       let zapasy = zapasyZeSouboru();
       let odkud = "uložený rozpis";
       if (!zapasy.length) {                       // první běh, než se rozpis jednou uloží
@@ -711,5 +746,6 @@ function hlasStavZapisu(dnesni, ted, poradi) {
   // Načtení přes require (testy): jen funkce, nic se nestahuje ani neukládá
   module.exports = { aktualizujHistorii, poradiZHtml, poradiZTabulky, statistikyZPoradi, overPoradi, poznejTym,
     programZapasu, rozhodniStahovani, melySkoncit, odehranoZTabulky, odehranoPredDneskem, dnesVPraze, prazskyCas,
-    zapasyZHtml, zdrojJePozadu, stariUlozeneTabulky, STARE_PO_DNECH, zapasyZeSouboru };
+    zapasyZHtml, zdrojJePozadu, stariUlozeneTabulky, STARE_PO_DNECH, zapasyZeSouboru,
+    stariRozpisu, rozpisJeHorsi, ROZPIS_MIN_PODIL, ROZPIS_STARY_H };
 }
