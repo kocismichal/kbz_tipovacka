@@ -250,6 +250,17 @@ over(S.stariRozpisu(new Date('2026-11-01T22:00:00Z'), souborR) < S.ROZPIS_STARY_
 over(S.stariRozpisu(new Date(), pathR.join(slozkaR, 'nic.json')) === null, 'chybějící rozpis se pozná');
 fsR.rmSync(slozkaR, { recursive: true, force: true });
 
+// ---------- data z cizí stránky se před uložením čistí ----------
+// Kdyby hokej.cz (nebo někdo po cestě) vrátil podvržený text, nesmí se do dat webu dostat znaky pro HTML.
+const cisty = S.bezpecnyText('<img src=x onerror="a()">Zlí & \'hoši\'', 40);
+over(!/[<>"'&`]/.test(cisty) && cisty.includes('hoši'), 'z cizího textu zmizí znaky pro HTML', cisty);
+over(S.bezpecnyText('x'.repeat(100), 40).length === 40, 'cizí text se zkrátí');
+const podvrzeny = S.zapasyZHtml('<h2>1. kolo</h2><tr data-href="/zapas/1"><span class="preview__name--long">Zlí "hoši"</span>'
+  + '<span class="preview__name--long">Sparta Praha</span><td class="preview__score">3</td><td class="preview__score">2</td>'
+  + '<span class="match-start-time">ne 1. 11.</span><span>(1:0, 1:1, <b onclick=x>1:1</b>)</span></tr>');
+over(podvrzeny.length === 1 && podvrzeny[0].tretiny === '' && !/["<>]/.test(podvrzeny[0].domaci) && podvrzeny[0].hoste === 'Sparta Praha',
+  'podvržený zápas: třetiny s HTML se zahodí, název týmu je bez uvozovek', JSON.stringify(podvrzeny));
+
 console.log(chyb ? (chyb + ' kontrol selhalo.') : 'Odehrané zápasy: všechny kontroly prošly.');
   process.exit(chyb ? 1 : 0);
 })();

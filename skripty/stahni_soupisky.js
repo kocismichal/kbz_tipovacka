@@ -72,7 +72,11 @@ const pauza = (ms) => new Promise((r) => setTimeout(r, ms));
 async function stahni(url) {
   const r = await fetch(url, { headers: HLAVICKY, redirect: "follow", signal: AbortSignal.timeout(25000) });
   if (r.status !== 200) throw new Error(`HTTP ${r.status} pro ${url}`);
-  return r.text();
+  const hostitel = new URL(r.url).hostname;
+  if (hostitel !== "www.hokej.cz" && hostitel !== "hokej.cz") throw new Error("přesměrování na cizí adresu: " + hostitel);
+  const obsah = await r.text();
+  if (obsah.length > 5e6) throw new Error("odpověď je podezřele velká (" + obsah.length + " znaků)");
+  return obsah;
 }
 // Jeden klub s opakováním: 403 od hokej.cz bývá jen chvilkové odmítnutí
 async function stahniOpakovane(url, stahniFn) {
@@ -110,7 +114,7 @@ function parsujSoupisku(html, tym) {
       let b;
       while ((b = reBunka.exec(r[1])) !== null) bunky.push(b[1]);
       if (bunky.length < 2) continue;
-      const jmeno = text(bunky[1]);
+      const jmeno = text(bunky[1]).replace(/[<>"`&]/g, "").trim().slice(0, 60);   // jméno jde do skriptu na webu
       if (jmeno) hraci.push({ j: jmeno, t: tym, p: pozice });
     }
   }

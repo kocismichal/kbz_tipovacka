@@ -23,7 +23,7 @@ const server = http.createServer((req, res) => {
   let p = decodeURIComponent(req.url.split('?')[0]);
   if (p.endsWith('/')) p += 'index.html';
   const soubor = path.normalize(path.join(KOREN, p));
-  if (!soubor.startsWith(KOREN) || !fs.existsSync(soubor) || fs.statSync(soubor).isDirectory()) { res.writeHead(404); res.end('404'); return; }
+  if (!soubor.startsWith(KOREN + path.sep) || path.relative(KOREN, soubor).startsWith('.git') || !fs.existsSync(soubor) || fs.statSync(soubor).isDirectory()) { res.writeHead(404); res.end('404'); return; }
   res.writeHead(200, { 'Content-Type': MIME[path.extname(soubor).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-store' });
   fs.createReadStream(soubor).pipe(res);
 });
