@@ -52,14 +52,20 @@ try {
     $zmeneno = & git status --porcelain -- $soubory
     if ([string]::IsNullOrWhiteSpace($zmeneno)) { Zapis 'Beze změny, není co posílat.'; exit 0 }
 
-    & git add $soubory
+    $pred = (& git rev-parse HEAD)
+    & git add -- $soubory
     $popis = 'Tabulka Extraligy: aktualizace z PC ' + (Get-Date -Format 'd. M. yyyy HH:mm')
-    & git commit --quiet -m $popis
+    # Commit jen těchto tří souborů: bez cesty by vzal i cokoli, co má někdo v této kopii zrovna připravené,
+    # a poslal by to na veřejný web.
+    & git commit --quiet -m $popis -- $soubory
+    if ($LASTEXITCODE -ne 0 -or (& git rev-parse HEAD) -eq $pred) { Zapis 'Commit se nepovedl, končím (zkusí se při dalším běhu).'; exit 0 }
     & git push --quiet origin main
     if ($LASTEXITCODE -ne 0) {
-        Zapis 'Push se nepovedl – srovnávám se s main a zkusím to při dalším běhu.'
-        & git fetch origin main --quiet
-        & git reset --hard origin/main --quiet
+        Zapis 'Push se nepovedl – vracím vlastní commit a zkusím to při dalším běhu.'
+        # Vrátí se jen vlastní commit a tři datové soubory (příště se stáhnou znovu). Dřív tu bylo
+        # "reset --hard", které by smazalo i rozpracovanou práci v této kopii.
+        & git reset --quiet --soft $pred
+        & git restore --staged --worktree -- $soubory
         exit 0
     }
     Zapis "Odesláno na GitHub: $popis"

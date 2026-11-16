@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tipovačky – Mistři světa &amp; KBZ</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="style.css">
     <script src="extraliga_spolecne.js?v=2627b"></script>
     <style>
@@ -185,7 +185,7 @@
                 .then(data => {
                     const el = document.getElementById(elementId);
                     if (el && data.pocet !== undefined) {
-                        el.innerHTML = `<i class="fas fa-users"></i> ${data.pocet}`;
+                        el.innerHTML = `<i class="fas fa-users"></i> ${Number(data.pocet) || 0}`;   // jen číslo – odpověď serveru se nevkládá jako HTML
                     }
                 })
                 .catch(error => {

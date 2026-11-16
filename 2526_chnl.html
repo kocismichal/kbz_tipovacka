@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chance Národní liga - KBZ tipovačka</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -248,8 +248,9 @@
         let vsichniHraci = []; let spravneOdpovediRow = []; let dataVyskytParsed = []; let aktivniZalozka = 'celkem';
 
         function odstranDiakritiku(text) { return text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : ""; }
+        function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
         function getInitials(name) { const parts = name.trim().split(' '); return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0, 2).toUpperCase(); }
-        function ziskejLogoKlubuHTML(clubName) { if (!clubName) return ''; const logo = teamLogos[clubName.trim()]; return logo ? `<img src="${logo}" class="fav-club-badge" title="Oblíbený klub: ${clubName}">` : ''; }
+        function ziskejLogoKlubuHTML(clubName) { if (!clubName) return ''; const logo = teamLogos[clubName.trim()]; return logo ? `<img src="${esc(logo)}" class="fav-club-badge" title="Oblíbený klub: ${esc(clubName)}">` : ''; }
         
         function getAvatarHTML(name, puvodniIndex) {
             const cleanName = name.toLowerCase();
@@ -257,7 +258,7 @@
             if (cleanName.includes("sodoma") || puvodniIndex === 3) return '<img src="sodoma.png" alt="Sodoma" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
             if (cleanName.includes("dvorka") || puvodniIndex === 4) return '<img src="dvorka.png" alt="Dvorka" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
             if (cleanName.includes("lars") || puvodniIndex === 5) return '<img src="lars.png" alt="Lars" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">';
-            return getInitials(name);
+            return esc(getInitials(name));
         }
 
         function parseCSVData(text) {
@@ -317,7 +318,7 @@
                 const korunaHtml = (zajic.celkem === maxZajicPoints && maxZajicPoints > 0) ? `<img src="koruna.png" style="position: absolute; top: -22px; left: 50%; transform: translateX(-50%); width: 38px; height: auto; z-index: 5;">` : '';
                 card.innerHTML = `
                     <div class="zajic-avatar-container">${korunaHtml}<div class="zajic-avatar" style="${isCustomAvatar ? 'background: transparent;' : ''}">${getAvatarHTML(zajic.jmeno, zajic.puvodniIndex)}</div></div>
-                    <div class="zajic-name">${zajic.jmeno} ${ziskejLogoKlubuHTML(zajic.oblubenyKlub)}</div>
+                    <div class="zajic-name">${esc(zajic.jmeno)} ${ziskejLogoKlubuHTML(zajic.oblubenyKlub)}</div>
                     <div class="zajic-points" style="color:var(--accent-primary);">${zajic.celkem} bodů</div><div style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Celkově ${zajic.poradiCelkem}. místo</div>`;
                 container.appendChild(card);
             });
@@ -344,7 +345,7 @@
                 if (aktivniZalozka === 'umisteni') { poradi = hrac.poradiUmisteni; bodyZobrazeni = hrac.bodyUmisteni; } else if (aktivniZalozka === 'bonusy') { poradi = hrac.poradiBonus; bodyZobrazeni = hrac.bodyBonus; } else { poradi = hrac.poradiCelkem; bodyZobrazeni = hrac.celkem; }
                 let colorClass = poradi === 1 ? 'color: var(--accent-primary); font-weight: bold;' : '';
                 let bodySloupceHtml = (aktivniZalozka === 'celkem') ? `<td class="sub-points-col">${hrac.bodyUmisteni}</td><td class="sub-points-col">${hrac.bodyBonus}</td><td class="points-col">${bodyZobrazeni}</td>` : `<td class="points-col">${bodyZobrazeni}</td>`;
-                tr.innerHTML = `<td class="rank-col" style="${colorClass}">${poradi}.</td><td style="font-weight: 600;">${hrac.jmeno} ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}</td>${bodySloupceHtml}`;
+                tr.innerHTML = `<td class="rank-col" style="${colorClass}">${poradi}.</td><td style="font-weight: 600;">${esc(hrac.jmeno)} ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}</td>${bodySloupceHtml}`;
                 tbody.appendChild(tr);
             });
         }
@@ -359,7 +360,7 @@
                 shody.forEach(hrac => {
                     const div = document.createElement('div'); div.className = 'autocomplete-item';
                     const isCustomAvatar = [2, 3, 4, 5].includes(hrac.puvodniIndex) || hrac.jmeno.toLowerCase().match(/(podry|sodoma|dvorka|lars)/);
-                    div.innerHTML = `<div style="display:flex; align-items:center; gap:10px;"><div style="width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:bold; overflow:hidden; color:#fff; flex-shrink:0; ${isCustomAvatar ? 'background: transparent;' : 'background: linear-gradient(135deg, #ff4d29, var(--accent-primary));'}">${getAvatarHTML(hrac.jmeno, hrac.puvodniIndex)}</div><span><strong>${hrac.jmeno}</strong> ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}</span></div><span style="color:var(--accent-primary); font-size:0.9rem;">${hrac.celkem} b.</span>`;
+                    div.innerHTML = `<div style="display:flex; align-items:center; gap:10px;"><div style="width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:bold; overflow:hidden; color:#fff; flex-shrink:0; ${isCustomAvatar ? 'background: transparent;' : 'background: linear-gradient(135deg, #ff4d29, var(--accent-primary));'}">${getAvatarHTML(hrac.jmeno, hrac.puvodniIndex)}</div><span><strong>${esc(hrac.jmeno)}</strong> ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}</span></div><span style="color:var(--accent-primary); font-size:0.9rem;">${hrac.celkem} b.</span>`;
                     div.onclick = () => { document.getElementById('searchInput').value = ''; resultBox.style.display = 'none'; otevriModal(hrac); };
                     resultBox.appendChild(div);
                 });
@@ -372,7 +373,7 @@
             const isCustomAvatar = [2, 3, 4, 5].includes(hrac.puvodniIndex) || hrac.jmeno.toLowerCase().match(/(podry|sodoma|dvorka|lars)/);
             avatarDiv.style.background = isCustomAvatar ? 'transparent' : 'linear-gradient(135deg, #ff4d29, var(--accent-primary))';
             avatarDiv.innerHTML = getAvatarHTML(hrac.jmeno, hrac.puvodniIndex);
-            document.getElementById('modalName').innerHTML = `${hrac.jmeno} ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}`;
+            document.getElementById('modalName').innerHTML = `${esc(hrac.jmeno)} ${ziskejLogoKlubuHTML(hrac.oblubenyKlub)}`;
             document.getElementById('modalPtsTotal').innerText = hrac.celkem; document.getElementById('modalRankTotal').innerText = `${hrac.poradiCelkem}. místo`;
             document.getElementById('modalPtsUmisteni').innerText = hrac.bodyUmisteni; document.getElementById('modalRankUmisteni').innerText = `${hrac.poradiUmisteni}`;
             document.getElementById('modalPtsBonus').innerText = hrac.bodyBonus; document.getElementById('modalRankBonus').innerText = `${hrac.poradiBonus}`;
@@ -384,12 +385,12 @@
             if (hrac.tipyData.length > 0 && hrac.kontrolaData.length > 0 && spravneOdpovediRow.length > 0) {
                 for (let j = 4; j <= 19; j++) {
                     const ofikoTym = spravneOdpovediRow[j] ? spravneOdpovediRow[j].replace(/"/g, '').trim() : '';
-                    offT.innerHTML += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j - 3}.</span><img src="${teamLogos[ofikoTym] || 'https://i.imgur.com/8N4Jp62.png'}" class="t-logo" title="${ofikoTym}"></div>`;
+                    offT.innerHTML += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j - 3}.</span><img src="${esc(teamLogos[ofikoTym] || 'https://i.imgur.com/8N4Jp62.png')}" class="t-logo" title="${esc(ofikoTym)}"></div>`;
                     const tipTym = hrac.tipyData[j] ? hrac.tipyData[j].replace(/"/g, '').trim() : '';
                     const ziskaneBody = hrac.kontrolaData[j] ? hrac.kontrolaData[j].replace(/"/g, '').trim() : '0';
                     const ptsColor = (["10","8","6","4","2"].includes(ziskaneBody)) ? 'pts-high' : 'pts-zero';
                     if (ziskaneBody === "10") pocetPresnychTipuTymu++;
-                    usrT.innerHTML += `<div class="team-col"><span class="t-pos">${j - 3}.</span><img src="${teamLogos[tipTym] || 'https://i.imgur.com/8N4Jp62.png'}" class="t-logo" title="${tipTym}"><span class="t-pts ${ptsColor}">${ziskaneBody}b</span></div>`;
+                    usrT.innerHTML += `<div class="team-col"><span class="t-pos">${j - 3}.</span><img src="${esc(teamLogos[tipTym] || 'https://i.imgur.com/8N4Jp62.png')}" class="t-logo" title="${esc(tipTym)}"><span class="t-pts ${ptsColor}">${esc(ziskaneBody)}b</span></div>`;
                 }
             } else { offT.innerHTML = usrT.innerHTML = '<span style="color:var(--text-muted); padding:10px;">Data se nepodařilo načíst.</span>'; }
 
@@ -404,7 +405,7 @@
                     const tipOdpoved = hrac.tipyData[colIndex] ? hrac.tipyData[colIndex].replace(/"/g, '').trim() : 'Nevyplněno';
                     const ziskaneBody = hrac.kontrolaData[colIndex] ? hrac.kontrolaData[colIndex].replace(/"/g, '').trim() : '0';
                     const spravnaOdpoved = spravneOdpovediRow[colIndex] ? spravneOdpovediRow[colIndex].replace(/"/g, '').trim() : 'Zatím neznámá';
-                    bon.innerHTML += `<div class="bonus-item"><div class="bonus-text"><div class="b-question">${bonusQuestionsText[k]} <span style="color: var(--accent-primary); font-style: italic; font-weight: 600; margin-left: 3px;">(${spravnaOdpoved})</span></div><div class="b-answer">${tipOdpoved}</div></div><div class="b-pts" style="${parseInt(ziskaneBody) > 0 ? 'color: var(--accent-primary);' : 'color: var(--text-muted);'}">${ziskaneBody}</div></div>`;
+                    bon.innerHTML += `<div class="bonus-item"><div class="bonus-text"><div class="b-question">${bonusQuestionsText[k]} <span style="color: var(--accent-primary); font-style: italic; font-weight: 600; margin-left: 3px;">(${esc(spravnaOdpoved)})</span></div><div class="b-answer">${esc(tipOdpoved)}</div></div><div class="b-pts" style="${parseInt(ziskaneBody) > 0 ? 'color: var(--accent-primary);' : 'color: var(--text-muted);'}">${esc(ziskaneBody)}</div></div>`;
                 }
             } else { bon.innerHTML = '<span style="color:var(--text-muted); padding:20px;">Bonusy se nepodařilo načíst.</span>'; }
             
@@ -418,12 +419,12 @@
             if (spravneOdpovediRow.length >= 26) {
                 for (let j = 4; j <= 19; j++) {
                     const spravnyTym = spravneOdpovediRow[j] ? spravneOdpovediRow[j].replace(/"/g, '').trim() : '';
-                    tm.innerHTML += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j - 3}.</span><img src="${teamLogos[spravnyTym] || 'https://i.imgur.com/8N4Jp62.png'}" class="t-logo" title="${spravnyTym}"></div>`;
+                    tm.innerHTML += `<div class="team-col" style="justify-content: flex-start; padding-top: 15px;"><span class="t-pos">${j - 3}.</span><img src="${esc(teamLogos[spravnyTym] || 'https://i.imgur.com/8N4Jp62.png')}" class="t-logo" title="${esc(spravnyTym)}"></div>`;
                 }
                 for (let k = 0; k < 6; k++) {
                     const colIndex = 21 + k; 
                     const spravnaOdpoved = spravneOdpovediRow[colIndex] ? spravneOdpovediRow[colIndex].replace(/"/g, '').trim() : 'Zatím neznámá';
-                    bn.innerHTML += `<div class="bonus-item" style="border-color: rgba(1,254,1,0.2);"><div class="bonus-text"><div class="b-question">${bonusQuestionsText[k]}</div><div class="b-answer" style="color: var(--accent-primary);">${spravnaOdpoved}</div></div><div class="b-pts" style="display:flex; align-items:center;">${teamLogos[spravnaOdpoved] ? `<img src="${teamLogos[spravnaOdpoved]}" style="width:32px; height:32px; object-fit:contain;">` : ``}</div></div>`;
+                    bn.innerHTML += `<div class="bonus-item" style="border-color: rgba(1,254,1,0.2);"><div class="bonus-text"><div class="b-question">${bonusQuestionsText[k]}</div><div class="b-answer" style="color: var(--accent-primary);">${esc(spravnaOdpoved)}</div></div><div class="b-pts" style="display:flex; align-items:center;">${teamLogos[spravnaOdpoved] ? `<img src="${esc(teamLogos[spravnaOdpoved])}" style="width:32px; height:32px; object-fit:contain;">` : ``}</div></div>`;
                 }
             } else { tm.innerHTML = bn.innerHTML = '<span style="color:var(--text-muted); padding:20px; text-align:center; width:100%; display:block;">Odpovědi zatím nejsou vyplněny.</span>'; }
             document.getElementById('spravneModal').querySelector('.modal-card').scrollTop = 0;
@@ -455,10 +456,10 @@
             for (let r = 1; r <= 16; r++) {
                 if(!dataVyskytParsed[r]) continue;
                 const tym = dataVyskytParsed[r][0]; const logo = teamLogos[tym] || 'https://i.imgur.com/8N4Jp62.png';
-                html += `<tr><td style="position:sticky;left:0;background:#111722;z-index:20;text-align:center;"><img src="${logo}" style="width:28px;height:28px;object-fit:contain;" title="${tym}"></td>`;
+                html += `<tr><td style="position:sticky;left:0;background:#111722;z-index:20;text-align:center;"><img src="${esc(logo)}" style="width:28px;height:28px;object-fit:contain;" title="${esc(tym)}"></td>`;
                 for(let c = 1; c <= 16; c++) {
                     const val = isProc ? dataVyskytParsed[r][c+18] : dataVyskytParsed[r][c];
-                    html += `<td style="text-align:center; color:${(!val || val === '0' || val === '0%') ? 'var(--text-muted)' : 'var(--accent-primary)'}">${val || '-'}</td>`;
+                    html += `<td style="text-align:center; color:${(!val || val === '0' || val === '0%') ? 'var(--text-muted)' : 'var(--accent-primary)'}">${esc(val || '-')}</td>`;
                 }
                 html += `</tr>`;
             }

@@ -101,9 +101,21 @@ const ROZPIS_STARY_H = 36;          // starší uložený rozpis se před rozhod
 const PAUZA_PO_CHYBE_S = [3, 8];
 const pauza = (ms) => new Promise((r) => setTimeout(r, ms));
 
+const POVOLENE_ADRESY = ["www.hokej.cz", "hokej.cz", "cs.wikipedia.org"];   // jinam se přesměrovat nenechá
+const MAX_ODPOVED = 5e6;            // znaků; stránka všech kol má necelý milion
+
 async function stahniJednou(url) {
   const r = await fetch(url, { headers: HLAVICKY, redirect: "follow", signal: AbortSignal.timeout(25000) });
-  return { status: r.status, typ: r.headers.get("content-type") || "", text: await r.text(), url: r.url };
+  const hostitel = new URL(r.url).hostname;
+  if (!POVOLENE_ADRESY.includes(hostitel)) throw new Error("přesměrování na cizí adresu: " + hostitel);
+  const text = await r.text();
+  if (text.length > MAX_ODPOVED) throw new Error("odpověď je podezřele velká (" + text.length + " znaků)");
+  return { status: r.status, typ: r.headers.get("content-type") || "", text, url: r.url };
+}
+
+// Text z cizí stránky, který se uloží do dat webu: bez znaků, kterými se dá utéct z HTML, a s omezenou délkou
+function bezpecnyText(s, max) {
+  return String(s || "").replace(/[<>"'`&]/g, "").trim().slice(0, max);
 }
 // Opakování: HTTP 403 od hokej.cz bývá jen chvilkové odmítnutí robota
 async function stahni(url) {
@@ -370,7 +382,7 @@ function zapasyZHtml(html) {
     const kolo = Number(casti[i]);
     const radky = casti[i + 1].match(/<tr data-href="\/zapas\/\d+"[\s\S]*?<\/tr>/g) || [];
     for (const r of radky) {
-      const jmena = [...r.matchAll(/preview__name--long">([^<]+)</g)].map((m) => poznejTym(m[1]) || odstranTagy(m[1]));
+      const jmena = [...r.matchAll(/preview__name--long">([^<]+)</g)].map((m) => poznejTym(m[1]) || bezpecnyText(odstranTagy(m[1]), 40));
       if (jmena.length !== 2) continue;
       const zaklad = { id: (r.match(/\/zapas\/(\d+)/) || [])[1], kolo, domaci: jmena[0], hoste: jmena[1] };
       const skore = [...r.matchAll(/<td class="preview__score[^"]*"[^>]*>([\s\S]*?)<\/td>/g)]
@@ -387,7 +399,7 @@ function zapasyZHtml(html) {
           odehrany: true,
           domaci_goly: Number(skore[0]),
           hoste_goly: Number(skore[1]),
-          tretiny: useky[0] || "",
+          tretiny: /^[\d:,\s]*$/.test(useky[0] || "") ? (useky[0] || "") : "",   // jen čísla, dvojtečky a čárky
           konec: useky.length >= 3 ? "sn" : (useky.length === 2 ? "pp" : "")
         }));
         continue;
@@ -755,5 +767,5 @@ function hlasStavZapisu(dnesni, ted, poradi) {
   module.exports = { aktualizujHistorii, poradiZHtml, poradiZTabulky, statistikyZPoradi, overPoradi, poznejTym,
     programZapasu, rozhodniStahovani, melySkoncit, odehranoZTabulky, odehranoPredDneskem, dnesVPraze, prazskyCas,
     zapasyZHtml, zdrojJePozadu, stariUlozeneTabulky, STARE_PO_DNECH, zapasyZeSouboru,
-    stariRozpisu, rozpisJeHorsi, ROZPIS_MIN_PODIL, ROZPIS_STARY_H };
+    stariRozpisu, rozpisJeHorsi, ROZPIS_MIN_PODIL, ROZPIS_STARY_H, bezpecnyText };
 }

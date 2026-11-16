@@ -98,6 +98,23 @@ mergne do `main` a ověří nasazení (viz Pracovní postup).
   s klubem a pozicí; výběr doplní přesné „Jméno Příjmení“ (tak se pak boduje shoda textu). U icetime jsou brankáři
   vynechaní. Volný text zůstává možný (test `test_naseptavac.js`).
 
+## Bezpečnost (z auditu 16. 11. 2026 – drž se toho při každé změně)
+
+- **E-maily tipujících se nikdy nesmí dostat ven.** Server (`doGet`) vydá jen listy `Tipy` a `Přehled HOTOVO`
+  a rozhoduje podle skutečného názvu listu (`sheet.getName()`) – `getSheetByName` nerozlišuje velikost písmen,
+  takže `sheet=tipy` dřív obešlo skrytí e-mailů. Sloupce E-mail a Vzkaz se nevrací nikdy. Hlídá `test_server.js`.
+- **Server nevěří prohlížeči.** `doPost` sám hlídá uzávěrku (`KONFIG.DEADLINE` má časovou zónu), vyžaduje jméno,
+  omezuje délky a počet řádků a text začínající `= + - @` ukládá s apostrofem (jinak by ho tabulka vzala jako
+  vzorec a šlo by jím číst cizí buňky). Nové pole formuláře = zkontrolovat i tady.
+- **Text z tabulky jde do stránky jen přes `esc()`** (i ve stránkách fotbalu). Slovníky s klíči z tipů zakládej
+  jako `Object.create(null)` – hodnota `constructor` nebo `__proto__` jinak shodí stránku.
+- **Data z hokej.cz jsou cizí vstup:** skripty kontrolují adresu po přesměrování, velikost odpovědi a čistí texty
+  (`bezpecnyText`), než je uloží do JSON a do `extraliga_soupisky.js`.
+- **Zavaděč** bere kód jen z `main`, stažený kód nejdřív spustí a až pak uloží jako zálohu (`test_zavadec.js`).
+  Kód z `main` tedy běží pod Google účtem majitele do 5 minut a na jeho PC do 30 minut – do `main` jen ověřené věci.
+- **Úloha na PC** commituje jen tři datové soubory (`git commit -- soubory`) a nikdy nedělá `reset --hard`.
+- Zpráva z auditu a kontrolní seznam leží mimo repo (jsou neveřejné): `CLAUDE_PRACOVNI\DOKUMENTY\BEZPECNOST_tipovacka_audit_2026-11-16*`.
+
 ## Pracovní postup
 
 1. Větev → změny → `cd testy && npm test` (poprvé `npm install` a `npx playwright install chromium`).

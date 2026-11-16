@@ -434,14 +434,18 @@ var EXTRALIGA = (function () {
   // podle toho, na kterém místě žolík v oficiálním pořadí skončil.
   function bodyZolici(tipRow, vysledkyRow) {
     var oficialni = seznamOficialni(vysledkyRow);
-    var polozky = [], celkem = 0;
+    var polozky = [], celkem = 0, pouzite = [];
     for (var k = 0; k < KONFIG.POCET_ZOLIKU; k++) {
       var sl = sloupceZolika(k);
       var tym = norm(tipRow ? tipRow[sl.tym] : "");
       var tipBody = norm(tipRow ? tipRow[sl.body] : "");
       var pozice = tym !== "" ? oficialni.indexOf(tym) : -1;
       var skutecne = pozice !== -1 && vysledkyRow ? norm(vysledkyRow[SLOUPCE.BODY_MISTO_OD + pozice]) : "";
-      var b = bodyZaCislo(tipBody, skutecne, KONFIG.ZOLIK_NASOBEK_BODU);
+      // Stejný tým jako žolík víckrát (formulář to nedovolí, přímý požadavek ano) se boduje jen poprvé –
+      // jinak by šlo tipnout body jednoho týmu třikrát různě a jistit si tak zisk.
+      var opakovany = tym !== "" && pouzite.indexOf(normKlic(tym)) !== -1;
+      if (tym !== "") pouzite.push(normKlic(tym));
+      var b = opakovany ? 0 : bodyZaCislo(tipBody, skutecne, KONFIG.ZOLIK_NASOBEK_BODU);
       polozky.push({ k: k, tym: tym, tipBody: tipBody, skutecne: skutecne, pozice: pozice, body: b });
       celkem += b;
     }

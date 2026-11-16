@@ -55,3 +55,6 @@ obecném `page.route('**/*')`, jinak by se neuplatnilo. `test_form.js` ověřuje
 | `test_naseptavac.js` | našeptávač jmen hráčů ve formuláři: nabídka podle jména i příjmení, klub u hráče, výběr klávesnicí, brankáři mimo icetime |
 | `test_index.js` | úvodní stránka bez chyb v konzoli |
 | `test_vzhled.js` | screenshoty formuláře a přehledu (desktop/iPad/mobil) do `vystup/` |
+| `test_server.js` | server (Apps Script) v node s napodobeninou tabulky: e-maily ani vzkazy nejdou přečíst žádným zápisem názvu listu, jiný list web nevydá, po uzávěrce se nic nezapíše, vzorce se ukládají jako text |
+| `test_zavadec.js` | zavaděč Apps Scriptu: kód jen z větve `main`, rozbitý kód nepřepíše zálohu, při výpadku GitHubu běží záloha |
+| `test_zly_tip.js` | přehled přežije tip s hodnotami `constructor` / `__proto__` a s kódem v textech (nic se nespustí, přehled nespadne) |

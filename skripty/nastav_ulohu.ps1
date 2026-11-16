@@ -28,6 +28,10 @@ $vecer = New-ScheduledTaskTrigger -Daily -At 4:00pm
 $vecer.Repetition = (New-ScheduledTaskTrigger -Once -At 4:00pm `
     -RepetitionInterval (New-TimeSpan -Minutes 30) `
     -RepetitionDuration (New-TimeSpan -Hours 7 -Minutes 30)).Repetition
+# Čas spouštěče bez posunu zóny = místní čas. S posunem (+01:00 / +02:00), který se vytvoří sám, by se úloha
+# po změně času o hodinu posunula (stalo se po 25. 10. 2026: běžela v 7:00 a 15:00–22:30).
+$rano.StartBoundary = (Get-Date -Hour 8 -Minute 0 -Second 0).ToString('yyyy-MM-ddTHH:mm:ss')
+$vecer.StartBoundary = (Get-Date -Hour 16 -Minute 0 -Second 0).ToString('yyyy-MM-ddTHH:mm:ss')
 
 $nastaveni = New-ScheduledTaskSettingsSet -StartWhenAvailable `
     -DontStopIfGoingOnBatteries -AllowStartIfOnBatteries `
