@@ -113,6 +113,13 @@ mergne do `main` a ověří nasazení (viz Pracovní postup).
 - **Zavaděč** bere kód jen z `main`, stažený kód nejdřív spustí a až pak uloží jako zálohu (`test_zavadec.js`).
   Kód z `main` tedy běží pod Google účtem majitele do 5 minut a na jeho PC do 30 minut – do `main` jen ověřené věci.
 - **Úloha na PC** commituje jen tři datové soubory (`git commit -- soubory`) a nikdy nedělá `reset --hard`.
+- **Větev `main` má pravidlo `ochrana-main`** (GitHub → Settings → Rulesets): nejde smazat ani přepsat historii
+  (force-push). Běžné odesílání je volné – posílá do ní úloha na PC, workflow i merge.
+- **Implementace Apps Scriptu (nasazení) se nesmí archivovat** – archivace je nevratná a nová implementace má novou
+  adresu. Tu je pak potřeba přepsat: Extraliga v `2627_form_extraliga.html`, `2627_prehled_extraliga.html`
+  a `index.html`; ChNL v `2627_formchancenarodniliga.html` a `index.html`; Chance liga v `2627_formchanceliga.html`
+  a `index.html`. Novou verzi kódu nasazuj přes **Implementovat → Spravovat implementace → tužka → Verze: Nová
+  verze** (adresa zůstane) a předtím ji vyzkoušej přes **Testovací implementace** (adresa `/dev`).
 - Zpráva z auditu a kontrolní seznam leží mimo repo (jsou neveřejné): `CLAUDE_PRACOVNI\DOKUMENTY\BEZPECNOST_tipovacka_audit_2026-11-16*`.
 
 ## Pracovní postup
