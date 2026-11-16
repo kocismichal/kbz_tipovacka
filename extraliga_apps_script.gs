@@ -9,10 +9,11 @@
  * předponu "web", aby nekolidovaly s funkcemi v ostatních souborech.
  *
  * Web volá:
- *   POST <URL>                               uložení tipu z formuláře (stejný e-mail = přepsání tipu)
+ *   POST <URL>                               uložení tipu z formuláře (stejný e-mail = přepsání tipu), jen do uzávěrky
  *   GET  <URL>?action=getCount               { "pocet": 12 }
- *   GET  <URL>?action=data&sheet=Tipy        celý list jako pole řádků (sloupec E-mail se ven neposílá)
+ *   GET  <URL>?action=data&sheet=Tipy        celý list jako pole řádků (sloupce E-mail a Vzkaz se ven neposílají)
  *   GET  <URL>?action=data&sheet=Přehled HOTOVO
+ * Jiné listy web číst nesmí.
  *
  * Postup po přidání žolíků a nových otázek (podrobně v extraliga_navod.md):
  *   1. spolecne.gs nahradit novým extraliga_spolecne.js, web.gs nahradit tímto souborem
@@ -23,26 +24,38 @@
 
 var WEB_LIST_TIPY = "Tipy";
 var WEB_LIST_HOTOVO = "Přehled HOTOVO";
+var WEB_MAX_RADKU = 5000;   // víc řádků list Tipy nepřijme (ochrana před zahlcením)
+var WEB_MAX_JMENO = 80;     // nejdelší jméno
+var WEB_MAX_TEXT = 200;     // nejdelší odpověď
+var WEB_MAX_VZKAZ = 1500;   // nejdelší vzkaz
 // Automaticky stažená tabulka Extraligy (GitHub Actions v repu webu). Když existuje a je platná, bere se z ní
 // pořadí a body týmů; bonusové odpovědi zůstávají v řádku 2 listu Přehled HOTOVO.
 var WEB_STAV_URL = "https://raw.githubusercontent.com/kocismichal/kbz_tipovacka/main/2627_extraliga_stav.json";
 
 // ---------- POST: uložení tipu ----------
 function doPost(e) {
+  // Uzávěrku hlídá i server – zavřený formulář v prohlížeči jde obejít přímým požadavkem.
+  if (webPoUzaverce(new Date())) return webJson({ ok: false, error: "Po uzávěrce se tipy nepřijímají." });
+
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(WEB_LIST_TIPY);
-    if (!sheet) return webJson({ ok: false, error: "List nenalezen: " + WEB_LIST_TIPY });
+    if (!sheet) return webJson({ ok: false, error: "Tip se nepodařilo uložit." });
 
     var param = (e && e.parameter) || {};
-    var row = EXTRALIGA.radekZFormulare(param, new Date());
+    if (EXTRALIGA.norm(param.jmeno) === "") return webJson({ ok: false, error: "Chybí jméno." });
+    var row = webOcistiRadek(EXTRALIGA.radekZFormulare(param, new Date()));
     webZajistiSloupce(sheet, row.length);
 
     var email = EXTRALIGA.normKlic(param.email);
     var radek = email ? webNajdiRadekPodleEmailu(sheet, email) : 0;
     var prepsano = radek > 0;
-    if (!prepsano) radek = sheet.getLastRow() + 1;
+    if (!prepsano) {
+      // Pojistka proti zahlcení: nové řádky jen do rozumného počtu (přepis vlastního tipu jde dál)
+      if (sheet.getLastRow() > WEB_MAX_RADKU) return webJson({ ok: false, error: "Tipovačka je plná." });
+      radek = sheet.getLastRow() + 1;
+    }
     sheet.getRange(radek, 1, 1, row.length).setValues([row]);
 
     return webJson({ ok: true, radek: radek, prepsano: prepsano });
@@ -60,24 +73,45 @@ function doGet(e) {
     return webJson({ pocet: webPocetTipu(ss.getSheetByName(WEB_LIST_TIPY)) });
   }
   if (param.action === "data") {
-    var nazev = param.sheet || WEB_LIST_TIPY;
-    var sheet = ss.getSheetByName(nazev);
-    if (!sheet) return webJson({ error: "List nenalezen: " + nazev });
-    return webJson(webDataListu(sheet, nazev === WEB_LIST_TIPY));
+    // Web smí číst jen tyto dva listy. Rozhoduje skutečný název nalezeného listu, ne text z adresy:
+    // getSheetByName nerozlišuje velikost písmen, takže "sheet=tipy" dřív obešlo skrytí e-mailů.
+    var sheet = ss.getSheetByName(param.sheet || WEB_LIST_TIPY);
+    var nazev = sheet ? sheet.getName() : "";
+    if (nazev !== WEB_LIST_TIPY && nazev !== WEB_LIST_HOTOVO) return webJson({ error: "List nenalezen." });
+    return webJson(webDataListu(sheet));
   }
   return webJson({ error: "Neznámá akce. Použij ?action=getCount nebo ?action=data&sheet=Tipy" });
 }
 
-// Celý list jako pole řádků. U listu Tipy se e-maily (osobní údaj) nahradí prázdným textem, datum se převede na text.
-function webDataListu(sheet, skryjEmail) {
+// Celý list jako pole řádků. E-maily (osobní údaj) a vzkazy se vždy nahradí prázdným textem – web je nepotřebuje
+// a oba listy mají stejné rozložení sloupců. Datum se převede na text.
+function webDataListu(sheet) {
   var data = sheet.getDataRange().getValues();
   var tz = Session.getScriptTimeZone();
   return data.map(function (r, i) {
     return r.map(function (v, j) {
-      if (skryjEmail && i > 0 && j === EXTRALIGA.SLOUPCE.EMAIL) return "";
+      if (i > 0 && (j === EXTRALIGA.SLOUPCE.EMAIL || j === EXTRALIGA.SLOUPCE.VZKAZ)) return "";
       if (v instanceof Date) return Utilities.formatDate(v, tz, "d.M.yyyy H:mm");
       return v;
     });
+  });
+}
+
+// Je po uzávěrce? (KONFIG.DEADLINE má časovou zónu, takže nezáleží na nastavení projektu skriptu)
+function webPoUzaverce(ted) {
+  return ted.getTime() >= new Date(EXTRALIGA.KONFIG.DEADLINE).getTime();
+}
+
+// Úprava hodnot před zápisem do tabulky:
+// - text začínající = + - @ by tabulka uložila jako vzorec (dal by se jím přečíst cizí sloupec včetně e-mailů
+//   nebo napsat tip, který se sám srovná podle výsledků) – apostrof na začátku z něj udělá obyčejný text,
+// - délka se omezí, ať jedno pole nezahltí tabulku ani přehled.
+function webOcistiRadek(row) {
+  return row.map(function (v, j) {
+    if (typeof v !== "string") return v;
+    var max = j === EXTRALIGA.SLOUPCE.VZKAZ ? WEB_MAX_VZKAZ : (j === EXTRALIGA.SLOUPCE.JMENO ? WEB_MAX_JMENO : WEB_MAX_TEXT);
+    if (v.length > max) v = v.slice(0, max);
+    return /^[=+@-]/.test(v) ? "'" + v : v;
   });
 }
 
