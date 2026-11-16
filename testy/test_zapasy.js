@@ -228,6 +228,28 @@ const zapasyJson = { sezona: '2026/27', aktualizovano: '2026-09-27T18:36:00Z', z
 
   over(errors.length === 0, 'stránka je bez chyb v konzoli', errors);
   await browser.close();
-  console.log(chyb ? (chyb + ' kontrol selhalo.') : 'Odehrané zápasy: všechny kontroly prošly.');
+  // ---------- kdy se smí přepsat uložený rozpis ----------
+// Rozpis se nesmí zaseknout: hokej.cz může mít o zápas míň (přeložený se slučuje), ale nesmí ubýt odehrané.
+const rozpis = (celkem, odehranych) => Array.from({ length: celkem }, (_, i) => ({ id: String(i), odehrany: i < odehranych }));
+over(S.rozpisJeHorsi(rozpis(364, 100), null) === null, 'první stažení projde');
+over(S.rozpisJeHorsi(rozpis(363, 130), rozpis(364, 98)) === null, 'o zápas kratší rozpis s víc odehranými projde');
+over(/zkrátil/.test(S.rozpisJeHorsi(rozpis(200, 130), rozpis(364, 98)) || ''), 'rozpis kratší o čtvrtinu se zahodí',
+  S.rozpisJeHorsi(rozpis(200, 130), rozpis(364, 98)));
+over(/odehraných/.test(S.rozpisJeHorsi(rozpis(364, 90), rozpis(364, 98)) || ''), 'úbytek odehraných se zahodí',
+  S.rozpisJeHorsi(rozpis(364, 90), rozpis(364, 98)));
+over(/žádný zápas/.test(S.rozpisJeHorsi([], rozpis(364, 98)) || ''), 'prázdná stránka se zahodí');
+
+// stáří rozpisu: podle něj se pozná, že je potřeba ho obnovit
+const fsR = require('fs'); const osR = require('os'); const pathR = require('path');
+const slozkaR = fsR.mkdtempSync(pathR.join(osR.tmpdir(), 'rozpis-stari-'));
+const souborR = pathR.join(slozkaR, 'zapasy.json');
+fsR.writeFileSync(souborR, JSON.stringify({ aktualizovano: '2026-11-01T19:48:00Z', zapasy: rozpis(364, 98) }));
+const stariR = S.stariRozpisu(new Date('2026-11-16T10:00:00Z'), souborR);
+over(stariR > S.ROZPIS_STARY_H, 'dva týdny starý rozpis se pozná jako starý', Math.round(stariR));
+over(S.stariRozpisu(new Date('2026-11-01T22:00:00Z'), souborR) < S.ROZPIS_STARY_H, 'čerstvý rozpis se neobnovuje');
+over(S.stariRozpisu(new Date(), pathR.join(slozkaR, 'nic.json')) === null, 'chybějící rozpis se pozná');
+fsR.rmSync(slozkaR, { recursive: true, force: true });
+
+console.log(chyb ? (chyb + ' kontrol selhalo.') : 'Odehrané zápasy: všechny kontroly prošly.');
   process.exit(chyb ? 1 : 0);
 })();

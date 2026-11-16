@@ -68,8 +68,11 @@ mergne do `main` a ověří nasazení (viz Pracovní postup).
   `match-start-time` (rok podle `KONFIG.SEZONA`: srpen–prosinec první rok, leden–červenec druhý). Odehraný zápas
   (`odehrany: true`) má dvě buňky `preview__score` a třetiny v závorce; `" - "` navíc znamená prodloužení
   (`konec: "pp"`), dvakrát nájezdy (`"sn"`). Zápas na programu má místo skóre `preview__center` se dnem, datem
-  a časem (`cas`, skóre `null`). Soubor se obnovuje při změně tabulky, v ranním běhu a když chybí; kdyby zápasů
-  nebo odehraných ubylo, starý zůstane. V přehledu je pod pořadím `<details id="zapasy-rozbal">` – JSON se stahuje
+  a časem (`cas`, skóre `null`). Soubor se obnovuje při změně tabulky, v ranním běhu, když chybí, a když je starší
+  než `ROZPIS_STARY_H` (36 h) – podle něj se totiž rozhoduje, jestli se dnes hraje. Nový rozpis se zahodí,
+  jen když je prázdný, kratší než `ROZPIS_MIN_PODIL` (95 %) uloženého, nebo by ubyly odehrané zápasy
+  (`rozpisJeHorsi`). Dřív stačil úbytek jediného zápasu: 1. 11. 2026 přišlo 363 místo 364, rozpis se zasekl
+  a hlídání pak dva týdny hlásilo „dnes se nehraje“, i když se hrálo. V přehledu je pod pořadím `<details id="zapasy-rozbal">` – JSON se stahuje
   **až po rozkliknutí** (`nactiZapasy`) a má dvě záložky (`zmenZapasy`): *Odehrané* od nejnovějšího hracího dne
   (vítěz tučně, skóre odkazuje na hokej.cz) a *Program* od nejbližšího zápasu s časem (test `test_zapasy.js`).
 - **hokej.cz odmítá roboty GitHub Actions** (HTTP 403 na všechny adresy, ověřeno 20. 10. 2026; neprojde ani
