@@ -1,13 +1,13 @@
 {
   "sezona": "2026/27",
-  "aktualizovano": "2026-11-16T13:47:37.596Z",
+  "aktualizovano": "2026-11-18T18:30:04.225Z",
   "zdroj": "hokej.cz",
   "zdroj_url": "https://www.hokej.cz/tipsport-extraliga/table",
   "poradi": [
     {
       "tym": "Třinec",
-      "zapasy": 19,
-      "body": 48
+      "zapasy": 20,
+      "body": 51
     },
     {
       "tym": "Pardubice",
@@ -71,16 +71,16 @@
     },
     {
       "tym": "Olomouc",
-      "zapasy": 19,
+      "zapasy": 20,
       "body": 15
     }
   ],
   "statistiky": {
     "Třinec": {
-      "goly": 76,
-      "obdrzene": 42,
+      "goly": 81,
+      "obdrzene": 45,
       "presilovky": 17,
-      "tresty": 177
+      "tresty": 183
     },
     "Pardubice": {
       "goly": 71,
@@ -155,10 +155,10 @@
       "tresty": 161
     },
     "Olomouc": {
-      "goly": 35,
-      "obdrzene": 60,
+      "goly": 38,
+      "obdrzene": 65,
       "presilovky": 9,
-      "tresty": 180
+      "tresty": 207
     }
   }
 }
