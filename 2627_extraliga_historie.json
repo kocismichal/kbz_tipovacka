@@ -3719,7 +3719,7 @@
   },
   {
    "datum": "2026-11-18",
-   "aktualizovano": "2026-11-18T18:30:04.225Z",
+   "aktualizovano": "2026-11-18T19:30:03.553Z",
    "poradi": [
     {
      "tym": "Třinec",
@@ -3742,6 +3742,11 @@
      "body": 32
     },
     {
+     "tym": "Mountfield HK",
+     "zapasy": 19,
+     "body": 30
+    },
+    {
      "tym": "Plzeň",
      "zapasy": 19,
      "body": 30
@@ -3762,13 +3767,8 @@
      "body": 27
     },
     {
-     "tym": "Mountfield HK",
-     "zapasy": 18,
-     "body": 27
-    },
-    {
      "tym": "Kometa Brno",
-     "zapasy": 17,
+     "zapasy": 18,
      "body": 24
     },
     {
@@ -3817,6 +3817,12 @@
      "presilovky": 18,
      "tresty": 223
     },
+    "Mountfield HK": {
+     "goly": 53,
+     "obdrzene": 45,
+     "presilovky": 11,
+     "tresty": 172
+    },
     "Plzeň": {
      "goly": 49,
      "obdrzene": 45,
@@ -3841,17 +3847,11 @@
      "presilovky": 10,
      "tresty": 160
     },
-    "Mountfield HK": {
-     "goly": 47,
-     "obdrzene": 45,
-     "presilovky": 10,
-     "tresty": 162
-    },
     "Kometa Brno": {
      "goly": 45,
-     "obdrzene": 49,
+     "obdrzene": 55,
      "presilovky": 5,
-     "tresty": 129
+     "tresty": 139
     },
     "Litvínov": {
      "goly": 40,
